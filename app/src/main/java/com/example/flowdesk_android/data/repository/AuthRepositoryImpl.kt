@@ -16,14 +16,21 @@ class AuthRepositoryImpl @Inject constructor(
     private val tokenManager: TokenManager
 ) : AuthRepository {
 
-    override suspend fun login(email: String, password: String): Result<User> = withContext(Dispatchers.IO) {
+    override suspend fun login(tenantName: String, userId: String, Password: String): Result<User> = withContext(Dispatchers.IO) {
         try {
-            val response = api.login(LoginRequest(email, password))
+            val response = api.login(LoginRequest(tenantName, userId, Password))
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body != null) {
                     tokenManager.saveToken(body.accessToken)
-                    Result.success(User(body.id, body.email, body.name, body.accessToken))
+                    Result.success(User(
+                        id = body.user.userSeq.toString(),
+                        userId = body.user.userId,
+                        email = body.user.userEmail,
+                        name = body.user.userName,
+                        corpName = body.user.corpName,
+                        token = body.accessToken
+                    ))
                 } else {
                     Result.failure(Exception("Empty response body"))
                 }

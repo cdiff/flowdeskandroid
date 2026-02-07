@@ -1,6 +1,8 @@
 package com.example.flowdesk_android.presentation.ui.auth
 
 import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.widget.Toast
 import androidx.core.view.isVisible
@@ -9,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.databinding.FragmentLoginBinding
 import com.example.flowdesk_android.presentation.viewmodel.LoginState
@@ -22,6 +25,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
     private val viewModel: LoginViewModel by viewModels()
+    private var isPasswordVisible = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -32,39 +36,81 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     }
 
     private fun setupListeners() {
+        // Login Button
         binding.btnLogin.setOnClickListener {
-            val email = binding.etEmail.text.toString()
+            val tenantName = binding.etTenant.text.toString()
+            val userId = binding.etUserId.text.toString()
             val password = binding.etPassword.text.toString()
-            viewModel.login(email, password)
+            viewModel.login(tenantName, userId, password)
         }
+
+        // SignUp Button
+        binding.btnSignUp.setOnClickListener {
+            Toast.makeText(requireContext(), "회원가입 기능은 준비 중입니다.", Toast.LENGTH_SHORT).show()
+        }
+        
+        // Password Toggle
+        binding.ivPasswordToggle.setOnClickListener {
+            togglePasswordVisibility()
+        }
+    }
+
+    private fun togglePasswordVisibility() {
+        val selection = binding.etPassword.selectionEnd
+        if (isPasswordVisible) {
+            // Hide Password
+            binding.etPassword.transformationMethod = PasswordTransformationMethod.getInstance()
+            binding.ivPasswordToggle.setImageResource(R.drawable.ic_visibility_off)
+        } else {
+            // Show Password
+            binding.etPassword.transformationMethod = HideReturnsTransformationMethod.getInstance()
+            binding.ivPasswordToggle.setImageResource(R.drawable.ic_visibility_on)
+        }
+        isPasswordVisible = !isPasswordVisible
+        binding.etPassword.setSelection(selection)
     }
 
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.loginState.collect { state ->
-                    when (state) {
-                        is LoginState.Loading -> {
-                            binding.progressBar.isVisible = true
-                            binding.btnLogin.isEnabled = false
-                        }
-                        is LoginState.Success -> {
-                            binding.progressBar.isVisible = false
-                            binding.btnLogin.isEnabled = true
-                            Toast.makeText(requireContext(), "Welcome ${state.user.name}", Toast.LENGTH_SHORT).show()
-                            // Navigate to Dashboard ideally
-                        }
-                        is LoginState.Error -> {
-                            binding.progressBar.isVisible = false
-                            binding.btnLogin.isEnabled = true
-                            Toast.makeText(requireContext(), state.message, Toast.LENGTH_LONG).show()
-                        }
-                        else -> {
-                            binding.progressBar.isVisible = false
-                            binding.btnLogin.isEnabled = true
-                        }
-                    }
+                    handleLoginState(state)
                 }
+            }
+        }
+    }
+
+    private fun handleLoginState(state: LoginState) {
+        when (state) {
+            is LoginState.Loading -> {
+                binding.btnLogin.isEnabled = false
+                binding.etTenant.isEnabled = false
+                binding.etUserId.isEnabled = false
+                binding.etPassword.isEnabled = false
+            }
+            is LoginState.Success -> {
+                binding.btnLogin.isEnabled = true
+                binding.etTenant.isEnabled = true
+                binding.etUserId.isEnabled = true
+                binding.etPassword.isEnabled = true
+                
+                val welcomeMsg = "환영합니다, ${state.user.name} (${state.user.corpName})님!"
+                Toast.makeText(requireContext(), welcomeMsg, Toast.LENGTH_LONG).show()
+                
+                findNavController().navigate(R.id.action_loginFragment_to_dashboardFragment)
+            }
+            is LoginState.Error -> {
+                binding.btnLogin.isEnabled = true
+                binding.etTenant.isEnabled = true
+                binding.etUserId.isEnabled = true
+                binding.etPassword.isEnabled = true
+                Toast.makeText(requireContext(), "로그인 실패: ${state.message}", Toast.LENGTH_LONG).show()
+            }
+            is LoginState.Idle -> {
+                binding.btnLogin.isEnabled = true
+                binding.etTenant.isEnabled = true
+                binding.etUserId.isEnabled = true
+                binding.etPassword.isEnabled = true
             }
         }
     }
