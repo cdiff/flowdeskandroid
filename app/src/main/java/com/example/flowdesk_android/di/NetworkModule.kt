@@ -29,7 +29,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://api.flowdesk.app/") 
+            .baseUrl("https://flowdesk-admin-production.up.railway.app/") 
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
