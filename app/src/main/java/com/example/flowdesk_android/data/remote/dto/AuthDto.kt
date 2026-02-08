@@ -53,3 +53,18 @@ data class AdminDto(
     val userId: String,
     val userName: String
 )
+
+data class AuthMeResponse(
+    val user: UserDto,
+    val roles: List<String>,
+    val permissions: Map<String, Boolean>,
+    val menuTree: List<MenuDto>
+)
+
+data class MenuDto(
+    val pageName: String,
+    val displayName: String,
+    val path: String,
+    val order: Int,
+    val children: List<MenuDto>
+)
