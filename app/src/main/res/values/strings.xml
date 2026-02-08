@@ -1,5 +1,13 @@
 <resources>
-    <string name="app_name">SaaS CRM</string>
+    <string name="app_name">FlowDesk Android</string>
+    <string-array name="email_domains">
+        <item>직접입력</item>
+        <item>gmail.com</item>
+        <item>naver.com</item>
+        <item>daum.net</item>
+        <item>hanmail.net</item>
+        <item>nate.com</item>
+    </string-array>
     <string name="login_title">로그인하고\n간편하게 회원관리 하기</string>
     <string name="hint_tenant">회사명</string>
     <string name="hint_user_id">아이디 (이메일)</string>
@@ -19,11 +27,11 @@
     <string name="label_phone">휴대폰 번호</string>
     <string name="hint_phone">휴대폰번호</string>
     <string name="label_password">비밀번호</string>
-    <string name="desc_password">영문, 숫자를 포함한 6자 이상의 비밀번호를 입력해주세요.</string>
-    <string name="error_password_format">영문, 숫자를 포함한 6자 이상의 비밀번호를 입력해주세요.</string>
+    <string name="desc_password">영문, 숫자, 특수문자를 포함한 8자 이상의 비밀번호를 입력해주세요.</string>
+    <string name="error_password_format">영문, 숫자, 특수문자를 포함한 8자 이상의 비밀번호를 입력해주세요.</string>
     <string name="label_password_confirm">비밀번호 확인</string>
     <string name="hint_password_confirm">비밀번호 확인</string>
     <string name="error_password_mismatch">비밀번호가 틀렸습니다.</string>
     <string name="btn_signup_action">가입하기</string>
-    <string name="text_sns_easy_login">SNS로 간편하게 이용하기</string>
+    <string name="text_sns_easy_login">기존 아이디로 로그인하기</string>
 </resources>

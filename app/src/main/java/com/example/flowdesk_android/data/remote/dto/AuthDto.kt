@@ -28,3 +28,28 @@ data class UserDto(
     val stopDtm: String?,
     val tenantId: Int
 )
+
+data class SignUpRequest(
+    val companyName: String,
+    val adminName: String,
+    val email: String,
+    val phone: String,
+    val password: String
+)
+
+data class SignUpResponse(
+    val message: String,
+    val tenant: TenantDto,
+    val admin: AdminDto
+)
+
+data class TenantDto(
+    val tenantId: Int,
+    val tenantName: String
+)
+
+data class AdminDto(
+    val userSeq: Int,
+    val userId: String,
+    val userName: String
+)

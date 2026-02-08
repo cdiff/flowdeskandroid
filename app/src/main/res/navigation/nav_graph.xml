@@ -15,6 +15,9 @@
             app:destination="@id/dashboardFragment"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_loginFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
     </fragment>
     
     <fragment
@@ -22,4 +25,10 @@
         android:name="com.example.flowdesk_android.presentation.ui.dashboard.DashboardFragment"
         android:label="Dashboard"
         tools:layout="@layout/fragment_dashboard" />
+
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="com.example.flowdesk_android.presentation.ui.auth.SignUpFragment"
+        android:label="SignUp"
+        tools:layout="@layout/fragment_signup" />
 </navigation>
