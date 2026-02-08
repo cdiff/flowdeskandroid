@@ -46,7 +46,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
         // SignUp Button
         binding.btnSignUp.setOnClickListener {
-            Toast.makeText(requireContext(), "회원가입 기능은 준비 중입니다.", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_loginFragment_to_signUpFragment)
         }
         
         // Password Toggle
