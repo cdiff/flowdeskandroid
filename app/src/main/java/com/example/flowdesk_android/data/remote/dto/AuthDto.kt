@@ -1,13 +1,30 @@
 package com.example.flowdesk_android.data.remote.dto
 
 data class LoginRequest(
-    val email: String,
+    val tenantName: String,
+    val userId: String,
     val password: String
 )
 
 data class LoginResponse(
-    val id: String,
-    val email: String,
-    val name: String,
-    val accessToken: String
+    val accessToken: String,
+    val expiresIn: String,
+    val refreshToken: String,
+    val refreshExpiresAt: String,
+    val user: UserDto
+)
+
+data class UserDto(
+    val userSeq: Int,
+    val userId: String,
+    val corpName: String,
+    val userName: String,
+    val userEmail: String,
+    val userTel: String?,
+    val userHp: String?,
+    val isActive: Int,
+    val tokenVersion: Int,
+    val regDtm: String,
+    val stopDtm: String?,
+    val tenantId: Int
 )

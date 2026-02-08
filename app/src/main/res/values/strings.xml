@@ -1,3 +1,29 @@
 <resources>
-    <string name="app_name">flowdesk-android</string>
+    <string name="app_name">SaaS CRM</string>
+    <string name="login_title">로그인하고\n간편하게 회원관리 하기</string>
+    <string name="hint_tenant">회사명</string>
+    <string name="hint_user_id">아이디 (이메일)</string>
+    <string name="hint_password">비밀번호</string>
+    <string name="auto_login">자동 로그인</string>
+    <string name="btn_login">로그인</string>
+    <string name="not_member_yet">아직 회원이 아니신가요?</string>
+    <string name="sign_up">회원가입</string>
+    <string name="signup_subtitle">회원가입에 사용할 이메일 주소를 입력하세요.</string>
+    <string name="label_company_name">업체명</string>
+    <string name="hint_company_name">업체명</string>
+    <string name="label_admin_name">관리자 이름</string>
+    <string name="hint_admin_name">이름</string>
+    <string name="label_email">이메일</string>
+    <string name="hint_email_id">이메일주소</string>
+    <string name="hint_email_domain">직접입력</string>
+    <string name="label_phone">휴대폰 번호</string>
+    <string name="hint_phone">휴대폰번호</string>
+    <string name="label_password">비밀번호</string>
+    <string name="desc_password">영문, 숫자를 포함한 6자 이상의 비밀번호를 입력해주세요.</string>
+    <string name="error_password_format">영문, 숫자를 포함한 6자 이상의 비밀번호를 입력해주세요.</string>
+    <string name="label_password_confirm">비밀번호 확인</string>
+    <string name="hint_password_confirm">비밀번호 확인</string>
+    <string name="error_password_mismatch">비밀번호가 틀렸습니다.</string>
+    <string name="btn_signup_action">가입하기</string>
+    <string name="text_sns_easy_login">SNS로 간편하게 이용하기</string>
 </resources>
