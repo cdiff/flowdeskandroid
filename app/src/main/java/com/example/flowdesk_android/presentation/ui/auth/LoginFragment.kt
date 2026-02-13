@@ -97,7 +97,9 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 val welcomeMsg = "환영합니다, ${state.user.name} (${state.user.corpName})님!"
                 Toast.makeText(requireContext(), welcomeMsg, Toast.LENGTH_LONG).show()
                 
-                findNavController().navigate(R.id.action_loginFragment_to_dashboardFragment)
+                val intent = android.content.Intent(requireActivity(), com.example.flowdesk_android.presentation.ui.MainActivity::class.java)
+                startActivity(intent)
+                requireActivity().finish()
             }
             is LoginState.Error -> {
                 binding.btnLogin.isEnabled = true
