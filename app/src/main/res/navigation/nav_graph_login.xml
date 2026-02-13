@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph"
+    android:id="@+id/nav_graph_login"
     app:startDestination="@id/loginFragment">
 
     <fragment
@@ -11,24 +11,20 @@
         android:label="Login"
         tools:layout="@layout/fragment_login">
         <action
-            android:id="@+id/action_loginFragment_to_dashboardFragment"
-            app:destination="@id/dashboardFragment"
-            app:popUpTo="@id/nav_graph"
-            app:popUpToInclusive="true" />
-        <action
             android:id="@+id/action_loginFragment_to_signUpFragment"
             app:destination="@id/signUpFragment" />
+        <!-- Action to MainActivity happens via Activity transition, not fragment nav -->
     </fragment>
-    
-    <fragment
-        android:id="@+id/dashboardFragment"
-        android:name="com.example.flowdesk_android.presentation.ui.dashboard.DashboardFragment"
-        android:label="Dashboard"
-        tools:layout="@layout/fragment_dashboard" />
 
     <fragment
         android:id="@+id/signUpFragment"
         android:name="com.example.flowdesk_android.presentation.ui.auth.SignUpFragment"
-        android:label="SignUp"
-        tools:layout="@layout/fragment_signup" />
+        android:label="Sign Up"
+        tools:layout="@layout/fragment_signup">
+        <action
+            android:id="@+id/action_signUpFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/signUpFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>
