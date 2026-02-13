@@ -4,6 +4,7 @@ import com.example.flowdesk_android.data.local.TokenManager
 import com.example.flowdesk_android.data.remote.AuthApi
 import com.example.flowdesk_android.data.remote.dto.LoginRequest
 import com.example.flowdesk_android.data.remote.dto.SignUpRequest
+import com.example.flowdesk_android.data.remote.dto.AuthMeResponse
 import com.example.flowdesk_android.domain.model.User
 import com.example.flowdesk_android.domain.repository.AuthRepository
 import kotlinx.coroutines.Dispatchers
@@ -55,6 +56,24 @@ class AuthRepositoryImpl @Inject constructor(
                 }
             } else {
                 Result.failure(Exception("SignUp failed with code: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getMe(): Result<AuthMeResponse> = withContext(Dispatchers.IO) {
+        try {
+            val response = api.getMe()
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    Result.success(body)
+                } else {
+                    Result.failure(Exception("Empty response body"))
+                }
+            } else {
+                Result.failure(Exception("Failed to fetch user data with code: ${response.code()}"))
             }
         } catch (e: Exception) {
             Result.failure(e)

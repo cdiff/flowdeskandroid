@@ -12,6 +12,6 @@
     <color name="dack_gray_text">#626264</color>
     <color name="gray_text">#757575</color>
     <color name="gray_border">#D1D1D1</color>
-    <color name="kakao_yellow">#FEE500</color>
-    <color name="kakao_brown">#3C1E1E</color>
+    <color name="nav">#9AA9BF</color>
+
 </resources>

@@ -4,8 +4,10 @@ import com.example.flowdesk_android.data.remote.dto.LoginRequest
 import com.example.flowdesk_android.data.remote.dto.LoginResponse
 import com.example.flowdesk_android.data.remote.dto.SignUpRequest
 import com.example.flowdesk_android.data.remote.dto.SignUpResponse
+import com.example.flowdesk_android.data.remote.dto.AuthMeResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface AuthApi {
@@ -14,4 +16,7 @@ interface AuthApi {
 
     @POST("auth/signup")
     suspend fun signUp(@Body request: SignUpRequest): Response<SignUpResponse>
+
+    @GET("auth/me")
+    suspend fun getMe(): Response<AuthMeResponse>
 }

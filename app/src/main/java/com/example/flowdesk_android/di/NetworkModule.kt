@@ -17,11 +17,26 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideOkHttpClient(tokenManager: com.example.flowdesk_android.data.local.TokenManager): OkHttpClient {
         val logging = HttpLoggingInterceptor()
         logging.setLevel(HttpLoggingInterceptor.Level.BODY)
+        
         return OkHttpClient.Builder()
             .addInterceptor(logging)
+            .addInterceptor { chain ->
+                val original = chain.request()
+                val token = tokenManager.getToken()
+                
+                if (token != null) {
+                    val request = original.newBuilder()
+                        .header("Authorization", "Bearer $token")
+                        .method(original.method, original.body)
+                        .build()
+                    chain.proceed(request)
+                } else {
+                    chain.proceed(original)
+                }
+            }
             .build()
     }
 
