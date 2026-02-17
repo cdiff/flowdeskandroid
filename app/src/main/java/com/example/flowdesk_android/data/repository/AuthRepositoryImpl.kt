@@ -104,4 +104,24 @@ class AuthRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun changePassword(current: String, new: String, confirm: String): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val response = api.changePassword(
+                com.example.flowdesk_android.data.remote.dto.ChangePasswordRequest(current, new, confirm)
+            )
+            if (response.isSuccessful) {
+                Result.success(Unit)
+            } else {
+                val errorMsg = if (response.code() == 400 || response.code() == 401) {
+                     "현재 비밀번호가 틀렸습니다."
+                } else {
+                     "비밀번호 변경에 실패했습니다 (Code: ${response.code()})"
+                }
+                Result.failure(Exception(errorMsg))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

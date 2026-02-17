@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
         
         // Listen for destination changes to update title or handle visibility
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (destination.id == R.id.editProfileFragment) {
+            if (destination.id == R.id.editProfileFragment || destination.id == R.id.changePasswordFragment) {
                 binding.bottomNavigation.visibility = android.view.View.GONE
                 binding.topBar.visibility = android.view.View.GONE
             } else {

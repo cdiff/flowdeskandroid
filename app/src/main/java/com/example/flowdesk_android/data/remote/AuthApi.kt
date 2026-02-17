@@ -22,4 +22,7 @@ interface AuthApi {
 
     @retrofit2.http.PATCH("auth/me/profile")
     suspend fun updateProfile(@Body request: com.example.flowdesk_android.data.remote.dto.ProfileUpdateRequest): Response<com.example.flowdesk_android.data.remote.dto.UserDto>
+
+    @POST("auth/change-password")
+    suspend fun changePassword(@Body request: com.example.flowdesk_android.data.remote.dto.ChangePasswordRequest): Response<Unit>
 }

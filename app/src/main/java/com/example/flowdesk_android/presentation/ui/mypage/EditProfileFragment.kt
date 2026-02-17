@@ -64,7 +64,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile) {
         }
 
         binding.btnChangePassword.setOnClickListener {
-             Toast.makeText(context, "비밀번호 변경 기능은 준비 중입니다.", Toast.LENGTH_SHORT).show()
+             findNavController().navigate(R.id.changePasswordFragment)
         }
     }
 

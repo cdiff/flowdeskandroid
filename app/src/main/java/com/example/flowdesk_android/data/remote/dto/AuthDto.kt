@@ -76,3 +76,9 @@ data class ProfileUpdateRequest(
     val userTel: String?,
     val userHp: String?
 )
+
+data class ChangePasswordRequest(
+    val currentPassword: String,
+    val newPassword: String,
+    val confirmPassword: String
+)
