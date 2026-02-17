@@ -17,4 +17,10 @@
         android:label="MyPage"
         tools:layout="@layout/fragment_mypage" />
 
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.example.flowdesk_android.presentation.ui.mypage.EditProfileFragment"
+        android:label="EditProfile"
+        tools:layout="@layout/fragment_edit_profile" />
+
 </navigation>
