@@ -19,4 +19,7 @@ interface AuthApi {
 
     @GET("auth/me")
     suspend fun getMe(): Response<AuthMeResponse>
+
+    @retrofit2.http.PATCH("auth/me/profile")
+    suspend fun updateProfile(@Body request: com.example.flowdesk_android.data.remote.dto.ProfileUpdateRequest): Response<com.example.flowdesk_android.data.remote.dto.UserDto>
 }

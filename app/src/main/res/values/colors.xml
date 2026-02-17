@@ -13,5 +13,9 @@
     <color name="gray_text">#757575</color>
     <color name="gray_border">#D1D1D1</color>
     <color name="nav">#9AA9BF</color>
+    <color name="login_blue_light">#E8F0FE</color>
+    <color name="green_light">#E6F4EA</color>
+    <color name="green_accent">#008236</color>
+
 
 </resources>

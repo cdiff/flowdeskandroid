@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Drop Shadow -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#0D000000" /> <!-- Very transparent black for shadow -->
+            <corners android:radius="12dp" />
+            <padding
+                android:left="1dp"
+                android:top="1dp"
+                android:right="1dp"
+                android:bottom="1dp" />
+        </shape>
+    </item>
+    
+    <!-- Background Card -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF" />
+            <corners android:radius="12dp" />
+            <!-- No stroke (border) as requested -->
+        </shape>
+    </item>
+</layer-list>

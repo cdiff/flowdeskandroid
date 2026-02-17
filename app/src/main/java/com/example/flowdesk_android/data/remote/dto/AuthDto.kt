@@ -68,3 +68,11 @@ data class MenuDto(
     val order: Int,
     val children: List<MenuDto>
 )
+
+data class ProfileUpdateRequest(
+    val corpName: String?, // Often read-only but included as per request
+    val userName: String,
+    val userEmail: String,
+    val userTel: String?,
+    val userHp: String?
+)
