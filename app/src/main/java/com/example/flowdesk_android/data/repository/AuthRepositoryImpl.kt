@@ -79,4 +79,29 @@ class AuthRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun updateProfile(userName: String, userEmail: String, userTel: String?, userHp: String?): Result<com.example.flowdesk_android.data.remote.dto.UserDto> = withContext(Dispatchers.IO) {
+        try {
+            val request = com.example.flowdesk_android.data.remote.dto.ProfileUpdateRequest(
+                corpName = null,
+                userName = userName,
+                userEmail = userEmail,
+                userTel = userTel,
+                userHp = userHp
+            )
+            val response = api.updateProfile(request)
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    Result.success(body)
+                } else {
+                    Result.failure(Exception("Empty response body"))
+                }
+            } else {
+                Result.failure(Exception("Update failed with code: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

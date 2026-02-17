@@ -14,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -45,6 +46,12 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage) {
             insets
         }
         
+
+        
+        binding.clProfileSection.setOnClickListener {
+            findNavController().navigate(R.id.editProfileFragment)
+        }
+
         observeViewModel()
     }
 

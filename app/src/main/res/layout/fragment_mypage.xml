@@ -23,6 +23,7 @@
 
             <!-- Profile Section -->
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_profile_section"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="2dp"

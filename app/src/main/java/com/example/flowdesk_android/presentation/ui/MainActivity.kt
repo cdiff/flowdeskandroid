@@ -103,9 +103,17 @@ class MainActivity : AppCompatActivity() {
         
         // Listen for destination changes to update title or handle visibility
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            when (destination.id) {
-                R.id.myPageFragment -> binding.tvTitle.text = "마이페이지"
-                R.id.homeFragment -> binding.tvTitle.text = "대시보드"
+            if (destination.id == R.id.editProfileFragment) {
+                binding.bottomNavigation.visibility = android.view.View.GONE
+                binding.topBar.visibility = android.view.View.GONE
+            } else {
+                binding.bottomNavigation.visibility = android.view.View.VISIBLE
+                binding.topBar.visibility = android.view.View.VISIBLE
+                
+                when (destination.id) {
+                    R.id.myPageFragment -> binding.tvTitle.text = "마이페이지"
+                    R.id.homeFragment -> binding.tvTitle.text = "대시보드"
+                }
             }
         }
     }
