@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
                 viewModel.dashboardState.collect { state ->
                     when (state) {
                         is DashboardState.Success -> {
-                            setupBottomNavigation(state.data.menuTree)
+                            setupBottomNavigation(state.data.menuTree ?: emptyList())
                         }
                         else -> {}
                     }

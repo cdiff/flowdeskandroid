@@ -62,6 +62,42 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun logout(): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val refreshToken = tokenManager.getRefreshToken()
+            if (refreshToken == null) {
+                 tokenManager.clear()
+                 return@withContext Result.success(Unit) // Already "logged out" locally
+            }
+            val response = api.logout(com.example.flowdesk_android.data.remote.dto.LogoutRequest(refreshToken))
+            if (response.isSuccessful) {
+                tokenManager.clear()
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Logout failed with code: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            tokenManager.clear() // Force clear on exception too? User intent is logout.
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun logoutAll(): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+             val refreshToken = tokenManager.getRefreshToken() ?: "" // API might need it or not. Assuming yes for consistency or use empty/null handling if API allows.
+             // If logout-all requires refresh token of current session:
+             val response = api.logoutAll(com.example.flowdesk_android.data.remote.dto.LogoutRequest(refreshToken))
+             if (response.isSuccessful) {
+                 tokenManager.clear()
+                 Result.success(Unit)
+             } else {
+                 Result.failure(Exception("Logout all failed with code: ${response.code()}"))
+             }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override suspend fun getMe(): Result<AuthMeResponse> = withContext(Dispatchers.IO) {
         try {
             val response = api.getMe()
@@ -125,3 +161,5 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 }
+
+

@@ -10,4 +10,6 @@ interface AuthRepository {
     suspend fun getMe(): Result<AuthMeResponse>
     suspend fun updateProfile(userName: String, userEmail: String, userTel: String?, userHp: String?): Result<com.example.flowdesk_android.data.remote.dto.UserDto>
     suspend fun changePassword(current: String, new: String, confirm: String): Result<Unit>
+    suspend fun logout(): Result<Unit>
+    suspend fun logoutAll(): Result<Unit>
 }

@@ -21,6 +21,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.data.remote.dto.MenuDto
 import com.example.flowdesk_android.databinding.FragmentMypageBinding
+import com.example.flowdesk_android.presentation.viewmodel.DashboardEffect
 import com.example.flowdesk_android.presentation.viewmodel.DashboardState
 import com.example.flowdesk_android.presentation.viewmodel.DashboardViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -42,7 +43,7 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage) {
         // Window insets handled by parent activity or root view if needed
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(top = systemBars.top, bottom = systemBars.bottom)
+            v.updatePadding(bottom = systemBars.bottom)
             insets
         }
         
@@ -52,24 +53,73 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage) {
             findNavController().navigate(R.id.editProfileFragment)
         }
 
+        binding.btnLogout.setOnClickListener {
+            viewModel.logout()
+        }
+
+        binding.btnLogoutAll.setOnClickListener {
+            showLogoutAllDialog()
+        }
+
         observeViewModel()
+    }
+
+    private fun showLogoutAllDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_logout_all_confirmation, null)
+        val dialog = android.app.AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+
+        val btnCancel = dialogView.findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.btn_cancel)
+        val btnConfirm = dialogView.findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.btn_confirm)
+
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        btnConfirm.setOnClickListener {
+            viewModel.logoutAll()
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.dashboardState.collect { state ->
-                    when (state) {
-                        is DashboardState.Success -> {
-                            updateUI(state)
+                launch {
+                    viewModel.dashboardState.collect { state ->
+                        when (state) {
+                            is DashboardState.Success -> {
+                                updateUI(state)
+                            }
+                            is DashboardState.Error -> {
+                                // Handle error
+                            }
+                            is DashboardState.Loading -> {
+                                // Handle loading
+                            }
+                            else -> {}
                         }
-                        is DashboardState.Error -> {
-                            // Handle error
+                    }
+                }
+                
+                launch {
+                    viewModel.dashboardEffect.collect { effect ->
+                        when (effect) {
+                            DashboardEffect.NavigateToLogin -> {
+                                val intent = android.content.Intent(requireActivity(), com.example.flowdesk_android.presentation.ui.AuthActivity::class.java)
+                                intent.flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                startActivity(intent)
+                                requireActivity().finish()
+                            }
+                            is DashboardEffect.ShowToast -> {
+                                android.widget.Toast.makeText(context, effect.message, android.widget.Toast.LENGTH_SHORT).show()
+                            }
                         }
-                        is DashboardState.Loading -> {
-                            // Handle loading
-                        }
-                        else -> {}
                     }
                 }
             }
@@ -79,14 +129,16 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage) {
     private fun updateUI(state: DashboardState.Success) {
         val user = state.data.user
         binding.tvUserName.text = "${user.userName}님"
-        binding.tvRoleBadge.text = state.data.roles.firstOrNull()?.uppercase() ?: "MEMBER"
+        binding.tvRoleBadge.text = state.data.roles?.firstOrNull()?.uppercase() ?: "MEMBER"
         binding.tvCompanyName.text = user.corpName
         
-        val permissionCount = state.data.permissions.count { it.value }
+        val permissions = state.data.permissions ?: emptyMap()
+        val permissionCount = permissions.count { it.value }
         binding.tvPermissionCount.text = "${permissionCount}개"
 
-        setupMyPermissionsGrid(state.data.menuTree)
-        setupPermissionDetails(state.data.menuTree, state.data.permissions)
+        val menuTree = state.data.menuTree ?: emptyList()
+        setupMyPermissionsGrid(menuTree)
+        setupPermissionDetails(menuTree, permissions)
     }
 
     private fun setupMyPermissionsGrid(menuTree: List<MenuDto>) {

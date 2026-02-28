@@ -56,9 +56,9 @@ data class AdminDto(
 
 data class AuthMeResponse(
     val user: UserDto,
-    val roles: List<String>,
-    val permissions: Map<String, Boolean>,
-    val menuTree: List<MenuDto>
+    val roles: List<String>?,
+    val permissions: Map<String, Boolean>?,
+    val menuTree: List<MenuDto>?
 )
 
 data class MenuDto(
@@ -81,4 +81,8 @@ data class ChangePasswordRequest(
     val currentPassword: String,
     val newPassword: String,
     val confirmPassword: String
+)
+
+data class LogoutRequest(
+    val refreshToken: String
 )
