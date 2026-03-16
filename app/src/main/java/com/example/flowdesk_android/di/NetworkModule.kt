@@ -55,4 +55,10 @@ object NetworkModule {
     fun provideAuthApi(retrofit: Retrofit): AuthApi {
         return retrofit.create(AuthApi::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideUserApi(retrofit: Retrofit): com.example.flowdesk_android.data.remote.UserApi {
+        return retrofit.create(com.example.flowdesk_android.data.remote.UserApi::class.java)
+    }
 }

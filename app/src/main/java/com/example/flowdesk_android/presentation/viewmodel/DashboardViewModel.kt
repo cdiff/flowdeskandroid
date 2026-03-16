@@ -62,20 +62,6 @@ class DashboardViewModel @Inject constructor(
                     _dashboardEffect.emit(DashboardEffect.NavigateToLogin)
                 }
                 .onFailure {
-                    // Even if failed, we cleared local token, so navigate?
-                    // Repository says failure clears token (in my implementation plan).
-                    // Actually, my implementation clears token in `catch` and `isSuccessful`.
-                    // So we can navigate anyway or show error.
-                    // But if it fails by network, user might want to retry?
-                    // Repository implementation: "Result.failure(e)" but clears token in catch block?
-                    // Ah, looking at my edit:
-                    /*
-                    } catch (e: Exception) {
-                        tokenManager.clear()
-                        Result.failure(e)
-                    }
-                    */
-                    // Yes, it clears. So we should navigate.
                     _dashboardEffect.emit(DashboardEffect.NavigateToLogin)
                 }
         }

@@ -28,4 +28,9 @@
         android:name="com.example.flowdesk_android.presentation.ui.mypage.ChangePasswordFragment"
         android:label="ChangePassword"
         tools:layout="@layout/fragment_change_password" />
+    <fragment
+        android:id="@+id/usersFragment"
+        android:name="com.example.flowdesk_android.presentation.ui.users.UserManagementFragment"
+        android:label="Users"
+        tools:layout="@layout/fragment_users" />
 </navigation>

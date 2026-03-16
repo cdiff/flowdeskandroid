@@ -16,6 +16,7 @@
     <color name="login_blue_light">#E8F0FE</color>
     <color name="green_light">#E6F4EA</color>
     <color name="green_accent">#008236</color>
+    <color name="red">#E53935</color>
 
 
 </resources>

@@ -28,9 +28,9 @@ class AuthRepositoryImpl @Inject constructor(
                     Result.success(User(
                         id = body.user.userSeq.toString(),
                         userId = body.user.userId,
-                        email = body.user.userEmail,
+                        email = body.user.userEmail ?: "",
                         name = body.user.userName,
-                        corpName = body.user.corpName,
+                        corpName = body.user.corpName ?: "",
                         token = body.accessToken
                     ))
                 } else {
@@ -67,7 +67,7 @@ class AuthRepositoryImpl @Inject constructor(
             val refreshToken = tokenManager.getRefreshToken()
             if (refreshToken == null) {
                  tokenManager.clear()
-                 return@withContext Result.success(Unit) // Already "logged out" locally
+                 return@withContext Result.success(Unit)
             }
             val response = api.logout(com.example.flowdesk_android.data.remote.dto.LogoutRequest(refreshToken))
             if (response.isSuccessful) {
@@ -77,15 +77,14 @@ class AuthRepositoryImpl @Inject constructor(
                 Result.failure(Exception("Logout failed with code: ${response.code()}"))
             }
         } catch (e: Exception) {
-            tokenManager.clear() // Force clear on exception too? User intent is logout.
+            tokenManager.clear()
             Result.failure(e)
         }
     }
 
     override suspend fun logoutAll(): Result<Unit> = withContext(Dispatchers.IO) {
         try {
-             val refreshToken = tokenManager.getRefreshToken() ?: "" // API might need it or not. Assuming yes for consistency or use empty/null handling if API allows.
-             // If logout-all requires refresh token of current session:
+             val refreshToken = tokenManager.getRefreshToken() ?: ""
              val response = api.logoutAll(com.example.flowdesk_android.data.remote.dto.LogoutRequest(refreshToken))
              if (response.isSuccessful) {
                  tokenManager.clear()

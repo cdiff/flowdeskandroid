@@ -15,18 +15,18 @@ data class LoginResponse(
 )
 
 data class UserDto(
-    val userSeq: Int,
-    val userId: String,
-    val corpName: String,
-    val userName: String,
-    val userEmail: String,
-    val userTel: String?,
-    val userHp: String?,
-    val isActive: Int,
-    val tokenVersion: Int,
-    val regDtm: String,
-    val stopDtm: String?,
-    val tenantId: Int
+    val userSeq: Int = 0,
+    val userId: String = "",
+    val corpName: String? = null,
+    val userName: String = "",
+    val userEmail: String? = null,
+    val userTel: String? = null,
+    val userHp: String? = null,
+    val isActive: Int = 0,
+    val tokenVersion: Int = 0,
+    val regDtm: String? = null,
+    val stopDtm: String? = null,
+    val tenantId: Int = 0
 )
 
 data class SignUpRequest(
@@ -70,7 +70,7 @@ data class MenuDto(
 )
 
 data class ProfileUpdateRequest(
-    val corpName: String?, // Often read-only but included as per request
+    val corpName: String?,
     val userName: String,
     val userEmail: String,
     val userTel: String?,
@@ -85,4 +85,26 @@ data class ChangePasswordRequest(
 
 data class LogoutRequest(
     val refreshToken: String
+)
+
+data class UsersResponse(
+    val items: List<UserDto>?,
+    val pageInfo: PageInfoDto?
+)
+
+data class PageInfoDto(
+    val page: Int,
+    val limit: Int,
+    val totalItems: Int,
+    val totalPages: Int
+)
+
+data class CreateUserRequest(
+    val userId: String,
+    val password: String,
+    val corpName: String,
+    val userName: String,
+    val userEmail: String,
+    val userTel: String,
+    val userHp: String
 )
