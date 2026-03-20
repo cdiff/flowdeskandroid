@@ -33,4 +33,10 @@
         android:name="com.example.flowdesk_android.presentation.ui.users.UserManagementFragment"
         android:label="Users"
         tools:layout="@layout/fragment_users" />
+
+    <fragment
+        android:id="@+id/userDetailFragment"
+        android:name="com.example.flowdesk_android.presentation.ui.users.UserDetailFragment"
+        android:label="UserDetail"
+        tools:layout="@layout/fragment_user_detail" />
 </navigation>

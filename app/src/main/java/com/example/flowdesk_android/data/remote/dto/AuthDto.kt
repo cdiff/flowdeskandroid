@@ -77,6 +77,15 @@ data class ProfileUpdateRequest(
     val userHp: String?
 )
 
+data class UpdateUserInfoRequest(
+    val corpName: String? = null,
+    val userName: String? = null,
+    val userEmail: String? = null,
+    val userTel: String? = null,
+    val userHp: String? = null,
+    val roleIds: List<Int>? = null
+)
+
 data class ChangePasswordRequest(
     val currentPassword: String,
     val newPassword: String,
@@ -107,4 +116,42 @@ data class CreateUserRequest(
     val userEmail: String,
     val userTel: String,
     val userHp: String
+)
+
+data class RoleDto(
+    val roleId: Int,
+    val roleName: String,
+    val displayName: String,
+    val description: String?,
+    val isActive: Int,
+    val isAssigned: Boolean
+)
+
+data class UserDetailDto(
+    val userSeq: Int = 0,
+    val userId: String = "",
+    val corpName: String? = null,
+    val userName: String = "",
+    val userEmail: String? = null,
+    val userTel: String? = null,
+    val userHp: String? = null,
+    val isActive: Int = 0,
+    val tokenVersion: Int = 0,
+    val regDtm: String? = null,
+    val stopDtm: String? = null,
+    val tenantId: Int = 0,
+    val assignedRoleIds: List<Int>? = null,
+    val availableRoles: List<RoleDto>? = null
+)
+
+data class UpdateUserStatusRequest(
+    val isActive: Int
+)
+
+data class UpdateUserRolesRequest(
+    val roleIds: List<Int>
+)
+
+data class AdminChangePasswordRequest(
+    val newPassword: String
 )

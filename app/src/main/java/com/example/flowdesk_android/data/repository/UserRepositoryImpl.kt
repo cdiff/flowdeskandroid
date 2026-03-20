@@ -48,4 +48,87 @@ class UserRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun getUserDetail(id: Int): Result<com.example.flowdesk_android.data.remote.dto.UserDetailDto> = withContext(Dispatchers.IO) {
+        try {
+            val response = api.getUserDetail(id)
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    Result.success(body)
+                } else {
+                    Result.failure(Exception("Empty response body"))
+                }
+            } else {
+                Result.failure(Exception("Failed to fetch user details: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updateUserStatus(id: Int, isActive: Int): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val response = api.updateUserStatus(id, com.example.flowdesk_android.data.remote.dto.UpdateUserStatusRequest(isActive))
+            if (response.isSuccessful) {
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Failed to update status: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updateUserRoles(id: Int, roleIds: List<Int>): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val response = api.updateUserRoles(id, com.example.flowdesk_android.data.remote.dto.UpdateUserRolesRequest(roleIds))
+            if (response.isSuccessful) {
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Failed to update roles: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun adminChangePassword(id: Int, newPassword: String): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val response = api.adminChangePassword(id, com.example.flowdesk_android.data.remote.dto.AdminChangePasswordRequest(newPassword))
+            if (response.isSuccessful) {
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Failed to change password: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun invalidateUserTokens(id: Int): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val response = api.invalidateUserTokens(id)
+            if (response.isSuccessful) {
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Failed to invalidate tokens: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updateUser(id: Int, request: com.example.flowdesk_android.data.remote.dto.UpdateUserInfoRequest): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val response = api.updateUser(id, request)
+            if (response.isSuccessful) {
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Failed to update user: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

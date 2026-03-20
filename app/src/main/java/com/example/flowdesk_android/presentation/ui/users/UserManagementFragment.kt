@@ -21,6 +21,7 @@ import com.example.flowdesk_android.presentation.viewmodel.UserManagementViewMod
 import com.example.flowdesk_android.presentation.viewmodel.UsersState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import androidx.navigation.fragment.findNavController
 
 @AndroidEntryPoint
 class UserManagementFragment : Fragment(R.layout.fragment_users) {
@@ -43,8 +44,8 @@ class UserManagementFragment : Fragment(R.layout.fragment_users) {
 
     private fun setupRecyclerView() {
         userAdapter = UserAdapter { user ->
-            // Handle row click
-            Toast.makeText(context, "Clicked: ${user.userName}", Toast.LENGTH_SHORT).show()
+            val bundle = Bundle().apply { putInt("user_id", user.userSeq) }
+            findNavController().navigate(R.id.userDetailFragment, bundle)
         }
         binding.rvUsers.apply {
             layoutManager = LinearLayoutManager(requireContext())
