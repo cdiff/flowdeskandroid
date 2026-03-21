@@ -23,7 +23,7 @@ interface UserApi {
     @PATCH("users/{id}/status")
     suspend fun updateUserStatus(@Path("id") id: Int, @Body request: UpdateUserStatusRequest): Response<Unit>
 
-    @PATCH("users/{id}/roles")
+    @PATCH("/users/{id}/roles")
     suspend fun updateUserRoles(@Path("id") id: Int, @Body request: UpdateUserRolesRequest): Response<Unit>
 
     @PATCH("users/{id}/password")

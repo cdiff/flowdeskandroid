@@ -33,18 +33,7 @@ class UserAdapter(private val onItemClick: (UserDto) -> Unit) :
             binding.tvUserName.text = user.userName
             binding.tvUserEmail.text = user.userEmail
             
-            // Set initial
             binding.tvAvatar.text = user.userName.firstOrNull()?.toString() ?: "?"
-            val isManager = user.userEmail?.startsWith("ceo") == true
-            if (isManager) {
-                binding.tvRoleBadge.text = "관리자"
-                binding.tvRoleBadge.setBackgroundResource(R.drawable.bg_badge_black)
-                binding.tvRoleBadge.setTextColor(ContextCompat.getColor(binding.root.context, R.color.white))
-            } else {
-                binding.tvRoleBadge.text = "팀원"
-                binding.tvRoleBadge.setBackgroundResource(R.drawable.bg_badge_gray_border)
-                binding.tvRoleBadge.setTextColor(ContextCompat.getColor(binding.root.context, R.color.black))
-            }
 
             // isActive = 1 means active
             if (user.isActive == 1) {

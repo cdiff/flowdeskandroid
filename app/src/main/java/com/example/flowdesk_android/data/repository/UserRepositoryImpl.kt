@@ -1,6 +1,12 @@
 package com.example.flowdesk_android.data.repository
 
 import com.example.flowdesk_android.data.remote.UserApi
+import com.example.flowdesk_android.data.remote.dto.AdminChangePasswordRequest
+import com.example.flowdesk_android.data.remote.dto.CreateUserRequest
+import com.example.flowdesk_android.data.remote.dto.UpdateUserInfoRequest
+import com.example.flowdesk_android.data.remote.dto.UpdateUserStatusRequest
+import com.example.flowdesk_android.data.remote.dto.UpdateUserRolesRequest
+import com.example.flowdesk_android.data.remote.dto.UserDetailDto
 import com.example.flowdesk_android.data.remote.dto.UserDto
 import com.example.flowdesk_android.domain.repository.UserRepository
 import kotlinx.coroutines.Dispatchers
@@ -80,9 +86,9 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateUserRoles(id: Int, roleIds: List<Int>): Result<Unit> = withContext(Dispatchers.IO) {
+    override suspend fun updateUserRoles(id: Int, request: UpdateUserRolesRequest): Result<Unit> = withContext(Dispatchers.IO) {
         try {
-            val response = api.updateUserRoles(id, com.example.flowdesk_android.data.remote.dto.UpdateUserRolesRequest(roleIds))
+            val response = api.updateUserRoles(id, request)
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {

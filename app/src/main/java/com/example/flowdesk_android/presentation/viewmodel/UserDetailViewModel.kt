@@ -9,7 +9,10 @@ import com.example.flowdesk_android.domain.usecase.UpdateUserRolesUseCase
 import com.example.flowdesk_android.domain.usecase.AdminChangePasswordUseCase
 import com.example.flowdesk_android.domain.usecase.InvalidateUserTokensUseCase
 import com.example.flowdesk_android.domain.usecase.UpdateUserUseCase
+import com.example.flowdesk_android.domain.usecase.GetRolesUseCase
 import com.example.flowdesk_android.data.remote.dto.UpdateUserInfoRequest
+import com.example.flowdesk_android.data.remote.dto.UpdateUserRolesRequest
+import com.example.flowdesk_android.data.remote.dto.RoleDto
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,11 +38,28 @@ class UserDetailViewModel @Inject constructor(
     private val updateUserRolesUseCase: UpdateUserRolesUseCase,
     private val adminChangePasswordUseCase: AdminChangePasswordUseCase,
     private val invalidateUserTokensUseCase: InvalidateUserTokensUseCase,
-    private val updateUserUseCase: UpdateUserUseCase
+    private val updateUserUseCase: UpdateUserUseCase,
+    private val getRolesUseCase: GetRolesUseCase
 ) : ViewModel() {
+
+    private val _allRoles = MutableStateFlow<List<RoleDto>>(emptyList())
+    val allRoles: StateFlow<List<RoleDto>> = _allRoles
 
     private val _state = MutableStateFlow<UserDetailState>(UserDetailState.Initial)
     val state: StateFlow<UserDetailState> = _state
+
+    init {
+        fetchRoles()
+    }
+
+    private fun fetchRoles() {
+        viewModelScope.launch {
+            val result = getRolesUseCase()
+            if (result.isSuccess) {
+                _allRoles.value = result.getOrNull() ?: emptyList()
+            }
+        }
+    }
 
     fun getUserDetail(id: Int) {
         _state.value = UserDetailState.Loading
@@ -65,10 +85,10 @@ class UserDetailViewModel @Inject constructor(
         }
     }
 
-    fun updateUserRoles(id: Int, roleIds: List<Int>) {
+    fun updateUserRoles(id: Int, request: UpdateUserRolesRequest) {
         _state.value = UserDetailState.Loading
         viewModelScope.launch {
-            val result = updateUserRolesUseCase(id, roleIds)
+            val result = updateUserRolesUseCase(id, request)
             if (result.isSuccess) {
                 _state.value = UserDetailState.RoleChangeSuccess
             } else {

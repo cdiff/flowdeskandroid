@@ -15,11 +15,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.databinding.FragmentUsersBinding
-import com.example.flowdesk_android.presentation.viewmodel.DashboardState
-import com.example.flowdesk_android.presentation.viewmodel.DashboardViewModel
 import com.example.flowdesk_android.presentation.viewmodel.UserManagementViewModel
 import com.example.flowdesk_android.presentation.viewmodel.UsersState
-import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import androidx.navigation.fragment.findNavController
@@ -30,7 +27,6 @@ class UserManagementFragment : Fragment(R.layout.fragment_users) {
     private var _binding: FragmentUsersBinding? = null
     private val binding get() = _binding!!
     private val viewModel: UserManagementViewModel by viewModels()
-    private val dashboardViewModel: DashboardViewModel by activityViewModels()
     private lateinit var userAdapter: UserAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -40,7 +36,6 @@ class UserManagementFragment : Fragment(R.layout.fragment_users) {
         setupRecyclerView()
         setupListeners()
         observeViewModel()
-        observeTabs()
 
         viewModel.fetchUsers()
     }
@@ -71,60 +66,6 @@ class UserManagementFragment : Fragment(R.layout.fragment_users) {
             }
             override fun afterTextChanged(s: Editable?) {}
         })
-    }
-
-    private fun observeTabs() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                dashboardViewModel.dashboardState.collect { state ->
-                    if (state is DashboardState.Success) {
-                        val menuTree = state.data.menuTree ?: return@collect
-
-                        // "users", "roles", "permissions" 중 하나를 children으로 가진 부모 메뉴 찾기
-                        val parentMenu = menuTree.firstOrNull { parent ->
-                            parent.children.any { child ->
-                                child.pageName in listOf("users", "roles", "permissions")
-                            }
-                        }
-
-                        val children = parentMenu?.children?.sortedBy { it.order }
-                        if (children.isNullOrEmpty()) return@collect
-
-                        // 탭이 아직 없을 때만 추가 (중복 방지)
-                        if (binding.tabLayout.tabCount != children.size) {
-                            binding.tabLayout.removeAllTabs()
-                            children.forEach { child ->
-                                binding.tabLayout.addTab(
-                                    binding.tabLayout.newTab().setText(child.displayName)
-                                )
-                            }
-
-                            // 사용자 관리 탭 자동 선택
-                            val usersTabIndex = children.indexOfFirst { it.pageName == "users" }
-                            if (usersTabIndex >= 0) {
-                                binding.tabLayout.getTabAt(usersTabIndex)?.select()
-                            }
-
-                            binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-                                override fun onTabSelected(tab: TabLayout.Tab?) {
-                                    val selectedChild = children.getOrNull(tab?.position ?: 0) ?: return
-                                    when (selectedChild.pageName) {
-                                        "users" -> viewModel.fetchUsers()
-                                        else -> Toast.makeText(
-                                            requireContext(),
-                                            "${selectedChild.displayName} 화면은 준비중입니다.",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                }
-                                override fun onTabUnselected(tab: TabLayout.Tab?) {}
-                                override fun onTabReselected(tab: TabLayout.Tab?) {}
-                            })
-                        }
-                    }
-                }
-            }
-        }
     }
 
     private fun observeViewModel() {

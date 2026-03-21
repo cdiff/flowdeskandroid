@@ -3,11 +3,12 @@ package com.example.flowdesk_android.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flowdesk_android.data.remote.dto.CreateUserRequest
+import com.example.flowdesk_android.data.remote.dto.RoleDto
 import com.example.flowdesk_android.domain.usecase.CreateUserUseCase
+import com.example.flowdesk_android.domain.usecase.GetRolesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,11 +21,28 @@ sealed class InviteTeamState {
 
 @HiltViewModel
 class InviteTeamViewModel @Inject constructor(
-    private val createUserUseCase: CreateUserUseCase
+    private val createUserUseCase: CreateUserUseCase,
+    private val getRolesUseCase: GetRolesUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<InviteTeamState>(InviteTeamState.Idle)
-    val state: StateFlow<InviteTeamState> = _state.asStateFlow()
+    val state: StateFlow<InviteTeamState> = _state
+
+    private val _allRoles = MutableStateFlow<List<RoleDto>>(emptyList())
+    val allRoles: StateFlow<List<RoleDto>> = _allRoles
+
+    init {
+        fetchRoles()
+    }
+
+    private fun fetchRoles() {
+        viewModelScope.launch {
+            val result = getRolesUseCase()
+            if (result.isSuccess) {
+                _allRoles.value = result.getOrNull() ?: emptyList()
+            }
+        }
+    }
 
     fun inviteUser(request: CreateUserRequest) {
         viewModelScope.launch {

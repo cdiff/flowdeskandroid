@@ -30,13 +30,19 @@
         tools:layout="@layout/fragment_change_password" />
     <fragment
         android:id="@+id/usersFragment"
-        android:name="com.example.flowdesk_android.presentation.ui.users.UserManagementFragment"
+        android:name="com.example.flowdesk_android.presentation.ui.users.OrganizationHostFragment"
         android:label="Users"
-        tools:layout="@layout/fragment_users" />
+        tools:layout="@layout/fragment_organization_host" />
 
     <fragment
         android:id="@+id/userDetailFragment"
         android:name="com.example.flowdesk_android.presentation.ui.users.UserDetailFragment"
         android:label="UserDetail"
         tools:layout="@layout/fragment_user_detail" />
+
+    <fragment
+        android:id="@+id/rolesFragment"
+        android:name="com.example.flowdesk_android.presentation.ui.roles.RolesFragment"
+        android:label="Roles"
+        tools:layout="@layout/fragment_roles" />
 </navigation>

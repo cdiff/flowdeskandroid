@@ -2,10 +2,12 @@ package com.example.flowdesk_android.presentation.ui.users
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -18,6 +20,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.data.remote.dto.RoleDto
 import com.example.flowdesk_android.data.remote.dto.UpdateUserInfoRequest
+import com.example.flowdesk_android.data.remote.dto.UpdateUserRolesRequest
 import com.example.flowdesk_android.data.remote.dto.UserDetailDto
 import com.example.flowdesk_android.databinding.FragmentUserDetailBinding
 import com.example.flowdesk_android.presentation.viewmodel.UserDetailState
@@ -70,8 +73,10 @@ class UserDetailFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        binding.btnBack.setOnClickListener {
-            findNavController().popBackStack()
+        binding.toolbar.setNavigationOnClickListener {
+            if (!findNavController().navigateUp()) {
+                requireActivity().onBackPressedDispatcher.onBackPressed()
+            }
         }
 
         binding.btnToggleStatus.setOnClickListener {
@@ -82,7 +87,22 @@ class UserDetailFragment : Fragment() {
         }
 
         binding.btnSaveRoles.setOnClickListener {
-            viewModel.updateUserRoles(userId, selectedRoleIds.toList())
+            val oldRoleIds = currentUserData?.assignedRoleIds ?: emptyList()
+            val newRoleIds = selectedRoleIds.toList()
+
+            val toAdd = newRoleIds.filter { !oldRoleIds.contains(it) }
+            val toRemove = oldRoleIds.filter { !newRoleIds.contains(it) }
+
+            if (toAdd.isEmpty() && toRemove.isEmpty()) {
+                Toast.makeText(requireContext(), "변경된 역할이 없습니다.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val request = UpdateUserRolesRequest(
+                add = if (toAdd.isNotEmpty()) toAdd else null,
+                remove = if (toRemove.isNotEmpty()) toRemove else null
+            )
+            viewModel.updateUserRoles(userId, request)
         }
 
         binding.btnChangePassword.setOnClickListener {
@@ -195,12 +215,21 @@ class UserDetailFragment : Fragment() {
                         else -> {}
                     }
                 }
+                
+                launch {
+                    viewModel.allRoles.collect { roles ->
+                        if (roles.isNotEmpty() && currentUserData != null) {
+                            renderRoles()
+                        }
+                    }
+                }
             }
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun showTopToast(message: String) {
-        val inflater = LayoutInflater.from(requireContext())
+        val inflater = requireActivity().layoutInflater
         val layout = inflater.inflate(R.layout.custom_top_toast, null)
         layout.findViewById<TextView>(R.id.tv_toast_message).text = message
 
@@ -211,6 +240,25 @@ class UserDetailFragment : Fragment() {
         toast.show()
     }
 
+    private fun createRoleBadge(label: String): TextView {
+        val dp8 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8f, resources.displayMetrics).toInt()
+        val dp12 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 12f, resources.displayMetrics).toInt()
+        val dp4 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4f, resources.displayMetrics).toInt()
+        return TextView(requireContext()).apply {
+            text = label
+            textSize = 12f
+            setTextColor(Color.WHITE)
+            setBackgroundResource(R.drawable.bg_badge_black)
+            setPadding(dp12, dp4, dp12, dp4)
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            params.marginEnd = dp8
+            layoutParams = params
+        }
+    }
+
     private fun bindUserData(user: UserDetailDto) {
         currentUserData = user
         
@@ -218,9 +266,18 @@ class UserDetailFragment : Fragment() {
         binding.tvName.text = user.userName
         binding.tvId.text = "@${user.userId}"
         
-        // Set badge using first assigned role if any
-        val mainRole = user.availableRoles?.firstOrNull { it.isAssigned }?.displayName ?: "사용자"
-        binding.tvRoleBadge.text = mainRole
+        // Set all assigned role badges
+        val assignedRoles = user.availableRoles?.filter { it.isAssigned } ?: emptyList()
+        binding.llRoleBadges.removeAllViews()
+        if (assignedRoles.isEmpty()) {
+            val badge = createRoleBadge("사용자")
+            binding.llRoleBadges.addView(badge)
+        } else {
+            assignedRoles.forEach { role ->
+                val badge = createRoleBadge(role.displayName)
+                binding.llRoleBadges.addView(badge)
+            }
+        }
 
         // Status
         if (user.isActive == 1) {
@@ -268,21 +325,20 @@ class UserDetailFragment : Fragment() {
             binding.tvRegDate.text = "-"
         }
 
-        // Roles
+        renderRoles()
+    }
+
+    private fun renderRoles() {
+        val roles = viewModel.allRoles.value
+        val user = currentUserData ?: return
+        if (roles.isEmpty()) return
+
         selectedRoleIds.clear()
         user.assignedRoleIds?.let { selectedRoleIds.addAll(it) }
 
         binding.llRolesContainer.removeAllViews()
-
-        // Temporarily use mockup roles as requested
-        val mockRoles = listOf(
-            RoleDto(1, "super_admin", "슈퍼 관리자", "시스템 전체 관리 권한을 가진 최고 관리자", 1, selectedRoleIds.contains(1)),
-            RoleDto(2, "admin", "관리자", "테넌트 관리 권한", 1, selectedRoleIds.contains(2)),
-            RoleDto(3, "manager", "매니저", "팀원 관리 및 승인 권한", 1, selectedRoleIds.contains(3)),
-            RoleDto(4, "member", "팀원", "기본적인 업무 수행 권한", 1, selectedRoleIds.contains(4))
-        )
         
-        mockRoles.forEach { role ->
+        roles.forEach { role ->
             addRoleView(role)
         }
     }

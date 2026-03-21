@@ -23,4 +23,10 @@ abstract class RepositoryModule {
     abstract fun bindUserRepository(
         userRepositoryImpl: com.example.flowdesk_android.data.repository.UserRepositoryImpl
     ): com.example.flowdesk_android.domain.repository.UserRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindRoleRepository(
+        roleRepositoryImpl: com.example.flowdesk_android.data.repository.RoleRepositoryImpl
+    ): com.example.flowdesk_android.domain.repository.RoleRepository
 }

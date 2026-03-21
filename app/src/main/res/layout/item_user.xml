@@ -35,20 +35,7 @@
         app:layout_constraintTop_toTopOf="@id/tv_avatar"
         app:layout_constraintBottom_toTopOf="@id/tv_user_email" />
 
-    <TextView
-        android:id="@+id/tv_role_badge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="관리자"
-        android:textSize="10sp"
-        android:textColor="@color/white"
-        android:background="@drawable/bg_badge_black"
-        android:paddingHorizontal="6dp"
-        android:paddingVertical="2dp"
-        android:layout_marginStart="8dp"
-        app:layout_constraintStart_toEndOf="@id/tv_user_name"
-        app:layout_constraintTop_toTopOf="@id/tv_user_name"
-        app:layout_constraintBottom_toBottomOf="@id/tv_user_name" />
+
 
     <ImageView
         android:id="@+id/iv_status"
@@ -57,7 +44,7 @@
         android:src="@drawable/ic_check_circle"
         app:tint="@color/green_accent"
         android:layout_marginStart="8dp"
-        app:layout_constraintStart_toEndOf="@id/tv_role_badge"
+        app:layout_constraintStart_toEndOf="@id/tv_user_name"
         app:layout_constraintTop_toTopOf="@id/tv_user_name"
         app:layout_constraintBottom_toBottomOf="@id/tv_user_name" />
 

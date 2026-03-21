@@ -19,7 +19,7 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- Summary Card -->
+            <!-- Summary Card (GET /roles) -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -28,14 +28,13 @@
                 android:layout_marginBottom="16dp"
                 android:padding="20dp"
                 android:layout_marginHorizontal="2dp"
-                android:layout_marginTop="2dp"
-                >
+                android:layout_marginTop="2dp">
 
                 <ImageView
-                    android:id="@+id/iv_users_icon"
+                    android:id="@+id/iv_roles_icon"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@drawable/ic_users"
+                    android:src="@android:drawable/ic_lock_lock"
                     android:background="@drawable/bg_card_rounded_border"
                     android:padding="12dp"
                     app:tint="@color/login_blue"
@@ -46,18 +45,18 @@
                     android:id="@+id/tv_total_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="전체 사용자"
+                    android:text="전체 역할"
                     android:textColor="@color/gray_text"
                     android:textSize="12sp"
                     android:layout_marginStart="16dp"
-                    app:layout_constraintStart_toEndOf="@id/iv_users_icon"
-                    app:layout_constraintTop_toTopOf="@id/iv_users_icon" />
+                    app:layout_constraintStart_toEndOf="@id/iv_roles_icon"
+                    app:layout_constraintTop_toTopOf="@id/iv_roles_icon" />
 
                 <TextView
                     android:id="@+id/tv_total_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="4명"
+                    tools:text="12개"
                     android:textColor="@color/black"
                     android:textSize="20sp"
                     android:textStyle="bold"
@@ -72,7 +71,7 @@
                     android:background="@drawable/bg_card_rounded_border"
                     android:paddingVertical="12dp"
                     android:baselineAligned="false"
-                    app:layout_constraintTop_toBottomOf="@id/iv_users_icon">
+                    app:layout_constraintTop_toBottomOf="@id/iv_roles_icon">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -84,7 +83,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="활성"
+                            android:text="활성 역할"
                             android:textColor="@color/gray_text"
                             android:textSize="12sp"
                             android:layout_marginBottom="4dp"/>
@@ -92,7 +91,7 @@
                             android:id="@+id/tv_active_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            tools:text="3"
+                            tools:text="10"
                             android:textColor="@color/green_accent"
                             android:textSize="16sp"
                             android:textStyle="bold"/>
@@ -113,7 +112,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="비활성"
+                            android:text="비활성 역할"
                             android:textColor="@color/gray_text"
                             android:textSize="12sp"
                             android:layout_marginBottom="4dp"/>
@@ -121,19 +120,17 @@
                             android:id="@+id/tv_inactive_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            tools:text="1"
+                            tools:text="2"
                             android:textColor="@color/red"
                             android:textSize="16sp"
                             android:textStyle="bold"/>
                     </LinearLayout>
-
                 </LinearLayout>
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- Invite Card -->
+            <!-- Create Role Card (POST /roles) -->
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/btn_invite_team"
+                android:id="@+id/btn_create_role"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -143,10 +140,10 @@
                 android:focusable="true">
 
                 <ImageView
-                    android:id="@+id/iv_invite_icon"
+                    android:id="@+id/iv_create_icon"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@drawable/ic_user_add"
+                    android:src="@android:drawable/ic_input_add"
                     android:background="@drawable/bg_banner_light_blue"
                     android:padding="12dp"
                     app:tint="@color/login_blue"
@@ -155,25 +152,25 @@
                     app:layout_constraintBottom_toBottomOf="parent" />
 
                 <TextView
-                    android:id="@+id/tv_invite_title"
+                    android:id="@+id/tv_create_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="새 팀원 초대하기"
+                    android:text="새 역할 생성하기"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:layout_marginStart="16dp"
-                    app:layout_constraintStart_toEndOf="@id/iv_invite_icon"
-                    app:layout_constraintTop_toTopOf="@id/iv_invite_icon" />
+                    app:layout_constraintStart_toEndOf="@id/iv_create_icon"
+                    app:layout_constraintTop_toTopOf="@id/iv_create_icon" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="함께 일할 동료를 추가하세요"
+                    android:text="새로운 역할을 만들고 권한을 부여하세요"
                     android:textColor="#D0E3FF"
                     android:textSize="12sp"
-                    app:layout_constraintStart_toStartOf="@id/tv_invite_title"
-                    app:layout_constraintTop_toBottomOf="@id/tv_invite_title" />
+                    app:layout_constraintStart_toStartOf="@id/tv_create_title"
+                    app:layout_constraintTop_toBottomOf="@id/tv_create_title" />
 
                 <ImageView
                     android:layout_width="24dp"
@@ -209,7 +206,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@null"
-                    android:hint="이름, 이메일, ID 검색..."
+                    android:hint="역할 이름 검색..."
                     android:textColorHint="@color/gray_text"
                     android:textSize="14sp"
                     android:textColor="@color/black"
@@ -230,7 +227,7 @@
                     android:id="@+id/tv_list_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="팀원 목록"
+                    android:text="역할 목록"
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -247,13 +244,13 @@
                     app:layout_constraintTop_toBottomOf="@id/tv_list_title"/>
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_users"
+                    android:id="@+id/rv_roles"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@id/divider_list"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="3"
-                    tools:listitem="@layout/item_user"
+                    tools:listitem="@layout/item_role"
                     android:nestedScrollingEnabled="false"
                     android:overScrollMode="never" />
 

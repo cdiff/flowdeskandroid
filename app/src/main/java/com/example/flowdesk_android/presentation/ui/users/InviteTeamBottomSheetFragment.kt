@@ -26,11 +26,7 @@ class InviteTeamBottomSheetFragment(private val onSuccess: () -> Unit) : BottomS
     private val binding get() = _binding!!
     private val viewModel: InviteTeamViewModel by viewModels()
 
-    private var selectedRole: Role? = null
-
-    enum class Role {
-        ADMIN, MANAGER, MEMBER, GUEST
-    }
+    private lateinit var roleAdapter: RoleSelectionAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,77 +53,17 @@ class InviteTeamBottomSheetFragment(private val onSuccess: () -> Unit) : BottomS
             }
         }
 
+        setupRecyclerView()
         setupListeners()
-        setupRoleSelection()
         observeViewModel()
     }
-
-    private fun setupRoleSelection() {
-        binding.clRoleAdmin.setOnClickListener { selectRole(Role.ADMIN) }
-        binding.clRoleManager.setOnClickListener { selectRole(Role.MANAGER) }
-        binding.clRoleMember.setOnClickListener { selectRole(Role.MEMBER) }
-        binding.clRoleGuest.setOnClickListener { selectRole(Role.GUEST) }
-    }
-
-    private fun selectRole(role: Role) {
-        selectedRole = role
-
-        val unselectedCard = R.drawable.bg_card_rounded_border
-        val unselectedRadio = R.drawable.ic_radio_unselected
-        val unselectedIconBg = R.drawable.bg_icon_gray
-        val unselectedTitleColor = android.graphics.Color.parseColor("#3A485A")
-        val unselectedSubtitleColor = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.gray_text)
-        val unselectedIconTint = android.graphics.Color.parseColor("#8BA1B8")
-
-        val selectedCard = R.drawable.bg_card_rounded_border_selected
-        val selectedRadio = R.drawable.ic_radio_selected
-        val selectedIconBg = R.drawable.bg_icon_green
-        val selectedTitleColor = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.login_blue)
-        val selectedSubtitleColor = android.graphics.Color.parseColor("#7B8DA3")
-        val selectedIconTint = android.graphics.Color.parseColor("#FFFFFF")
-
-        fun resetCard(cl: View, radio: android.widget.ImageView, icon: android.widget.ImageView, title: android.widget.TextView, desc: android.widget.TextView) {
-            cl.setBackgroundResource(unselectedCard)
-            radio.setImageResource(unselectedRadio)
-            icon.setBackgroundResource(unselectedIconBg)
-            icon.setColorFilter(unselectedIconTint)
-            title.setTextColor(unselectedTitleColor)
-            desc.setTextColor(unselectedSubtitleColor)
+    private fun setupRecyclerView() {
+        roleAdapter = RoleSelectionAdapter { _ ->
+            // selection handled inside adapter
         }
-
-        fun setCard(cl: View, radio: android.widget.ImageView, icon: android.widget.ImageView, title: android.widget.TextView, desc: android.widget.TextView) {
-            cl.setBackgroundResource(selectedCard)
-            radio.setImageResource(selectedRadio)
-            icon.setBackgroundResource(selectedIconBg)
-            icon.setColorFilter(selectedIconTint)
-            title.setTextColor(selectedTitleColor)
-            desc.setTextColor(selectedSubtitleColor)
-        }
-
-        resetCard(binding.clRoleAdmin, binding.ivAdminRadio, binding.ivAdmin, binding.tvAdmin, binding.tvAdminDesc)
-        resetCard(binding.clRoleManager, binding.ivManagerRadio, binding.ivManager, binding.tvManager, binding.tvManagerDesc)
-        resetCard(binding.clRoleMember, binding.ivMemberRadio, binding.ivMember, binding.tvMember, binding.tvMemberDesc)
-        resetCard(binding.clRoleGuest, binding.ivGuestRadio, binding.ivGuest, binding.tvGuest, binding.tvGuestDesc)
-
-        binding.tvSelectedRole.visibility = View.VISIBLE
-
-        when (role) {
-            Role.ADMIN -> {
-                setCard(binding.clRoleAdmin, binding.ivAdminRadio, binding.ivAdmin, binding.tvAdmin, binding.tvAdminDesc)
-                binding.tvSelectedRole.text = "선택된 역할: 관리자"
-            }
-            Role.MANAGER -> {
-                setCard(binding.clRoleManager, binding.ivManagerRadio, binding.ivManager, binding.tvManager, binding.tvManagerDesc)
-                binding.tvSelectedRole.text = "선택된 역할: 매니저"
-            }
-            Role.MEMBER -> {
-                setCard(binding.clRoleMember, binding.ivMemberRadio, binding.ivMember, binding.tvMember, binding.tvMemberDesc)
-                binding.tvSelectedRole.text = "선택된 역할: 팀원"
-            }
-            Role.GUEST -> {
-                setCard(binding.clRoleGuest, binding.ivGuestRadio, binding.ivGuest, binding.tvGuest, binding.tvGuestDesc)
-                binding.tvSelectedRole.text = "선택된 역할: 게스트"
-            }
+        binding.rvRoles.apply {
+            layoutManager = androidx.recyclerview.widget.GridLayoutManager(requireContext(), 2)
+            adapter = roleAdapter
         }
     }
 
@@ -154,12 +90,12 @@ class InviteTeamBottomSheetFragment(private val onSuccess: () -> Unit) : BottomS
                 return@setOnClickListener
             }
 
-            if (selectedRole == null) {
-                Toast.makeText(context, "역할을 선택해주세요.", Toast.LENGTH_SHORT).show()
+            val selectedRoleIds = roleAdapter.getSelectedRoleIds()
+            if (selectedRoleIds.isEmpty()) {
+                Toast.makeText(context, "하나 이상의 역할을 선택해주세요.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Using hardcoded corpName for now based on JSON example or empty
             val request = CreateUserRequest(
                 userId = userId,
                 password = password,
@@ -167,7 +103,8 @@ class InviteTeamBottomSheetFragment(private val onSuccess: () -> Unit) : BottomS
                 userName = userName,
                 userEmail = userEmail,
                 userTel = userTel,
-                userHp = userHp
+                userHp = userHp,
+                roleIds = selectedRoleIds.toList()
             )
 
             viewModel.inviteUser(request)
@@ -177,20 +114,30 @@ class InviteTeamBottomSheetFragment(private val onSuccess: () -> Unit) : BottomS
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.state.collect { state ->
-                    binding.progressBar.isVisible = state is InviteTeamState.Loading
-                    binding.btnInvite.isEnabled = state !is InviteTeamState.Loading
+                launch {
+                    viewModel.state.collect { state ->
+                        binding.progressBar.isVisible = state is InviteTeamState.Loading
+                        binding.btnInvite.isEnabled = state !is InviteTeamState.Loading
 
-                    when (state) {
-                        is InviteTeamState.Success -> {
-                            Toast.makeText(context, "팀원 초대가 완료되었습니다.", Toast.LENGTH_SHORT).show()
-                            onSuccess()
-                            dismiss()
+                        when (state) {
+                            is InviteTeamState.Success -> {
+                                Toast.makeText(context, "팀원 초대가 완료되었습니다.", Toast.LENGTH_SHORT).show()
+                                onSuccess()
+                                dismiss()
+                            }
+                            is InviteTeamState.Error -> {
+                                Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
+                            }
+                            else -> {}
                         }
-                        is InviteTeamState.Error -> {
-                            Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
+                    }
+                }
+
+                launch {
+                    viewModel.allRoles.collect { roles ->
+                        if (roles.isNotEmpty()) {
+                            roleAdapter.submitList(roles)
                         }
-                        else -> {}
                     }
                 }
             }

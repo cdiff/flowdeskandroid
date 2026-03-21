@@ -26,7 +26,8 @@ data class UserDto(
     val tokenVersion: Int = 0,
     val regDtm: String? = null,
     val stopDtm: String? = null,
-    val tenantId: Int = 0
+    val tenantId: Int = 0,
+    val roles: List<RoleDto>? = null
 )
 
 data class SignUpRequest(
@@ -115,16 +116,33 @@ data class CreateUserRequest(
     val userName: String,
     val userEmail: String,
     val userTel: String,
-    val userHp: String
+    val userHp: String,
+    val roleIds: List<Int>? = null
 )
 
 data class RoleDto(
     val roleId: Int,
     val roleName: String,
     val displayName: String,
-    val description: String?,
+    val description: String,
     val isActive: Int,
-    val isAssigned: Boolean
+    val isAssigned: Boolean = false,
+    val createdAt: String?,
+    val updatedAt: String?,
+    val tenantId: Int?,
+    val userCount: Int?,
+    val permissionCount: Int?
+)
+
+data class CreateRoleRequest(
+    val roleName: String,
+    val displayName: String,
+    val description: String
+)
+
+data class RolesResponse(
+    val items: List<RoleDto>?,
+    val pageInfo: PageInfoDto?
 )
 
 data class UserDetailDto(
@@ -149,7 +167,8 @@ data class UpdateUserStatusRequest(
 )
 
 data class UpdateUserRolesRequest(
-    val roleIds: List<Int>
+    val add: List<Int>? = null,
+    val remove: List<Int>? = null
 )
 
 data class AdminChangePasswordRequest(
