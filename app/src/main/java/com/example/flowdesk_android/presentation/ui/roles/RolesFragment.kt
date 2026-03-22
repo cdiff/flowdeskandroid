@@ -69,29 +69,46 @@ class RolesFragment : Fragment() {
     private fun setupRecyclerView() {
         roleAdapter = RoleAdapter(
             onManagePermissionsClick = { role ->
-                Toast.makeText(requireContext(), "Manage permissions for ${role.displayName}", Toast.LENGTH_SHORT).show()
+                val bundle = Bundle().apply { putInt("role_id", role.roleId) }
+                findNavController().navigate(R.id.managePermissionsFragment, bundle)
             },
             onEditRoleClick = { role ->
-                Toast.makeText(requireContext(), "Edit role ${role.displayName}", Toast.LENGTH_SHORT).show()
-            },
-            onMoreOptionsClick = { role, view ->
-                val popup = PopupMenu(requireContext(), view)
-                popup.menu.add(0, 1, 0, if (role.isActive == 1) "비활성화" else "활성화")
-                popup.menu.add(0, 2, 0, "삭제")
-                popup.setOnMenuItemClickListener { item ->
-                    when (item.itemId) {
-                        1 -> {
-                            Toast.makeText(requireContext(), "Toggle status", Toast.LENGTH_SHORT).show()
-                            true
-                        }
-                        2 -> {
-                            Toast.makeText(requireContext(), "Delete clicked", Toast.LENGTH_SHORT).show()
-                            true
-                        }
-                        else -> false
-                    }
+                val bundle = Bundle().apply {
+                    putInt("roleId", role.roleId)
                 }
-                popup.show()
+                findNavController().navigate(R.id.roleDetailFragment, bundle)
+            },
+            onToggleStatusClick = { role ->
+                viewModel.toggleRoleStatus(role.roleId, role.isActive)
+                showTopToast("상태 변경을 요청했습니다.")
+            },
+            onDeleteRoleClick = { role ->
+                val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_delete_role_confirmation, null)
+                val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                    .setView(dialogView)
+                    .create()
+
+                dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+                val tvTitle = dialogView.findViewById<TextView>(R.id.tv_title)
+                val tvMessage = dialogView.findViewById<TextView>(R.id.tv_message)
+                val btnCancel = dialogView.findViewById<View>(R.id.btn_cancel)
+                val btnConfirm = dialogView.findViewById<View>(R.id.btn_confirm)
+
+                tvTitle.text = "역할 삭제"
+                tvMessage.text = "'${role.displayName}' 역할을 정말 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다."
+
+                btnCancel.setOnClickListener {
+                    dialog.dismiss()
+                }
+
+                btnConfirm.setOnClickListener {
+                    viewModel.deleteRole(role.roleId)
+                    showTopToast("삭제 요청을 보냈습니다.")
+                    dialog.dismiss()
+                }
+
+                dialog.show()
             }
         )
         rvRoles.adapter = roleAdapter
@@ -138,7 +155,8 @@ class RolesFragment : Fragment() {
                             }
                             is RolesState.Error -> {
                                 progressBar.visibility = View.GONE
-                                Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                                rvRoles.visibility = View.VISIBLE
+                                showTopToast(state.message)
                             }
                             else -> {}
                         }
@@ -152,5 +170,18 @@ class RolesFragment : Fragment() {
                 }
             }
         }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun showTopToast(message: String) {
+        val inflater = requireActivity().layoutInflater
+        val layout = inflater.inflate(R.layout.custom_top_toast, null)
+        layout.findViewById<TextView>(R.id.tv_toast_message).text = message
+
+        val toast = Toast(requireContext())
+        toast.setGravity(android.view.Gravity.TOP or android.view.Gravity.CENTER_HORIZONTAL, 0, 100)
+        toast.duration = Toast.LENGTH_SHORT
+        toast.view = layout
+        toast.show()
     }
 }

@@ -45,4 +45,24 @@
         android:name="com.example.flowdesk_android.presentation.ui.roles.RolesFragment"
         android:label="Roles"
         tools:layout="@layout/fragment_roles" />
+
+    <fragment
+        android:id="@+id/roleDetailFragment"
+        android:name="com.example.flowdesk_android.presentation.ui.roles.RoleDetailFragment"
+        android:label="RoleDetail"
+        tools:layout="@layout/fragment_role_detail">
+        <argument
+            android:name="roleId"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/managePermissionsFragment"
+        android:name="com.example.flowdesk_android.presentation.ui.roles.ManagePermissionsFragment"
+        android:label="ManagePermissions"
+        tools:layout="@layout/fragment_manage_permissions">
+        <argument
+            android:name="role_id"
+            app:argType="integer" />
+    </fragment>
 </navigation>

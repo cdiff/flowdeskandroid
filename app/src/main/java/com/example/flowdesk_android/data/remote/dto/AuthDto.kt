@@ -174,3 +174,92 @@ data class UpdateUserRolesRequest(
 data class AdminChangePasswordRequest(
     val newPassword: String
 )
+
+data class UpdateRoleStatusRequest(
+    val isActive: Int
+)
+
+data class UpdateRoleInfoRequest(
+    val roleName: String,
+    val displayName: String,
+    val description: String?
+)
+
+data class UpdateRolePermissionsRequest(
+    val add: List<Int>? = null,
+    val remove: List<Int>? = null
+)
+
+data class RoleDetailResponse(
+    val roleId: Int,
+    val roleName: String,
+    val displayName: String,
+    val description: String?,
+    val isActive: Int,
+    val createdAt: String?,
+    val updatedAt: String?,
+    val tenantId: Int?,
+    val permissionsByPage: List<PermissionPageDto>?,
+    val assignedUsers: List<RoleAssignedUserDto>?
+)
+
+data class PermissionPageDto(
+    val pageId: Int,
+    val pageName: String,
+    val pageDisplayName: String,
+    val permissions: List<PermissionActionDto>?
+)
+
+data class PermissionActionDto(
+    val permissionId: Int,
+    val displayName: String,
+    val description: String?,
+    val actionId: Int,
+    val actionName: String,
+    val actionDisplayName: String
+)
+
+data class RoleAssignedUserDto(
+    val userSeq: Int,
+    val userId: String,
+    val userName: String,
+    val email: String?,
+    val isActive: Int,
+    val assignedAt: String?
+)
+
+data class PermissionCatalogResponse(
+    val pages: List<PageDto>,
+    val actions: List<ActionDto>,
+    val permissions: List<PermissionDto>,
+    val matrix: Map<String, List<MatrixActionDto>>
+)
+
+data class PageDto(
+    val pageId: Int,
+    val parentId: Int?,
+    val pageName: String,
+    val path: String?,
+    val displayName: String,
+    val description: String?,
+    val sortOrder: Int
+)
+
+data class ActionDto(
+    val actionId: Int,
+    val actionName: String,
+    val displayName: String
+)
+
+data class PermissionDto(
+    val permissionId: Int,
+    val pageId: Int,
+    val actionId: Int,
+    val displayName: String,
+    val description: String?
+)
+
+data class MatrixActionDto(
+    val actionName: String,
+    val permissionId: Int
+)

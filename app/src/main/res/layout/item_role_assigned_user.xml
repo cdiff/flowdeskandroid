@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:layout_marginBottom="16dp"
+    android:background="?attr/selectableItemBackground">
+    
+    <TextView
+        android:id="@+id/tv_avatar"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        tools:text="J"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:background="@drawable/bg_oval_light_blue"
+        android:textColor="@color/login_blue" />
+        
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginStart="12dp">
+        <TextView 
+            android:id="@+id/tv_user_name"
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content" 
+            tools:text="John Doe" 
+            android:textColor="@color/black" 
+            android:textStyle="bold" 
+            android:textSize="14sp" />
+        <TextView 
+            android:id="@+id/tv_user_email"
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content" 
+            tools:text="john.doe@example.com" 
+            android:textColor="@color/gray_text" 
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:src="@drawable/ic_chevron_right"
+        app:tint="@color/gray_text" />
+</LinearLayout>

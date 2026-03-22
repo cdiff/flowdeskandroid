@@ -8,6 +8,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import android.transition.AutoTransition
+import android.transition.TransitionManager
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.data.remote.dto.RoleDto
 import java.text.SimpleDateFormat
@@ -16,8 +18,11 @@ import java.util.Locale
 class RoleAdapter(
     private val onManagePermissionsClick: (RoleDto) -> Unit,
     private val onEditRoleClick: (RoleDto) -> Unit,
-    private val onMoreOptionsClick: (RoleDto, View) -> Unit
+    private val onToggleStatusClick: (RoleDto) -> Unit,
+    private val onDeleteRoleClick: (RoleDto) -> Unit
 ) : ListAdapter<RoleDto, RoleAdapter.RoleViewHolder>(RoleDiffCallback()) {
+
+    private val expandedRoles = mutableSetOf<Int>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RoleViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_role, parent, false)
@@ -40,6 +45,10 @@ class RoleAdapter(
         private val btnManagePermissions: TextView = itemView.findViewById(R.id.btn_manage_permissions)
         private val btnEditRole: TextView = itemView.findViewById(R.id.btn_edit_role)
         private val ivMoreOptions: ImageView = itemView.findViewById(R.id.iv_more_options)
+        
+        private val llHiddenMenu: View = itemView.findViewById(R.id.ll_hidden_menu)
+        private val btnToggleStatus: TextView = itemView.findViewById(R.id.btn_toggle_status)
+        private val btnDeleteRole: TextView = itemView.findViewById(R.id.btn_delete_role)
 
         fun bind(role: RoleDto) {
             tvDisplayName.text = role.displayName
@@ -70,9 +79,52 @@ class RoleAdapter(
             tvUserCount.text = "${role.userCount}명"
             tvPermissionCount.text = "${role.permissionCount}개"
 
+            // Hidden Menu Logic
+            val isExpanded = expandedRoles.contains(role.roleId)
+            llHiddenMenu.visibility = if (isExpanded) View.VISIBLE else View.GONE
+            
+            btnToggleStatus.text = if (role.isActive == 1) "비활성화" else "활성화"
+
+            ivMoreOptions.setOnClickListener { 
+                val isCurrentlyExpanded = expandedRoles.contains(role.roleId)
+                if (isCurrentlyExpanded) {
+                    expandedRoles.remove(role.roleId)
+                } else {
+                    expandedRoles.add(role.roleId)
+                }
+                
+                val parent = itemView.parent as? ViewGroup
+                if (parent != null) {
+                    TransitionManager.beginDelayedTransition(parent, AutoTransition().apply { duration = 200 })
+                }
+                
+                llHiddenMenu.visibility = if (expandedRoles.contains(role.roleId)) View.VISIBLE else View.GONE
+            }
+            
+            btnToggleStatus.setOnClickListener {
+                onToggleStatusClick(role)
+                expandedRoles.remove(role.roleId)
+                
+                val parent = itemView.parent as? ViewGroup
+                if (parent != null) {
+                    TransitionManager.beginDelayedTransition(parent, AutoTransition().apply { duration = 200 })
+                }
+                llHiddenMenu.visibility = View.GONE
+            }
+            
+            btnDeleteRole.setOnClickListener {
+                onDeleteRoleClick(role)
+                expandedRoles.remove(role.roleId)
+                
+                val parent = itemView.parent as? ViewGroup
+                if (parent != null) {
+                    TransitionManager.beginDelayedTransition(parent, AutoTransition().apply { duration = 200 })
+                }
+                llHiddenMenu.visibility = View.GONE
+            }
+
             btnManagePermissions.setOnClickListener { onManagePermissionsClick(role) }
             btnEditRole.setOnClickListener { onEditRoleClick(role) }
-            ivMoreOptions.setOnClickListener { onMoreOptionsClick(role, it) }
         }
     }
 }
