@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingVertical="12dp"
+    android:gravity="center_vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!-- Action Name Badge -->
+        <TextView
+            android:id="@+id/tv_action_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:background="@drawable/bg_card_rounded"
+            android:text="조회"
+            android:textColor="@color/white"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <!-- Role Discovery / Key Section -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="14dp">
+
+            <TextView
+                android:id="@+id/tv_permission_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="ID: 142"
+                android:textColor="#9CA3AF"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/tv_permission_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="사용자 정보 조회"
+                android:textColor="#374151"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
+
+        <!-- Dynamic Key Text with custom style -->
+        <TextView
+            android:id="@+id/tv_permission_key"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="6dp"
+            android:background="@drawable/bg_rect_rounded_light_gray"
+            tools:text="users@read"
+            android:textColor="#4B5563"
+            android:textSize="11sp"
+            android:fontFamily="monospace" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_permission_desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="사용자의 개인정보 및 할당된 역할을 조회할 수 있는 권한입니다."
+        android:textColor="#6B7280"
+        android:textSize="12sp"
+        android:layout_marginTop="8dp"
+        android:lineSpacingExtra="2dp" />
+
+    <!-- Separator for items within group -->
+    <View
+        android:id="@+id/div_item"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#F3F4F6"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>

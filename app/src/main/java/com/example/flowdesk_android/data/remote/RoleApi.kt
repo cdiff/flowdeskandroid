@@ -13,7 +13,9 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
+import com.example.flowdesk_android.data.remote.dto.CopyRolePermissionsRequest
 
 interface RoleApi {
 
@@ -49,6 +51,12 @@ interface RoleApi {
     suspend fun updateRolePermissions(
         @Path("id") id: Int,
         @Body request: UpdateRolePermissionsRequest
+    ): Response<Unit>
+
+    @PUT("/roles/{id}/permissions")
+    suspend fun copyRolePermissions(
+        @Path("id") id: Int,
+        @Body request: CopyRolePermissionsRequest
     ): Response<Unit>
 
     @DELETE("/roles/{id}")

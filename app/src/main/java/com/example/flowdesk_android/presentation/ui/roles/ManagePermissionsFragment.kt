@@ -59,7 +59,10 @@ class ManagePermissionsFragment : Fragment() {
         setupToolbar()
         observeViewModel()
 
-        if (roleId != -1) viewModel.loadRoleDetail(roleId)
+        if (roleId != -1) {
+            viewModel.loadRoleDetail(roleId)
+            viewModel.loadAvailableRoles()
+        }
     }
 
     private fun setupToolbar() {
@@ -97,6 +100,11 @@ class ManagePermissionsFragment : Fragment() {
             adapter = permAdapter
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(requireContext())
         }
+
+        // 권한 복사 버튼 셋업
+        permBinding?.btnCopyPermissions?.setOnClickListener {
+            showRoleSelectionBottomSheet()
+        }
     }
 
     private fun observeViewModel() {
@@ -110,12 +118,17 @@ class ManagePermissionsFragment : Fragment() {
                             is ManagePermissionsState.InfoUpdateSuccess -> {
                                 showTopToast("역할 정보가 수정되었습니다.")
                                 viewModel.resetState()
-                                viewModel.loadRoleDetail(roleId)
+                                requireActivity().onBackPressedDispatcher.onBackPressed()
                             }
                             is ManagePermissionsState.PermissionsUpdateSuccess -> {
                                 showTopToast("권한이 저장되었습니다.")
                                 viewModel.resetState()
-                                viewModel.loadRoleDetail(roleId)
+                                requireActivity().onBackPressedDispatcher.onBackPressed()
+                            }
+                            is ManagePermissionsState.CopySuccess -> {
+                                showTopToast("다른 역할의 권한을 성공적으로 가져왔습니다.")
+                                viewModel.resetState()
+                                requireActivity().onBackPressedDispatcher.onBackPressed()
                             }
                             is ManagePermissionsState.Error -> {
                                 showTopToast(state.message)
@@ -168,6 +181,42 @@ class ManagePermissionsFragment : Fragment() {
         toast.duration = Toast.LENGTH_SHORT
         toast.view = layout
         toast.show()
+    }
+
+    private fun showRoleSelectionBottomSheet() {
+        val roles = viewModel.availableRoles.value
+        if (roles.isEmpty()) {
+            viewModel.loadAvailableRoles()
+        }
+        
+        // availableRoles가 업데이트될 때까지 기다리기는 어렵고, 보통 UI 흐름상 이미 로드되어 있거나 금방 로드됨.
+        // 더 안전하게는 Flow를 collect하여 보여주는게 정석이지만, 여기서는 단순화하여 열릴 때 넘김.
+        RoleCopyBottomSheetFragment(roles, roleId) { selectedRole ->
+            showCopyConfirmationDialog(selectedRole)
+        }.show(childFragmentManager, "RoleCopyBottomSheet")
+    }
+
+    private fun showCopyConfirmationDialog(sourceRole: com.example.flowdesk_android.data.remote.dto.RoleDto) {
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_confirm_role_copy, null)
+        val dialog = android.app.AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        dialogView.findViewById<TextView>(R.id.tv_message).text = 
+            "'${sourceRole.displayName}' 역할의 권한 설정을\n이 역할에 복사할까요?\n\n(기존 권한은 모두 제거됩니다)"
+
+        dialogView.findViewById<View>(R.id.btn_cancel).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialogView.findViewById<View>(R.id.btn_confirm).setOnClickListener {
+            viewModel.copyPermissions(roleId, sourceRole.roleId)
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     override fun onDestroyView() {

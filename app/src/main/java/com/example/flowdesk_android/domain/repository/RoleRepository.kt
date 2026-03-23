@@ -11,5 +11,6 @@ interface RoleRepository {
     suspend fun deleteRole(id: Int): Result<Unit>
     suspend fun updateRoleInfo(id: Int, request: com.example.flowdesk_android.data.remote.dto.UpdateRoleInfoRequest): Result<Unit>
     suspend fun updateRolePermissions(id: Int, request: com.example.flowdesk_android.data.remote.dto.UpdateRolePermissionsRequest): Result<Unit>
+    suspend fun copyRolePermissions(id: Int, request: com.example.flowdesk_android.data.remote.dto.CopyRolePermissionsRequest): Result<Unit>
     suspend fun getPermissionCatalog(): Result<com.example.flowdesk_android.data.remote.dto.PermissionCatalogResponse>
 }

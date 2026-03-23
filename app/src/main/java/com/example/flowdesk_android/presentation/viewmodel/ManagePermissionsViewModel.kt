@@ -19,6 +19,7 @@ sealed class ManagePermissionsState {
     data class Loaded(val role: RoleDetailResponse) : ManagePermissionsState()
     object InfoUpdateSuccess : ManagePermissionsState()
     object PermissionsUpdateSuccess : ManagePermissionsState()
+    object CopySuccess : ManagePermissionsState()
     data class Error(val message: String) : ManagePermissionsState()
 }
 
@@ -26,8 +27,10 @@ sealed class ManagePermissionsState {
 class ManagePermissionsViewModel @Inject constructor(
     private val getRoleDetailUseCase: GetRoleDetailUseCase,
     private val getPermissionCatalogUseCase: GetPermissionCatalogUseCase,
+    private val getRolesUseCase: com.example.flowdesk_android.domain.usecase.GetRolesUseCase,
     private val updateRoleInfoUseCase: UpdateRoleInfoUseCase,
-    private val updateRolePermissionsUseCase: UpdateRolePermissionsUseCase
+    private val updateRolePermissionsUseCase: UpdateRolePermissionsUseCase,
+    private val copyRolePermissionsUseCase: CopyRolePermissionsUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<ManagePermissionsState>(ManagePermissionsState.Idle)
@@ -39,6 +42,10 @@ class ManagePermissionsViewModel @Inject constructor(
 
     // 현재 체크된 permissionId 집합
     val checkedPermissionIds = mutableSetOf<Int>()
+
+    // 역할 복사용 역할 목록
+    private val _availableRoles = MutableStateFlow<List<com.example.flowdesk_android.data.remote.dto.RoleDto>>(emptyList())
+    val availableRoles: StateFlow<List<com.example.flowdesk_android.data.remote.dto.RoleDto>> = _availableRoles
 
     fun loadRoleDetail(roleId: Int) {
         viewModelScope.launch {
@@ -136,5 +143,30 @@ class ManagePermissionsViewModel @Inject constructor(
 
     fun resetState() {
         _state.value = ManagePermissionsState.Idle
+    }
+
+    fun loadAvailableRoles() {
+        viewModelScope.launch {
+            getRolesUseCase().fold(
+                onSuccess = { response ->
+                    _availableRoles.value = response
+                },
+                onFailure = { /* Silent fail for now */ }
+            )
+        }
+    }
+
+    fun copyPermissions(roleId: Int, sourceRoleId: Int) {
+        viewModelScope.launch {
+            _state.value = ManagePermissionsState.Loading
+            copyRolePermissionsUseCase(roleId, sourceRoleId).fold(
+                onSuccess = {
+                    _state.value = ManagePermissionsState.CopySuccess
+                },
+                onFailure = { e ->
+                    _state.value = ManagePermissionsState.Error(e.message ?: "권한 복사 실패")
+                }
+            )
+        }
     }
 }

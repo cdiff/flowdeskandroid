@@ -4,6 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.flowdesk_android.data.remote.dto.MenuDto
 import com.example.flowdesk_android.presentation.ui.roles.RolesFragment
+import com.example.flowdesk_android.presentation.ui.roles.PermissionCatalogFragment
 
 class OrganizationPagerAdapter(
     fragment: Fragment,
@@ -17,7 +18,8 @@ class OrganizationPagerAdapter(
         return when (pageName) {
             "users" -> UserManagementFragment()
             "roles" -> RolesFragment()
-            else -> Fragment() // Placeholder for permissions
+            "permissions" -> PermissionCatalogFragment.newInstance()
+            else -> Fragment()
         }
     }
 }

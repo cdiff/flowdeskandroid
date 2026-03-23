@@ -119,6 +119,19 @@ class RoleRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun copyRolePermissions(id: Int, request: com.example.flowdesk_android.data.remote.dto.CopyRolePermissionsRequest): Result<Unit> {
+        return try {
+            val response = api.copyRolePermissions(id, request)
+            if (response.isSuccessful) {
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("권한 복사 실패 (${response.code()})"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override suspend fun getPermissionCatalog(): Result<com.example.flowdesk_android.data.remote.dto.PermissionCatalogResponse> {
         return try {
             val response = api.getPermissionCatalog()

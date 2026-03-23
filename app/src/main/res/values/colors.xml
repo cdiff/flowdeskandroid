@@ -18,5 +18,17 @@
     <color name="green_accent">#008236</color>
     <color name="red">#E53935</color>
 
+    <!-- Action Badge Colors -->
+    <color name="badge_read_bg">#E1F0FF</color>
+    <color name="badge_read_text">#0052CC</color>
+    <color name="badge_create_bg">#E3FCEF</color>
+    <color name="badge_create_text">#006644</color>
+    <color name="badge_update_bg">#FFF0B3</color>
+    <color name="badge_update_text">#FF8B00</color>
+    <color name="badge_delete_bg">#FFEBE6</color>
+    <color name="badge_delete_text">#DE350B</color>
+    <color name="badge_default_bg">#F3F4F6</color>
+    <color name="badge_default_text">#6B7280</color>
+
 
 </resources>

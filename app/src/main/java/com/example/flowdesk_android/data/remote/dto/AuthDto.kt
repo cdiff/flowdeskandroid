@@ -263,3 +263,7 @@ data class MatrixActionDto(
     val actionName: String,
     val permissionId: Int
 )
+
+data class CopyRolePermissionsRequest(
+    val sourceRoleId: Int
+)
