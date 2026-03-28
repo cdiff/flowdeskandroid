@@ -32,13 +32,16 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         viewBinding = true
     }
 }
+
 
 dependencies {
     implementation(libs.androidx.core.ktx)
@@ -69,6 +72,7 @@ dependencies {
     implementation(libs.androidx.fragment.ktx)
 
     implementation("com.google.android.flexbox:flexbox:3.0.0")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
 
     testImplementation(libs.junit)

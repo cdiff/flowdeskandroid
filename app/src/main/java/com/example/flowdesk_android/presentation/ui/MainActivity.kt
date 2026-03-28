@@ -65,6 +65,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private var currentMenuTree: List<MenuDto> = emptyList()
+    private var isFirstLoad = true
 
     private fun setupBottomNavigation(menuTree: List<MenuDto>) {
         currentMenuTree = menuTree.sortedBy { it.order }
@@ -83,37 +84,49 @@ class MainActivity : AppCompatActivity() {
             }
             menuItem.setIcon(iconRes)
         }
+
+        if (isFirstLoad && currentMenuTree.isNotEmpty()) {
+            isFirstLoad = false
+            navigateToMenu(currentMenuTree.first())
+        }
     }
 
     private fun setupBottomNavigationListener() {
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             val selectedMenu = currentMenuTree.getOrNull(item.itemId)
             if (selectedMenu != null) {
-                try {
-                    val navOptions = androidx.navigation.NavOptions.Builder()
-                        .setPopUpTo(navController.graph.startDestinationId, false)
-                        .setLaunchSingleTop(true)
-                        .build()
-
-                    when {
-                        selectedMenu.pageName == "user_management" || selectedMenu.pageName == "users" || selectedMenu.pageName == "permissions" || selectedMenu.displayName.contains("사용자") || selectedMenu.displayName.contains("권한") -> {
-                            if (navController.currentDestination?.id != R.id.usersFragment) {
-                                navController.navigate(R.id.usersFragment, null, navOptions)
-                            }
-                            true
-                        }
-                        else -> {
-                            android.widget.Toast.makeText(this, "${selectedMenu.displayName} 페이지는 준비중입니다.", android.widget.Toast.LENGTH_SHORT).show()
-                            true
-                        }
-                    }
-                } catch (e: Exception) {
-                    android.widget.Toast.makeText(this, "화면 이동 오류: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
-                    false
-                }
+                navigateToMenu(selectedMenu)
+                true
             } else {
                 false
             }
+        }
+    }
+
+    private fun navigateToMenu(selectedMenu: MenuDto) {
+        try {
+            val navOptions = androidx.navigation.NavOptions.Builder()
+                .setPopUpTo(navController.graph.startDestinationId, false)
+                .setLaunchSingleTop(true)
+                .build()
+
+            val pageName = selectedMenu.pageName
+            val bundle = Bundle().apply { putString("parent_page_name", pageName) }
+            
+            when {
+                pageName == "user_management" || pageName == "super" || pageName == "system_management" || pageName == "content_management" || pageName == "cousel_management" -> {
+                    navController.navigate(R.id.usersFragment, bundle, navOptions)
+                }
+                pageName == "users" || pageName == "permissions" || selectedMenu.displayName.contains("사용자") || selectedMenu.displayName.contains("권한") -> {
+                    val userBundle = Bundle().apply { putString("parent_page_name", "user_management") }
+                    navController.navigate(R.id.usersFragment, userBundle, navOptions)
+                }
+                else -> {
+                    android.widget.Toast.makeText(this, "${selectedMenu.displayName} 페이지는 준비중입니다.", android.widget.Toast.LENGTH_SHORT).show()
+                }
+            }
+        } catch (e: Exception) {
+            android.widget.Toast.makeText(this, "화면 이동 오류: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -126,7 +139,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         
-        navController.addOnDestinationChangedListener { _, destination, _ ->
+        navController.addOnDestinationChangedListener { _, destination, arguments ->
             if (destination.id == R.id.editProfileFragment || destination.id == R.id.changePasswordFragment) {
                 binding.bottomNavigation.visibility = android.view.View.GONE
                 binding.topBar.visibility = android.view.View.GONE
@@ -137,7 +150,12 @@ class MainActivity : AppCompatActivity() {
                 when (destination.id) {
                     R.id.myPageFragment -> binding.tvTitle.text = "마이페이지"
                     R.id.homeFragment -> binding.tvTitle.text = "대시보드"
-                    R.id.usersFragment -> binding.tvTitle.text = "사용자 & 권한"
+                    R.id.usersFragment -> {
+                        val pageName = arguments?.getString("parent_page_name")
+                        val menuTitle = currentMenuTree.find { it.pageName == pageName }?.displayName
+                            ?: "사용자 & 권한"
+                        binding.tvTitle.text = menuTitle
+                    }
                 }
             }
         }

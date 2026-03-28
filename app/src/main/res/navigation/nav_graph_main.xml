@@ -30,9 +30,9 @@
         tools:layout="@layout/fragment_change_password" />
     <fragment
         android:id="@+id/usersFragment"
-        android:name="com.example.flowdesk_android.presentation.ui.users.OrganizationHostFragment"
+        android:name="com.example.flowdesk_android.presentation.ui.common.DynamicTabHostFragment"
         android:label="Users"
-        tools:layout="@layout/fragment_organization_host" />
+        tools:layout="@layout/fragment_dynamic_tab_host" />
 
     <fragment
         android:id="@+id/userDetailFragment"

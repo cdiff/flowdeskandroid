@@ -1,4 +1,4 @@
-package com.example.flowdesk_android.presentation.ui.users
+package com.example.flowdesk_android.presentation.ui.common
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -20,20 +20,20 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class OrganizationHostFragment : Fragment() {
+class DynamicTabHostFragment : Fragment() {
 
     private val dashboardViewModel: DashboardViewModel by activityViewModels()
 
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager: ViewPager2
-    private var pagerAdapter: OrganizationPagerAdapter? = null
+    private var pagerAdapter: DynamicTabPagerAdapter? = null
     private var currentTabs: List<MenuDto> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_organization_host, container, false)
+        val view = inflater.inflate(R.layout.fragment_dynamic_tab_host, container, false)
         tabLayout = view.findViewById(R.id.tab_layout)
         viewPager = view.findViewById(R.id.view_pager)
         
@@ -48,22 +48,21 @@ class OrganizationHostFragment : Fragment() {
                     if (state is DashboardState.Success) {
                         val menuTree = state.data.menuTree ?: return@collect
                         
-                        val parentMenu = menuTree.firstOrNull { parent ->
-                            parent.children.any { child ->
-                                child.pageName in listOf("users", "roles", "permissions")
-                            }
-                        }
+                        // Arguments에서 parentPageName을 가져옴 (기본값: user_management)
+                        val parentPageName = arguments?.getString("parent_page_name") ?: "user_management"
+                        
+                        // 매개변수로 받은 parentPageName에 맞는 대분류를 찾음
+                        val parentMenu = menuTree.find { it.pageName == parentPageName }
                         
                         val children = parentMenu?.children?.sortedBy { it.order }
                         if (children.isNullOrEmpty()) return@collect
 
-                        if (currentTabs != children) {
+                        if (currentTabs != children || viewPager.adapter == null) {
                             currentTabs = children
-                        }
-
-                        if (viewPager.adapter == null) {
-                            pagerAdapter = OrganizationPagerAdapter(this@OrganizationHostFragment, currentTabs)
+                            pagerAdapter = DynamicTabPagerAdapter(this@DynamicTabHostFragment, currentTabs)
                             viewPager.adapter = pagerAdapter
+                            
+                            // TabLayoutMediator를 다시 연결하기 전에 이전 것 해제 (필요시)
                             TabLayoutMediator(tabLayout, viewPager) { tab, position ->
                                 tab.text = currentTabs[position].displayName
                             }.attach()

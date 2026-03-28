@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:clipChildren="false"
+    android:clipToPadding="false">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="전체 현황"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#111827"
+        android:layout_marginBottom="8dp" />
+
+    <!-- 첫 번째 행: 테넌트 / 사용자 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_card_rounded"
+            android:padding="16dp"
+            android:elevation="1dp"
+            android:layout_marginEnd="6dp">
+
+            <ImageView
+                android:id="@+id/iv_tenant_icon"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_oval_light_blue"
+                android:padding="8dp"
+                android:src="@drawable/ic_super_admin"
+                app:tint="@color/login_blue"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="총 테넌트"
+                android:textSize="11sp"
+                android:textColor="@color/gray_text"
+                android:layout_marginTop="10dp"
+                app:layout_constraintTop_toBottomOf="@id/iv_tenant_icon"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_total_tenants"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="3"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#111827"
+                android:layout_marginTop="2dp"
+                app:layout_constraintTop_toBottomOf="@id/iv_tenant_icon"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_active_tenants_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="활성 3"
+                android:textSize="10sp"
+                android:textColor="@color/green_accent"
+                android:layout_marginTop="2dp"
+                app:layout_constraintTop_toBottomOf="@id/tv_total_tenants"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_card_rounded"
+            android:padding="16dp"
+            android:elevation="1dp"
+            android:layout_marginStart="6dp">
+
+            <ImageView
+                android:id="@+id/iv_user_icon"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_tag_light_green"
+                android:padding="8dp"
+                android:src="@drawable/ic_users"
+                app:tint="@color/green_accent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="총 사용자"
+                android:textSize="11sp"
+                android:textColor="@color/gray_text"
+                android:layout_marginTop="10dp"
+                app:layout_constraintTop_toBottomOf="@id/iv_user_icon"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_total_users"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="5"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#111827"
+                android:layout_marginTop="2dp"
+                app:layout_constraintTop_toBottomOf="@id/iv_user_icon"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_active_users_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="활성 5"
+                android:textSize="10sp"
+                android:textColor="@color/green_accent"
+                android:layout_marginTop="2dp"
+                app:layout_constraintTop_toBottomOf="@id/tv_total_users"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+    <!-- 두 번째 행: 상담 / 게시글 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_card_rounded"
+            android:padding="16dp"
+            android:elevation="1dp"
+            android:layout_marginEnd="6dp">
+
+            <ImageView
+                android:id="@+id/iv_counsel_icon"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_badge_blue"
+                android:padding="8dp"
+                android:src="@drawable/ic_permissions"
+                app:tint="@color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="총 상담"
+                android:textSize="11sp"
+                android:textColor="@color/gray_text"
+                android:layout_marginTop="10dp"
+                app:layout_constraintTop_toBottomOf="@id/iv_counsel_icon"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_total_counsels"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="51"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#111827"
+                android:layout_marginTop="2dp"
+                app:layout_constraintTop_toBottomOf="@id/iv_counsel_icon"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_card_rounded"
+            android:padding="16dp"
+            android:elevation="1dp"
+            android:layout_marginStart="6dp">
+
+            <ImageView
+                android:id="@+id/iv_post_icon"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_badge_blue"
+                android:padding="8dp"
+                android:src="@drawable/ic_roles"
+                app:tint="@color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="총 게시글"
+                android:textSize="11sp"
+                android:textColor="@color/gray_text"
+                android:layout_marginTop="10dp"
+                app:layout_constraintTop_toBottomOf="@id/iv_post_icon"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_total_posts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="24"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#111827"
+                android:layout_marginTop="2dp"
+                app:layout_constraintTop_toBottomOf="@id/iv_post_icon"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+    <!-- 세 번째 행: 역할 / 권한 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_card_rounded"
+            android:padding="16dp"
+            android:elevation="1dp"
+            android:layout_marginEnd="6dp">
+
+            <ImageView
+                android:id="@+id/iv_role_icon"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_badge_blue"
+                android:padding="8dp"
+                android:src="@drawable/ic_shield_check"
+                app:tint="@color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="총 역할"
+                android:textSize="11sp"
+                android:textColor="@color/gray_text"
+                android:layout_marginTop="10dp"
+                app:layout_constraintTop_toBottomOf="@id/iv_role_icon"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_total_roles"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="7"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#111827"
+                android:layout_marginTop="2dp"
+                app:layout_constraintTop_toBottomOf="@id/iv_role_icon"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_card_rounded"
+            android:padding="16dp"
+            android:elevation="1dp"
+            android:layout_marginStart="6dp">
+
+            <ImageView
+                android:id="@+id/iv_permission_icon"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_badge_blue"
+                android:padding="8dp"
+                android:src="@drawable/ic_permissions"
+                app:tint="@color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="총 권한"
+                android:textSize="11sp"
+                android:textColor="@color/gray_text"
+                android:layout_marginTop="10dp"
+                app:layout_constraintTop_toBottomOf="@id/iv_permission_icon"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_total_permissions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="62"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#111827"
+                android:layout_marginTop="2dp"
+                app:layout_constraintTop_toBottomOf="@id/iv_permission_icon"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+</LinearLayout>
