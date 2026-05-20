@@ -2,15 +2,15 @@ package com.example.flowdesk_android.presentation.ui.common
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.example.flowdesk_android.data.remote.dto.MenuDto
-import com.example.flowdesk_android.presentation.ui.roles.RolesFragment
-import com.example.flowdesk_android.presentation.ui.roles.PermissionCatalogFragment
-import com.example.flowdesk_android.presentation.ui.users.UserListFragment
-import com.example.flowdesk_android.presentation.ui.super_admin.SuperDashboardFragment
+import com.example.flowdesk_android.feature.auth.domain.model.Menu
+import com.example.flowdesk_android.feature.role.presentation.list.RolesFragment
+import com.example.flowdesk_android.feature.role.presentation.catalog.PermissionCatalogFragment
+import com.example.flowdesk_android.feature.user.presentation.list.UserListFragment
+import com.example.flowdesk_android.feature.super_admin.presentation.dashboard.SuperDashboardFragment
 
 class DynamicTabPagerAdapter(
     fragment: Fragment,
-    private val tabs: List<MenuDto>
+    private val tabs: List<Menu>
 ) : FragmentStateAdapter(fragment) {
 
     override fun getItemCount(): Int = tabs.size

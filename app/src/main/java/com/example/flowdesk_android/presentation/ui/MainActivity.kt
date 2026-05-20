@@ -12,10 +12,13 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.data.remote.dto.MenuDto
+import com.example.flowdesk_android.feature.auth.domain.model.Menu
 import com.example.flowdesk_android.databinding.ActivityMainBinding
-import com.example.flowdesk_android.presentation.viewmodel.DashboardState
-import com.example.flowdesk_android.presentation.viewmodel.DashboardViewModel
+import com.example.flowdesk_android.feature.mypage.presentation.main.MyPageUiState
+import com.example.flowdesk_android.feature.mypage.presentation.main.MyPageViewModel
+import com.example.flowdesk_android.feature.auth.presentation.dashboard.DashboardViewModel
+import com.example.flowdesk_android.feature.auth.presentation.dashboard.DashboardState
+import com.example.flowdesk_android.feature.auth.presentation.dashboard.DashboardEffect
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -25,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private val viewModel: DashboardViewModel by viewModels()
+    private var currentMenuTree: List<Menu> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,10 +68,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private var currentMenuTree: List<MenuDto> = emptyList()
     private var isFirstLoad = true
 
-    private fun setupBottomNavigation(menuTree: List<MenuDto>) {
+    private fun setupBottomNavigation(menuTree: List<Menu>) {
         currentMenuTree = menuTree.sortedBy { it.order }
         val menu = binding.bottomNavigation.menu
         menu.clear()
@@ -103,7 +106,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun navigateToMenu(selectedMenu: MenuDto) {
+    private fun navigateToMenu(selectedMenu: Menu) {
         try {
             val navOptions = androidx.navigation.NavOptions.Builder()
                 .setPopUpTo(navController.graph.startDestinationId, false)

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:paddingHorizontal="20dp"
+    android:paddingVertical="16dp">
+
+    <!-- Avatar Placeholder -->
+    <FrameLayout
+        android:id="@+id/fl_tenant_avatar"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:background="@drawable/bg_oval_light_blue"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:id="@+id/tv_tenant_initial"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            tools:text="T"
+            android:textColor="@color/login_blue"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </FrameLayout>
+
+    <!-- Tenant Name -->
+    <TextView
+        android:id="@+id/tv_tenant_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        tools:text="삼성전자"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/fl_tenant_avatar"
+        app:layout_constraintBottom_toTopOf="@id/tv_tenant_domain"
+        app:layout_constraintEnd_toStartOf="@id/tv_tenant_status"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <!-- Tenant Domain / Description -->
+    <TextView
+        android:id="@+id/tv_tenant_domain"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        tools:text="samsung.flowdesk.com"
+        android:textColor="@color/gray_text"
+        android:textSize="13sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        app:layout_constraintStart_toStartOf="@id/tv_tenant_name"
+        app:layout_constraintEnd_toEndOf="@id/tv_tenant_name"
+        app:layout_constraintTop_toBottomOf="@id/tv_tenant_name"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <!-- Status Badge -->
+    <TextView
+        android:id="@+id/tv_tenant_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="활성"
+        android:textColor="@color/green_accent"
+        android:background="@drawable/bg_tag_light_green"
+        android:textSize="11sp"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:layout_marginEnd="12dp"
+        app:layout_constraintEnd_toStartOf="@id/iv_more"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <!-- Edit/Options Icon -->
+    <ImageView
+        android:id="@+id/iv_more"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_chevron_right"
+        app:tint="@color/gray_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#4DE5E5E5"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

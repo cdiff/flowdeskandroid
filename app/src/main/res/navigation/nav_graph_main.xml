@@ -13,21 +13,21 @@
 
     <fragment
         android:id="@+id/myPageFragment"
-        android:name="com.example.flowdesk_android.presentation.ui.mypage.MyPageFragment"
+        android:name="com.example.flowdesk_android.feature.mypage.presentation.main.MyPageFragment"
         android:label="MyPage"
-        tools:layout="@layout/fragment_mypage" />
+        tools:layout="@layout/mypage_fragment_main" />
 
     <fragment
         android:id="@+id/editProfileFragment"
-        android:name="com.example.flowdesk_android.presentation.ui.mypage.EditProfileFragment"
+        android:name="com.example.flowdesk_android.feature.mypage.presentation.edit_profile.EditProfileFragment"
         android:label="EditProfile"
-        tools:layout="@layout/fragment_edit_profile" />
+        tools:layout="@layout/mypage_fragment_edit_profile" />
 
     <fragment
         android:id="@+id/changePasswordFragment"
-        android:name="com.example.flowdesk_android.presentation.ui.mypage.ChangePasswordFragment"
+        android:name="com.example.flowdesk_android.feature.mypage.presentation.change_password.ChangePasswordFragment"
         android:label="ChangePassword"
-        tools:layout="@layout/fragment_change_password" />
+        tools:layout="@layout/mypage_fragment_change_password" />
     <fragment
         android:id="@+id/usersFragment"
         android:name="com.example.flowdesk_android.presentation.ui.common.DynamicTabHostFragment"
@@ -36,19 +36,19 @@
 
     <fragment
         android:id="@+id/userDetailFragment"
-        android:name="com.example.flowdesk_android.presentation.ui.users.UserDetailFragment"
+        android:name="com.example.flowdesk_android.feature.user.presentation.detail.UserDetailFragment"
         android:label="UserDetail"
-        tools:layout="@layout/fragment_user_detail" />
+        tools:layout="@layout/user_fragment_detail" />
 
     <fragment
         android:id="@+id/rolesFragment"
-        android:name="com.example.flowdesk_android.presentation.ui.roles.RolesFragment"
+        android:name="com.example.flowdesk_android.feature.role.presentation.list.RolesFragment"
         android:label="Roles"
         tools:layout="@layout/fragment_roles" />
 
     <fragment
         android:id="@+id/roleDetailFragment"
-        android:name="com.example.flowdesk_android.presentation.ui.roles.RoleDetailFragment"
+        android:name="com.example.flowdesk_android.feature.role.presentation.detail.RoleDetailFragment"
         android:label="RoleDetail"
         tools:layout="@layout/fragment_role_detail">
         <argument
@@ -58,7 +58,7 @@
 
     <fragment
         android:id="@+id/managePermissionsFragment"
-        android:name="com.example.flowdesk_android.presentation.ui.roles.ManagePermissionsFragment"
+        android:name="com.example.flowdesk_android.feature.role.presentation.permissions.ManagePermissionsFragment"
         android:label="ManagePermissions"
         tools:layout="@layout/fragment_manage_permissions">
         <argument

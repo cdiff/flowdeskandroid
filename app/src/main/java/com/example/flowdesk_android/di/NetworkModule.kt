@@ -1,6 +1,6 @@
 package com.example.flowdesk_android.di
 
-import com.example.flowdesk_android.data.remote.AuthApi
+import com.example.flowdesk_android.data.local.TokenManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,22 +11,32 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
+/**
+ * 공통 네트워크 모듈 — Retrofit/OkHttp 인스턴스만 제공
+ * 각 feature별 API 인터페이스는 각 feature의 di/ 모듈에서 등록
+ *
+ * feature/auth/di/AuthModule.kt     → AuthApi
+ * feature/user/di/UserModule.kt     → UserApi
+ * feature/role/di/RoleModule.kt     → RoleApi
+ * feature/super_admin/di/SuperModule.kt → SuperApi
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
+    private const val BASE_URL = "https://flowdesk-admin-production.up.railway.app/"
+
     @Provides
     @Singleton
-    fun provideOkHttpClient(tokenManager: com.example.flowdesk_android.data.local.TokenManager): OkHttpClient {
-        val logging = HttpLoggingInterceptor()
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY)
-        
+    fun provideOkHttpClient(tokenManager: TokenManager): OkHttpClient {
+        val logging = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
         return OkHttpClient.Builder()
             .addInterceptor(logging)
             .addInterceptor { chain ->
                 val original = chain.request()
                 val token = tokenManager.getToken()
-                
                 if (token != null) {
                     val request = original.newBuilder()
                         .header("Authorization", "Bearer $token")
@@ -44,33 +54,9 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://flowdesk-admin-production.up.railway.app/") 
+            .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideAuthApi(retrofit: Retrofit): AuthApi {
-        return retrofit.create(AuthApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideUserApi(retrofit: Retrofit): com.example.flowdesk_android.data.remote.UserApi {
-        return retrofit.create(com.example.flowdesk_android.data.remote.UserApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideRoleApi(retrofit: Retrofit): com.example.flowdesk_android.data.remote.RoleApi {
-        return retrofit.create(com.example.flowdesk_android.data.remote.RoleApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideSuperApi(retrofit: Retrofit): com.example.flowdesk_android.data.remote.SuperApi {
-        return retrofit.create(com.example.flowdesk_android.data.remote.SuperApi::class.java)
     }
 }

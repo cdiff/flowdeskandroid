@@ -11,9 +11,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager2.widget.ViewPager2
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.data.remote.dto.MenuDto
-import com.example.flowdesk_android.presentation.viewmodel.DashboardState
-import com.example.flowdesk_android.presentation.viewmodel.DashboardViewModel
+import com.example.flowdesk_android.feature.auth.domain.model.Menu
+import com.example.flowdesk_android.feature.mypage.presentation.main.MyPageUiState
+import com.example.flowdesk_android.feature.mypage.presentation.main.MyPageViewModel
+import com.example.flowdesk_android.feature.auth.presentation.dashboard.DashboardViewModel
+import com.example.flowdesk_android.feature.auth.presentation.dashboard.DashboardState
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,7 +29,7 @@ class DynamicTabHostFragment : Fragment() {
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager: ViewPager2
     private var pagerAdapter: DynamicTabPagerAdapter? = null
-    private var currentTabs: List<MenuDto> = emptyList()
+    private var currentTabs: List<Menu> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,24 +56,25 @@ class DynamicTabHostFragment : Fragment() {
                         // 매개변수로 받은 parentPageName에 맞는 대분류를 찾음
                         val parentMenu = menuTree.find { it.pageName == parentPageName }
                         
-                        val children = parentMenu?.children?.sortedBy { it.order }
-                        if (children.isNullOrEmpty()) return@collect
+                        val childrenList: List<Menu>? = parentMenu?.children
+                        val children = childrenList?.sortedBy { menu -> menu.order }
+                        if (children == null || children.isEmpty()) return@collect
 
-                        if (currentTabs != children || viewPager.adapter == null) {
-                            currentTabs = children
-                            pagerAdapter = DynamicTabPagerAdapter(this@DynamicTabHostFragment, currentTabs)
-                            viewPager.adapter = pagerAdapter
-                            
-                            // TabLayoutMediator를 다시 연결하기 전에 이전 것 해제 (필요시)
-                            TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-                                tab.text = currentTabs[position].displayName
-                            }.attach()
+                            if (currentTabs != children || viewPager.adapter == null) {
+                                currentTabs = children
+                                pagerAdapter = DynamicTabPagerAdapter(this@DynamicTabHostFragment, currentTabs)
+                                viewPager.adapter = pagerAdapter
+                                
+                                // TabLayoutMediator를 다시 연결하기 전에 이전 것 해제 (필요시)
+                                TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+                                    tab.text = currentTabs[position].displayName
+                                }.attach()
+                            }
                         }
                     }
                 }
             }
         }
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
