@@ -13,20 +13,20 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.databinding.MypageFragmentEditProfileBinding
+import com.example.flowdesk_android.databinding.FragmentMypageEditProfileBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class EditProfileFragment : Fragment(R.layout.mypage_fragment_edit_profile) {
+class EditProfileFragment : Fragment(R.layout.fragment_mypage_edit_profile) {
 
-    private var _binding: MypageFragmentEditProfileBinding? = null
+    private var _binding: FragmentMypageEditProfileBinding? = null
     private val binding get() = _binding!!
     private val viewModel: EditProfileViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = MypageFragmentEditProfileBinding.bind(view)
+        _binding = FragmentMypageEditProfileBinding.bind(view)
 
         // Handle Insets
         ViewCompat.setOnApplyWindowInsetsListener(binding.topBar) { v, insets ->

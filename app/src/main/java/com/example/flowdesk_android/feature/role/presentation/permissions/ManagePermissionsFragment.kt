@@ -13,9 +13,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.core.domain.model.RoleDetail
-import com.example.flowdesk_android.databinding.FragmentManagePermissionsBinding
-import com.example.flowdesk_android.databinding.LayoutManageRoleInfoBinding
-import com.example.flowdesk_android.databinding.LayoutManageRolePermissionsBinding
+import com.example.flowdesk_android.databinding.FragmentRoleManagePermissionsBinding
+import com.example.flowdesk_android.databinding.ViewRoleManageInfoBinding
+import com.example.flowdesk_android.databinding.ViewRoleManagePermissionsBinding
 import com.example.flowdesk_android.feature.role.presentation.list.RolesViewModel
 import com.example.flowdesk_android.feature.role.presentation.list.RoleCopyBottomSheetFragment
 import com.google.android.material.tabs.TabLayoutMediator
@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class ManagePermissionsFragment : Fragment() {
 
-    private var _binding: FragmentManagePermissionsBinding? = null
+    private var _binding: FragmentRoleManagePermissionsBinding? = null
     private val binding get() = _binding!!
     private val viewModel: ManagePermissionsViewModel by viewModels()
     private val rolesViewModel: RolesViewModel by viewModels()
@@ -33,9 +33,9 @@ class ManagePermissionsFragment : Fragment() {
     private var roleId: Int = -1
 
     // 탭1: 기본 정보 뷰
-    private var infoBinding: LayoutManageRoleInfoBinding? = null
+    private var infoBinding: ViewRoleManageInfoBinding? = null
     // 탭2: 권한 목록 뷰
-    private var permBinding: LayoutManageRolePermissionsBinding? = null
+    private var permBinding: ViewRoleManagePermissionsBinding? = null
 
     private lateinit var permAdapter: ManagePermissionsAdapter
     private var originalPermissionIds: Set<Int> = emptySet()
@@ -49,7 +49,7 @@ class ManagePermissionsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentManagePermissionsBinding.inflate(inflater, container, false)
+        _binding = FragmentRoleManagePermissionsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -172,7 +172,7 @@ class ManagePermissionsFragment : Fragment() {
 
     @Suppress("DEPRECATION")
     private fun showTopToast(message: String) {
-        val layout = requireActivity().layoutInflater.inflate(R.layout.common_toast_top, null)
+        val layout = requireActivity().layoutInflater.inflate(R.layout.view_common_toast_top, null)
         layout.findViewById<TextView>(R.id.tv_toast_message).text = message
         val toast = Toast(requireContext())
         toast.setGravity(android.view.Gravity.TOP or android.view.Gravity.CENTER_HORIZONTAL, 0, 100)
@@ -195,7 +195,7 @@ class ManagePermissionsFragment : Fragment() {
     }
 
     private fun showCopyConfirmationDialog(sourceRole: com.example.flowdesk_android.core.domain.model.Role) {
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_confirm_role_copy, null)
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_role_confirm_copy, null)
         val dialog = android.app.AlertDialog.Builder(requireContext())
             .setView(dialogView)
             .create()

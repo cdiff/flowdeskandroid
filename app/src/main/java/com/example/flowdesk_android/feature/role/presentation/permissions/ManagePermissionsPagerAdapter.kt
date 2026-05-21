@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.flowdesk_android.databinding.LayoutManageRoleInfoBinding
-import com.example.flowdesk_android.databinding.LayoutManageRolePermissionsBinding
+import com.example.flowdesk_android.databinding.ViewRoleManageInfoBinding
+import com.example.flowdesk_android.databinding.ViewRoleManagePermissionsBinding
 
 class ManagePermissionsPagerAdapter(
     inflater: LayoutInflater,
@@ -13,11 +13,11 @@ class ManagePermissionsPagerAdapter(
 ) : RecyclerView.Adapter<ManagePermissionsPagerAdapter.PageViewHolder>() {
 
     // 생성자 시점에 미리 두 뷰를 inflate해 두어 lateinit 크래시 방지
-    val infoBinding: LayoutManageRoleInfoBinding =
-        LayoutManageRoleInfoBinding.inflate(inflater, parent, false)
+    val infoBinding: ViewRoleManageInfoBinding =
+        ViewRoleManageInfoBinding.inflate(inflater, parent, false)
 
-    val permBinding: LayoutManageRolePermissionsBinding =
-        LayoutManageRolePermissionsBinding.inflate(inflater, parent, false)
+    val permBinding: ViewRoleManagePermissionsBinding =
+        ViewRoleManagePermissionsBinding.inflate(inflater, parent, false)
 
     private val pages: List<View> = listOf(infoBinding.root, permBinding.root)
 

@@ -31,7 +31,7 @@ object TopToast {
         durationMs: Long = 2500
     ) {
         val rootView = activity.window.decorView.findViewById<ViewGroup>(android.R.id.content)
-        val toastView = LayoutInflater.from(activity).inflate(R.layout.common_toast_top, rootView, false)
+        val toastView = LayoutInflater.from(activity).inflate(R.layout.view_common_toast_top, rootView, false)
 
         toastView.findViewById<TextView>(R.id.tv_toast_message).text = message
 

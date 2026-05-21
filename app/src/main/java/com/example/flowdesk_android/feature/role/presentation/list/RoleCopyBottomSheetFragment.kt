@@ -25,7 +25,7 @@ class RoleCopyBottomSheetFragment(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.dialog_copy_role_permissions, container, false)
+        val view = inflater.inflate(R.layout.dialog_role_copy_permissions, container, false)
         val rvRoles = view.findViewById<RecyclerView>(R.id.rv_roles)
         
         // 정렬: 현재 선택된 id는 제외

@@ -56,7 +56,7 @@ class SuperDashboardFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.super_fragment_dashboard, container, false)
+        return inflater.inflate(R.layout.fragment_super_admin_dashboard, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -144,7 +144,7 @@ class SuperDashboardFragment : Fragment() {
         llTenantStats.removeAllViews()
         data.tenantStats.forEach { tenant ->
             val cardView = LayoutInflater.from(requireContext())
-                .inflate(R.layout.item_tenant_stat_card, llTenantStats, false)
+                .inflate(R.layout.item_super_admin_tenant_stat_card, llTenantStats, false)
 
             cardView.findViewById<TextView>(R.id.tv_tenant_name).text    = tenant.tenantName
             cardView.findViewById<TextView>(R.id.tv_tenant_id).text      = tenant.tenantId.toString()

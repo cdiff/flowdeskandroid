@@ -35,7 +35,7 @@ class CreateRoleBottomSheetFragment(private val onSuccess: () -> Unit) : BottomS
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.role_bottom_sheet_create, container, false)
+        return inflater.inflate(R.layout.dialog_role_create, container, false)
     }
 
     override fun getTheme(): Int {

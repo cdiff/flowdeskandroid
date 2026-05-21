@@ -250,7 +250,7 @@
                     app:layout_constraintTop_toBottomOf="@id/divider_list"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="3"
-                    tools:listitem="@layout/item_role"
+                    tools:listitem="@layout/item_role_list"
                     android:nestedScrollingEnabled="false"
                     android:overScrollMode="never" />
 

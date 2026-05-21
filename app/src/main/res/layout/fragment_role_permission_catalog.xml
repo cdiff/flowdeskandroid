@@ -86,7 +86,7 @@
                 android:clipToPadding="false"
                 android:nestedScrollingEnabled="false"
                 android:padding="16dp"
-                tools:listitem="@layout/item_permission_catalog_group" />
+                tools:listitem="@layout/item_role_permission_catalog_group" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

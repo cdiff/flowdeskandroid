@@ -12,14 +12,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.databinding.AuthFragmentSignupBinding
+import com.example.flowdesk_android.databinding.FragmentAuthSignupBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class SignUpFragment : Fragment(R.layout.auth_fragment_signup) {
+class SignUpFragment : Fragment(R.layout.fragment_auth_signup) {
 
-    private var _binding: AuthFragmentSignupBinding? = null
+    private var _binding: FragmentAuthSignupBinding? = null
     private val binding get() = _binding!!
     private val viewModel: SignUpViewModel by viewModels()
 
@@ -28,7 +28,7 @@ class SignUpFragment : Fragment(R.layout.auth_fragment_signup) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = AuthFragmentSignupBinding.bind(view)
+        _binding = FragmentAuthSignupBinding.bind(view)
 
         setupEmailDomainDropdown()
         setupListeners()

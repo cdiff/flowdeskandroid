@@ -20,14 +20,14 @@ import com.example.flowdesk_android.R
 import com.example.flowdesk_android.core.domain.model.PermissionPage
 import com.example.flowdesk_android.core.domain.model.RoleDetail
 import com.example.flowdesk_android.core.domain.model.PermissionAction
-import com.example.flowdesk_android.databinding.RoleFragmentDetailBinding
+import com.example.flowdesk_android.databinding.FragmentRoleDetailBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class RoleDetailFragment : Fragment() {
 
-    private var _binding: RoleFragmentDetailBinding? = null
+    private var _binding: FragmentRoleDetailBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: RoleDetailViewModel by viewModels()
@@ -36,7 +36,7 @@ class RoleDetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = RoleFragmentDetailBinding.inflate(inflater, container, false)
+        _binding = FragmentRoleDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
 

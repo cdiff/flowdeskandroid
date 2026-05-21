@@ -14,20 +14,20 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.databinding.MypageFragmentChangePasswordBinding
+import com.example.flowdesk_android.databinding.FragmentMypageChangePasswordBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class ChangePasswordFragment : Fragment(R.layout.mypage_fragment_change_password) {
+class ChangePasswordFragment : Fragment(R.layout.fragment_mypage_change_password) {
 
-    private var _binding: MypageFragmentChangePasswordBinding? = null
+    private var _binding: FragmentMypageChangePasswordBinding? = null
     private val binding get() = _binding!!
     private val viewModel: ChangePasswordViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = MypageFragmentChangePasswordBinding.bind(view)
+        _binding = FragmentMypageChangePasswordBinding.bind(view)
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.topBar) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -64,7 +64,7 @@ class ChangePasswordFragment : Fragment(R.layout.mypage_fragment_change_password
     }
 
     private fun showConfirmationDialog(current: String, new: String, confirm: String) {
-        val dialogView = android.view.LayoutInflater.from(requireContext()).inflate(R.layout.common_dialog_confirm, null)
+        val dialogView = android.view.LayoutInflater.from(requireContext()).inflate(R.layout.dialog_common_confirm, null)
         
         val builder = AlertDialog.Builder(requireContext())
             .setView(dialogView)

@@ -18,7 +18,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.databinding.UserFragmentDetailBinding
+import com.example.flowdesk_android.databinding.FragmentUserDetailBinding
 import com.example.flowdesk_android.core.domain.model.UserDetail
 import com.example.flowdesk_android.core.domain.model.UserRole
 import com.example.flowdesk_android.feature.user.presentation.detail.UserDetailEvent
@@ -34,7 +34,7 @@ import java.util.TimeZone
 @AndroidEntryPoint
 class UserDetailFragment : Fragment() {
 
-    private var _binding: UserFragmentDetailBinding? = null
+    private var _binding: FragmentUserDetailBinding? = null
     private val binding get() = _binding!!
     private val viewModel: UserDetailViewModel by viewModels()
 
@@ -53,7 +53,7 @@ class UserDetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = UserFragmentDetailBinding.inflate(inflater, container, false)
+        _binding = FragmentUserDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -223,7 +223,7 @@ class UserDetailFragment : Fragment() {
     @Suppress("DEPRECATION")
     private fun showTopToast(message: String) {
         val inflater = requireActivity().layoutInflater
-        val layout = inflater.inflate(R.layout.common_toast_top, null)
+        val layout = inflater.inflate(R.layout.view_common_toast_top, null)
         layout.findViewById<TextView>(R.id.tv_toast_message).text = message
 
         val toast = Toast(requireContext())
@@ -337,7 +337,7 @@ class UserDetailFragment : Fragment() {
     }
 
     private fun addRoleView(role: UserRole) {
-        val roleView = LayoutInflater.from(requireContext()).inflate(R.layout.user_item_role_checkbox, binding.llRolesContainer, false)
+        val roleView = LayoutInflater.from(requireContext()).inflate(R.layout.item_user_role_checkbox, binding.llRolesContainer, false)
         
         val tvName = roleView.findViewById<TextView>(R.id.tv_role_name)
         val tvDesc = roleView.findViewById<TextView>(R.id.tv_role_desc)

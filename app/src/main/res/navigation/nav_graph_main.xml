@@ -9,36 +9,36 @@
         android:id="@+id/homeFragment"
         android:name="com.example.flowdesk_android.feature.main.home.HomeFragment"
         android:label="Home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_main_home" />
 
     <fragment
         android:id="@+id/myPageFragment"
         android:name="com.example.flowdesk_android.feature.mypage.presentation.main.MyPageFragment"
         android:label="MyPage"
-        tools:layout="@layout/mypage_fragment_main" />
+        tools:layout="@layout/fragment_mypage_main" />
 
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="com.example.flowdesk_android.feature.mypage.presentation.edit_profile.EditProfileFragment"
         android:label="EditProfile"
-        tools:layout="@layout/mypage_fragment_edit_profile" />
+        tools:layout="@layout/fragment_mypage_edit_profile" />
 
     <fragment
         android:id="@+id/changePasswordFragment"
         android:name="com.example.flowdesk_android.feature.mypage.presentation.change_password.ChangePasswordFragment"
         android:label="ChangePassword"
-        tools:layout="@layout/mypage_fragment_change_password" />
+        tools:layout="@layout/fragment_mypage_change_password" />
     <fragment
         android:id="@+id/usersFragment"
         android:name="com.example.flowdesk_android.feature.main.common.DynamicTabHostFragment"
         android:label="Users"
-        tools:layout="@layout/fragment_dynamic_tab_host" />
+        tools:layout="@layout/fragment_main_dynamic_tab_host" />
 
     <fragment
         android:id="@+id/userDetailFragment"
         android:name="com.example.flowdesk_android.feature.user.presentation.detail.UserDetailFragment"
         android:label="UserDetail"
-        tools:layout="@layout/user_fragment_detail" />
+        tools:layout="@layout/fragment_user_detail" />
 
     <fragment
         android:id="@+id/rolesFragment"
@@ -60,7 +60,7 @@
         android:id="@+id/managePermissionsFragment"
         android:name="com.example.flowdesk_android.feature.role.presentation.permissions.ManagePermissionsFragment"
         android:label="ManagePermissions"
-        tools:layout="@layout/fragment_manage_permissions">
+        tools:layout="@layout/fragment_role_manage_permissions">
         <argument
             android:name="role_id"
             app:argType="integer" />

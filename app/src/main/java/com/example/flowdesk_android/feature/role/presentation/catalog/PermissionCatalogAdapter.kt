@@ -9,8 +9,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.core.domain.model.PermissionPage
-import com.example.flowdesk_android.databinding.ItemPermissionCatalogBinding
-import com.example.flowdesk_android.databinding.ItemPermissionCatalogGroupBinding
+import com.example.flowdesk_android.databinding.ItemRolePermissionCatalogBinding
+import com.example.flowdesk_android.databinding.ItemRolePermissionCatalogGroupBinding
 
 class PermissionCatalogAdapter() : RecyclerView.Adapter<PermissionCatalogAdapter.GroupViewHolder>() {
 
@@ -23,7 +23,7 @@ class PermissionCatalogAdapter() : RecyclerView.Adapter<PermissionCatalogAdapter
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
-        val binding = ItemPermissionCatalogGroupBinding.inflate(
+        val binding = ItemRolePermissionCatalogGroupBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
         return GroupViewHolder(binding)
@@ -35,7 +35,7 @@ class PermissionCatalogAdapter() : RecyclerView.Adapter<PermissionCatalogAdapter
 
     override fun getItemCount() = items.size
 
-    inner class GroupViewHolder(private val binding: ItemPermissionCatalogGroupBinding) :
+    inner class GroupViewHolder(private val binding: ItemRolePermissionCatalogGroupBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(page: PermissionPage) {
@@ -57,7 +57,7 @@ class PermissionCatalogAdapter() : RecyclerView.Adapter<PermissionCatalogAdapter
                 binding.layoutActionsContainer.addView(noneTv)
             } else {
                 permissions.forEachIndexed { index, permissionAction ->
-                    val actionRow = ItemPermissionCatalogBinding.inflate(
+                    val actionRow = ItemRolePermissionCatalogBinding.inflate(
                         LayoutInflater.from(binding.root.context),
                         binding.layoutActionsContainer,
                         false

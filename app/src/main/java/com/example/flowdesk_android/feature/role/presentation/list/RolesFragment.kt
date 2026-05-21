@@ -41,7 +41,7 @@ class RolesFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.role_fragment_list, container, false)
+        val view = inflater.inflate(R.layout.fragment_role_list, container, false)
 
         initViews(view)
         setupRecyclerView()
@@ -80,7 +80,7 @@ class RolesFragment : Fragment() {
                 showTopToast("상태 변경을 요청했습니다.")
             },
             onDeleteRoleClick = { role ->
-                val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.common_dialog_delete_role, null)
+                val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_role_delete, null)
                 val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
                     .setView(dialogView)
                     .create()
@@ -172,7 +172,7 @@ class RolesFragment : Fragment() {
     @Suppress("DEPRECATION")
     private fun showTopToast(message: String) {
         val inflater = requireActivity().layoutInflater
-        val layout = inflater.inflate(R.layout.common_toast_top, null)
+        val layout = inflater.inflate(R.layout.view_common_toast_top, null)
         layout.findViewById<TextView>(R.id.tv_toast_message).text = message
 
         val toast = Toast(requireContext())

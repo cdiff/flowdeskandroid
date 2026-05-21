@@ -25,7 +25,7 @@ class RoleAdapter(
     private val expandedRoles = mutableSetOf<Int>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RoleViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_role, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_role_list, parent, false)
         return RoleViewHolder(view)
     }
 

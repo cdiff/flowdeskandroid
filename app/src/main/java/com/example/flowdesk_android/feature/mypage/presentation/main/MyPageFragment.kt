@@ -20,20 +20,20 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.feature.auth.domain.model.Menu
-import com.example.flowdesk_android.databinding.MypageFragmentMainBinding
+import com.example.flowdesk_android.databinding.FragmentMypageMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MyPageFragment : Fragment(R.layout.mypage_fragment_main) {
+class MyPageFragment : Fragment(R.layout.fragment_mypage_main) {
 
-    private var _binding: MypageFragmentMainBinding? = null
+    private var _binding: FragmentMypageMainBinding? = null
     private val binding get() = _binding!!
     private val viewModel: MyPageViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = MypageFragmentMainBinding.bind(view)
+        _binding = FragmentMypageMainBinding.bind(view)
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -57,7 +57,7 @@ class MyPageFragment : Fragment(R.layout.mypage_fragment_main) {
     }
 
     private fun showLogoutAllDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_logout_all_confirmation, null)
+        val dialogView = layoutInflater.inflate(R.layout.dialog_user_logout_all_confirmation, null)
         val dialog = android.app.AlertDialog.Builder(requireContext())
             .setView(dialogView)
             .create()

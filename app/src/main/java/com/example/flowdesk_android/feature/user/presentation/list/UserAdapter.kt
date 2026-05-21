@@ -8,13 +8,13 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.core.domain.model.User
-import com.example.flowdesk_android.databinding.UserItemCardBinding
+import com.example.flowdesk_android.databinding.ItemUserCardBinding
 
 class UserAdapter(private val onItemClick: (User) -> Unit) :
     ListAdapter<User, UserAdapter.UserViewHolder>(UserDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
-        val binding = UserItemCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ItemUserCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return UserViewHolder(binding, onItemClick)
     }
 
@@ -23,7 +23,7 @@ class UserAdapter(private val onItemClick: (User) -> Unit) :
     }
 
     class UserViewHolder(
-        private val binding: UserItemCardBinding,
+        private val binding: ItemUserCardBinding,
         private val onItemClick: (User) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 

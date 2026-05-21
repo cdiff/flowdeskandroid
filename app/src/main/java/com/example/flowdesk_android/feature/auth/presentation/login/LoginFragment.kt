@@ -12,22 +12,22 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.databinding.AuthFragmentLoginBinding
+import com.example.flowdesk_android.databinding.FragmentAuthLoginBinding
 import com.example.flowdesk_android.feature.auth.domain.model.AuthUser
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class LoginFragment : Fragment(R.layout.auth_fragment_login) {
+class LoginFragment : Fragment(R.layout.fragment_auth_login) {
 
-    private var _binding: AuthFragmentLoginBinding? = null
+    private var _binding: FragmentAuthLoginBinding? = null
     private val binding get() = _binding!!
     private val viewModel: LoginViewModel by viewModels()
     private var isPasswordVisible = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = AuthFragmentLoginBinding.bind(view)
+        _binding = FragmentAuthLoginBinding.bind(view)
 
         setupListeners()
         observeViewModel()

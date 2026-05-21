@@ -85,7 +85,7 @@
             android:layout_marginTop="16dp"
             android:nestedScrollingEnabled="false"
             tools:itemCount="3"
-            tools:listitem="@layout/item_manage_permission_group"/>
+            tools:listitem="@layout/item_role_manage_permission_group"/>
             
         <View
             android:layout_width="match_parent"

@@ -7,7 +7,7 @@ import com.example.flowdesk_android.R
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HomeFragment : Fragment(R.layout.fragment_home) {
+class HomeFragment : Fragment(R.layout.fragment_main_home) {
     // TopBar and BottomNav logic moved to MainActivity
     // This fragment is now just for content
     

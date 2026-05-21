@@ -11,7 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.databinding.UserBottomSheetInviteBinding
+import com.example.flowdesk_android.databinding.DialogUserInviteBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class InviteTeamBottomSheetFragment(private val onSuccess: () -> Unit) : BottomSheetDialogFragment() {
 
-    private var _binding: UserBottomSheetInviteBinding? = null
+    private var _binding: DialogUserInviteBinding? = null
     private val binding get() = _binding!!
     private val viewModel: InviteTeamViewModel by viewModels()
 
@@ -29,7 +29,7 @@ class InviteTeamBottomSheetFragment(private val onSuccess: () -> Unit) : BottomS
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = UserBottomSheetInviteBinding.inflate(inflater, container, false)
+        _binding = DialogUserInviteBinding.inflate(inflater, container, false)
         return binding.root
     }
 

@@ -10,7 +10,7 @@ import com.example.flowdesk_android.R
 import com.example.flowdesk_android.core.domain.model.CatalogPage
 import com.example.flowdesk_android.core.domain.model.CatalogPermission
 import com.example.flowdesk_android.core.domain.model.PermissionCatalog
-import com.example.flowdesk_android.databinding.ItemManagePermissionGroupBinding
+import com.example.flowdesk_android.databinding.ItemRoleManagePermissionGroupBinding
 
 class ManagePermissionsAdapter(
     private val onCheckChanged: () -> Unit
@@ -27,7 +27,7 @@ class ManagePermissionsAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemManagePermissionGroupBinding.inflate(
+        val binding = ItemRoleManagePermissionGroupBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
         return ViewHolder(binding)
@@ -41,7 +41,7 @@ class ManagePermissionsAdapter(
 
     override fun getItemCount() = catalog?.pages?.size ?: 0
 
-    inner class ViewHolder(private val binding: ItemManagePermissionGroupBinding) :
+    inner class ViewHolder(private val binding: ItemRoleManagePermissionGroupBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(page: CatalogPage, actions: List<CatalogPermission>) {

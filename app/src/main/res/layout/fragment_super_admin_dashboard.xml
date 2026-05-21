@@ -20,16 +20,16 @@
         android:paddingBottom="24dp">
 
         <!-- ① 전체 현황 통계 카드 -->
-        <include layout="@layout/section_dashboard_overview" />
+        <include layout="@layout/view_super_admin_dashboard_overview" />
 
         <!-- ② 오늘의 현황 -->
-        <include layout="@layout/section_dashboard_today" />
+        <include layout="@layout/view_super_admin_dashboard_today" />
 
         <!-- ③ 월별 증가 추이 차트 -->
-        <include layout="@layout/section_dashboard_chart" />
+        <include layout="@layout/view_super_admin_dashboard_chart" />
 
         <!-- ④ 보안 현황 -->
-        <include layout="@layout/section_dashboard_security" />
+        <include layout="@layout/view_super_admin_dashboard_security" />
 
         <!-- ⑤ 테넌트별 현황 (동적 목록 - ViewModel에서 추가) -->
         <TextView

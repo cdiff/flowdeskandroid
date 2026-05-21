@@ -35,7 +35,7 @@ class DynamicTabHostFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_dynamic_tab_host, container, false)
+        val view = inflater.inflate(R.layout.fragment_main_dynamic_tab_host, container, false)
         tabLayout = view.findViewById(R.id.tab_layout)
         viewPager = view.findViewById(R.id.view_pager)
         

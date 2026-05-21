@@ -14,21 +14,21 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.databinding.UserFragmentListBinding
+import com.example.flowdesk_android.databinding.FragmentUserListBinding
 import com.example.flowdesk_android.feature.user.presentation.invite.InviteTeamBottomSheetFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import androidx.navigation.fragment.findNavController
 
 @AndroidEntryPoint
-class UserListFragment : Fragment(R.layout.user_fragment_list) {
-    private var _binding: UserFragmentListBinding? = null
+class UserListFragment : Fragment(R.layout.fragment_user_list) {
+    private var _binding: FragmentUserListBinding? = null
     private val binding get() = _binding!!
     private val viewModel: UserListViewModel by viewModels()
     private lateinit var userAdapter: UserAdapter
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = UserFragmentListBinding.bind(view)
+        _binding = FragmentUserListBinding.bind(view)
 
         setupRecyclerView()
         setupListeners()
