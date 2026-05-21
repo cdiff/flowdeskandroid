@@ -6,6 +6,8 @@ import com.example.flowdesk_android.feature.auth.data.dto.LoginRequest
 import com.example.flowdesk_android.feature.auth.data.dto.LoginResponse
 import com.example.flowdesk_android.feature.auth.data.dto.LogoutRequest
 import com.example.flowdesk_android.feature.auth.data.dto.ProfileUpdateRequest
+import com.example.flowdesk_android.feature.auth.data.dto.RefreshTokenRequest
+import com.example.flowdesk_android.feature.auth.data.dto.RefreshTokenResponse
 import com.example.flowdesk_android.feature.auth.data.dto.SignUpRequest
 import com.example.flowdesk_android.feature.auth.data.dto.SignUpResponse
 import com.example.flowdesk_android.feature.auth.data.dto.UserDto
@@ -28,6 +30,9 @@ interface AuthApi {
     @POST("auth/signup")
     suspend fun signUp(@Body request: SignUpRequest): Response<SignUpResponse>
 
+    @POST("auth/refresh")
+    suspend fun refreshToken(@Body request: RefreshTokenRequest): Response<RefreshTokenResponse>
+
     @GET("auth/me")
     suspend fun getMe(): Response<AuthMeResponse>
 
@@ -37,3 +42,4 @@ interface AuthApi {
     @POST("auth/change-password")
     suspend fun changePassword(@Body request: ChangePasswordRequest): Response<Unit>
 }
+

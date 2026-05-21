@@ -34,6 +34,7 @@ class AuthRepositoryImpl @Inject constructor(
                 val body = response.body()
                 if (body != null) {
                     tokenManager.saveToken(body.accessToken)
+                    tokenManager.saveRefreshToken(body.refreshToken)
                     val authUser = body.user.toDomain(body.accessToken)
                     _sessionState.value = AuthSession.Active(authUser)
                     Result.success(Unit)
@@ -47,6 +48,16 @@ class AuthRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    /**
+     * TokenAuthenticator에서 refresh 실패 시 호출하여 세션을 강제로 Guest 전환합니다.
+     * Data 레이어 내부 전용이며 Domain 레이어에는 노출되지 않습니다.
+     */
+    fun clearSessionDueToAuthFailure() {
+        tokenManager.clear()
+        _sessionState.value = AuthSession.Guest
+    }
+
 
     override suspend fun initializeSession() = withContext(Dispatchers.IO) {
         val token = tokenManager.getToken()

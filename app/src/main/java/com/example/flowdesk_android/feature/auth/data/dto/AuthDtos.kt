@@ -124,3 +124,15 @@ data class ChangePasswordRequest(
 data class LogoutRequest(
     @SerializedName("refreshToken") val refreshToken: String
 )
+
+data class RefreshTokenRequest(
+    @SerializedName("refreshToken") val refreshToken: String
+)
+
+data class RefreshTokenResponse(
+    @SerializedName("accessToken") val accessToken: String,
+    @SerializedName("expiresIn") val expiresIn: String,
+    @SerializedName("refreshToken") val refreshToken: String,
+    @SerializedName("refreshExpiresAt") val refreshExpiresAt: String
+)
+
