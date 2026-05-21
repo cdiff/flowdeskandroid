@@ -96,7 +96,7 @@ class MyPageFragment : Fragment(R.layout.mypage_fragment_main) {
                     viewModel.event.collect { event ->
                         when (event) {
                             MyPageEvent.NavigateToLogin -> {
-                                val intent = android.content.Intent(requireActivity(), com.example.flowdesk_android.presentation.ui.AuthActivity::class.java)
+                                val intent = android.content.Intent(requireActivity(), com.example.flowdesk_android.feature.main.AuthActivity::class.java)
                                 intent.flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
                                 startActivity(intent)
                                 requireActivity().finish()

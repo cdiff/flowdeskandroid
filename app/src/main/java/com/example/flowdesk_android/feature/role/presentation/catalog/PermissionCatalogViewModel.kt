@@ -2,10 +2,10 @@ package com.example.flowdesk_android.feature.role.presentation.catalog
 
 import androidx.lifecycle.viewModelScope
 import com.example.flowdesk_android.core.base.BaseViewModel
-import com.example.flowdesk_android.feature.role.domain.model.PermissionAction
-import com.example.flowdesk_android.feature.role.domain.model.PermissionCatalog
-import com.example.flowdesk_android.feature.role.domain.model.PermissionPage
-import com.example.flowdesk_android.feature.role.domain.usecase.GetPermissionCatalogUseCase
+import com.example.flowdesk_android.core.domain.model.PermissionAction
+import com.example.flowdesk_android.core.domain.model.PermissionCatalog
+import com.example.flowdesk_android.core.domain.model.PermissionPage
+import com.example.flowdesk_android.core.domain.repository.RoleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +22,7 @@ sealed class PermissionCatalogUiState {
 
 @HiltViewModel
 class PermissionCatalogViewModel @Inject constructor(
-    private val getPermissionCatalogUseCase: GetPermissionCatalogUseCase
+    private val roleRepository: RoleRepository
 ) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow<PermissionCatalogUiState>(PermissionCatalogUiState.Idle)
@@ -43,7 +43,7 @@ class PermissionCatalogViewModel @Inject constructor(
     fun loadCatalog() {
         viewModelScope.launch {
             _uiState.value = PermissionCatalogUiState.Loading
-            getPermissionCatalogUseCase()
+            roleRepository.getPermissionCatalog()
                 .onSuccess { catalog ->
                     originalPages = catalog.toPermissionPages()
                     _uiState.value = PermissionCatalogUiState.Success(catalog)

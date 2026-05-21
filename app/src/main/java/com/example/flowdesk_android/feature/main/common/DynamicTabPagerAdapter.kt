@@ -1,4 +1,4 @@
-package com.example.flowdesk_android.presentation.ui.common
+package com.example.flowdesk_android.feature.main.common
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter

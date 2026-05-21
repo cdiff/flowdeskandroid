@@ -6,9 +6,9 @@ import com.example.flowdesk_android.feature.user.data.dto.CreateUserRequest
 import com.example.flowdesk_android.feature.user.data.dto.UpdateUserInfoRequest
 import com.example.flowdesk_android.feature.user.data.dto.UpdateUserRolesRequest
 import com.example.flowdesk_android.feature.user.data.dto.UpdateUserStatusRequest
-import com.example.flowdesk_android.feature.user.domain.model.User
-import com.example.flowdesk_android.feature.user.domain.model.UserDetail
-import com.example.flowdesk_android.feature.user.domain.repository.UserRepository
+import com.example.flowdesk_android.core.domain.model.User
+import com.example.flowdesk_android.core.domain.model.UserDetail
+import com.example.flowdesk_android.core.domain.repository.UserRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

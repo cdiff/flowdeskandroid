@@ -1,7 +1,7 @@
-package com.example.flowdesk_android.feature.user.domain.repository
+package com.example.flowdesk_android.core.domain.repository
 
-import com.example.flowdesk_android.feature.user.domain.model.User
-import com.example.flowdesk_android.feature.user.domain.model.UserDetail
+import com.example.flowdesk_android.core.domain.model.User
+import com.example.flowdesk_android.core.domain.model.UserDetail
 
 interface UserRepository {
     suspend fun getUsers(): Result<List<User>>

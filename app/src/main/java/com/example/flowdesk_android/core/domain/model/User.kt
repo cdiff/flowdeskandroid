@@ -1,4 +1,4 @@
-package com.example.flowdesk_android.feature.user.domain.model
+package com.example.flowdesk_android.core.domain.model
 
 data class User(
     val userSeq: Int,

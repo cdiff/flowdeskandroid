@@ -2,13 +2,9 @@ package com.example.flowdesk_android.feature.role.presentation.permissions
 
 import androidx.lifecycle.viewModelScope
 import com.example.flowdesk_android.core.base.BaseViewModel
-import com.example.flowdesk_android.feature.role.domain.model.PermissionCatalog
-import com.example.flowdesk_android.feature.role.domain.model.RoleDetail
-import com.example.flowdesk_android.feature.role.domain.usecase.CopyRolePermissionsUseCase
-import com.example.flowdesk_android.feature.role.domain.usecase.GetPermissionCatalogUseCase
-import com.example.flowdesk_android.feature.role.domain.usecase.GetRoleDetailUseCase
-import com.example.flowdesk_android.feature.role.domain.usecase.UpdateRoleInfoUseCase
-import com.example.flowdesk_android.feature.role.domain.usecase.UpdateRolePermissionsUseCase
+import com.example.flowdesk_android.core.domain.model.PermissionCatalog
+import com.example.flowdesk_android.core.domain.model.RoleDetail
+import com.example.flowdesk_android.core.domain.repository.RoleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -38,11 +34,7 @@ sealed class ManagePermissionsEvent {
 
 @HiltViewModel
 class ManagePermissionsViewModel @Inject constructor(
-    private val getRoleDetailUseCase: GetRoleDetailUseCase,
-    private val getPermissionCatalogUseCase: GetPermissionCatalogUseCase,
-    private val updateRolePermissionsUseCase: UpdateRolePermissionsUseCase,
-    private val copyRolePermissionsUseCase: CopyRolePermissionsUseCase,
-    private val updateRoleInfoUseCase: UpdateRoleInfoUseCase
+    private val roleRepository: RoleRepository
 ) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow<ManagePermissionsUiState>(ManagePermissionsUiState.Loading)
@@ -59,8 +51,8 @@ class ManagePermissionsViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = ManagePermissionsUiState.Loading
 
-            val roleResult = getRoleDetailUseCase(roleId)
-            val catalogResult = getPermissionCatalogUseCase()
+            val roleResult = roleRepository.getRoleDetail(roleId)
+            val catalogResult = roleRepository.getPermissionCatalog()
 
             if (roleResult.isFailure) {
                 _uiState.value = ManagePermissionsUiState.Error(roleResult.exceptionOrNull()?.message ?: "역할 조회 실패")
@@ -90,7 +82,7 @@ class ManagePermissionsViewModel @Inject constructor(
         val toRemove = (originalPermissionIds - newSelectedIds).toList()
 
         viewModelScope.launch {
-            updateRolePermissionsUseCase(currentRoleId, toAdd.ifEmpty { null }, toRemove.ifEmpty { null })
+            roleRepository.updateRolePermissions(currentRoleId, toAdd.ifEmpty { null }, toRemove.ifEmpty { null })
                 .onSuccess {
                     _event.send(ManagePermissionsEvent.PermissionsSaved)
                     load(currentRoleId)
@@ -101,7 +93,7 @@ class ManagePermissionsViewModel @Inject constructor(
 
     fun copyFromRole(sourceRoleId: Int) {
         viewModelScope.launch {
-            copyRolePermissionsUseCase(currentRoleId, sourceRoleId)
+            roleRepository.copyRolePermissions(currentRoleId, sourceRoleId)
                 .onSuccess {
                     _event.send(ManagePermissionsEvent.PermissionsCopied)
                     load(currentRoleId)
@@ -112,7 +104,7 @@ class ManagePermissionsViewModel @Inject constructor(
 
     fun updateRoleInfo(roleName: String, displayName: String, description: String?) {
         viewModelScope.launch {
-            updateRoleInfoUseCase(currentRoleId, roleName, displayName, description)
+            roleRepository.updateRoleInfo(currentRoleId, roleName, displayName, description)
                 .onSuccess {
                     _event.send(ManagePermissionsEvent.InfoUpdated)
                     load(currentRoleId)

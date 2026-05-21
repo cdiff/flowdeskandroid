@@ -2,11 +2,8 @@ package com.example.flowdesk_android.feature.role.presentation.detail
 
 import androidx.lifecycle.viewModelScope
 import com.example.flowdesk_android.core.base.BaseViewModel
-import com.example.flowdesk_android.feature.role.domain.model.RoleDetail
-import com.example.flowdesk_android.feature.role.domain.usecase.DeleteRoleUseCase
-import com.example.flowdesk_android.feature.role.domain.usecase.GetRoleDetailUseCase
-import com.example.flowdesk_android.feature.role.domain.usecase.ToggleRoleStatusUseCase
-import com.example.flowdesk_android.feature.role.domain.usecase.UpdateRoleInfoUseCase
+import com.example.flowdesk_android.core.domain.model.RoleDetail
+import com.example.flowdesk_android.core.domain.repository.RoleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -32,10 +29,7 @@ sealed class RoleDetailEvent {
 
 @HiltViewModel
 class RoleDetailViewModel @Inject constructor(
-    private val getRoleDetailUseCase: GetRoleDetailUseCase,
-    private val toggleRoleStatusUseCase: ToggleRoleStatusUseCase,
-    private val updateRoleInfoUseCase: UpdateRoleInfoUseCase,
-    private val deleteRoleUseCase: DeleteRoleUseCase
+    private val roleRepository: RoleRepository
 ) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow<RoleDetailUiState>(RoleDetailUiState.Loading)
@@ -47,7 +41,7 @@ class RoleDetailViewModel @Inject constructor(
     fun loadRoleDetail(roleId: Int) {
         viewModelScope.launch {
             _uiState.value = RoleDetailUiState.Loading
-            getRoleDetailUseCase(roleId)
+            roleRepository.getRoleDetail(roleId)
                 .onSuccess { _uiState.value = RoleDetailUiState.Success(it) }
                 .onFailure { _uiState.value = RoleDetailUiState.Error(it.message ?: "조회 실패") }
         }
@@ -56,7 +50,7 @@ class RoleDetailViewModel @Inject constructor(
     fun toggleStatus(roleId: Int, currentIsActive: Boolean) {
         val newStatus = !currentIsActive
         viewModelScope.launch {
-            toggleRoleStatusUseCase(roleId, newStatus)
+            roleRepository.toggleRoleStatus(roleId, newStatus)
                 .onSuccess {
                     _event.send(RoleDetailEvent.StatusToggled)
                     loadRoleDetail(roleId)
@@ -67,7 +61,7 @@ class RoleDetailViewModel @Inject constructor(
 
     fun updateInfo(roleId: Int, roleName: String, displayName: String, description: String?) {
         viewModelScope.launch {
-            updateRoleInfoUseCase(roleId, roleName, displayName, description)
+            roleRepository.updateRoleInfo(roleId, roleName, displayName, description)
                 .onSuccess {
                     _event.send(RoleDetailEvent.InfoUpdated)
                     loadRoleDetail(roleId)
@@ -78,7 +72,7 @@ class RoleDetailViewModel @Inject constructor(
 
     fun deleteRole(roleId: Int) {
         viewModelScope.launch {
-            deleteRoleUseCase(roleId)
+            roleRepository.deleteRole(roleId)
                 .onSuccess { _event.send(RoleDetailEvent.Deleted) }
                 .onFailure { _event.send(RoleDetailEvent.Error(it.message ?: "삭제 실패")) }
         }

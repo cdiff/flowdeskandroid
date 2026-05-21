@@ -2,13 +2,8 @@ package com.example.flowdesk_android.feature.user.presentation.detail
 
 import androidx.lifecycle.viewModelScope
 import com.example.flowdesk_android.core.base.BaseViewModel
-import com.example.flowdesk_android.feature.user.domain.model.UserDetail
-import com.example.flowdesk_android.feature.user.domain.usecase.AdminChangePasswordUseCase
-import com.example.flowdesk_android.feature.user.domain.usecase.GetUserDetailUseCase
-import com.example.flowdesk_android.feature.user.domain.usecase.InvalidateUserTokensUseCase
-import com.example.flowdesk_android.feature.user.domain.usecase.UpdateUserRolesUseCase
-import com.example.flowdesk_android.feature.user.domain.usecase.UpdateUserStatusUseCase
-import com.example.flowdesk_android.feature.user.domain.usecase.UpdateUserUseCase
+import com.example.flowdesk_android.core.domain.model.UserDetail
+import com.example.flowdesk_android.core.domain.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -38,12 +33,7 @@ sealed class UserDetailEvent {
 
 @HiltViewModel
 class UserDetailViewModel @Inject constructor(
-    private val getUserDetailUseCase: GetUserDetailUseCase,
-    private val updateUserStatusUseCase: UpdateUserStatusUseCase,
-    private val updateUserRolesUseCase: UpdateUserRolesUseCase,
-    private val adminChangePasswordUseCase: AdminChangePasswordUseCase,
-    private val invalidateUserTokensUseCase: InvalidateUserTokensUseCase,
-    private val updateUserUseCase: UpdateUserUseCase
+    private val userRepository: UserRepository
 ) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow<UserDetailUiState>(UserDetailUiState.Loading)
@@ -55,7 +45,7 @@ class UserDetailViewModel @Inject constructor(
     fun loadUserDetail(id: Int) {
         viewModelScope.launch {
             _uiState.value = UserDetailUiState.Loading
-            getUserDetailUseCase(id)
+            userRepository.getUserDetail(id)
                 .onSuccess { _uiState.value = UserDetailUiState.Success(it) }
                 .onFailure { _uiState.value = UserDetailUiState.Error(it.message ?: "오류") }
         }
@@ -63,7 +53,7 @@ class UserDetailViewModel @Inject constructor(
 
     fun updateStatus(id: Int, isActive: Boolean) {
         viewModelScope.launch {
-            updateUserStatusUseCase(id, isActive)
+            userRepository.updateUserStatus(id, isActive)
                 .onSuccess { _event.send(UserDetailEvent.StatusChanged) }
                 .onFailure { _event.send(UserDetailEvent.Error(it.message ?: "상태 변경 실패")) }
         }
@@ -71,7 +61,7 @@ class UserDetailViewModel @Inject constructor(
 
     fun updateRoles(id: Int, add: List<Int>?, remove: List<Int>?) {
         viewModelScope.launch {
-            updateUserRolesUseCase(id, add, remove)
+            userRepository.updateUserRoles(id, add, remove)
                 .onSuccess { _event.send(UserDetailEvent.RolesChanged) }
                 .onFailure { _event.send(UserDetailEvent.Error(it.message ?: "역할 변경 실패")) }
         }
@@ -79,7 +69,7 @@ class UserDetailViewModel @Inject constructor(
 
     fun changePassword(id: Int, newPassword: String) {
         viewModelScope.launch {
-            adminChangePasswordUseCase(id, newPassword)
+            userRepository.adminChangePassword(id, newPassword)
                 .onSuccess { _event.send(UserDetailEvent.PasswordChanged) }
                 .onFailure { _event.send(UserDetailEvent.Error(it.message ?: "비밀번호 변경 실패")) }
         }
@@ -87,7 +77,7 @@ class UserDetailViewModel @Inject constructor(
 
     fun invalidateTokens(id: Int) {
         viewModelScope.launch {
-            invalidateUserTokensUseCase(id)
+            userRepository.invalidateUserTokens(id)
                 .onSuccess { _event.send(UserDetailEvent.TokensInvalidated) }
                 .onFailure { _event.send(UserDetailEvent.Error(it.message ?: "토큰 무효화 실패")) }
         }
@@ -98,7 +88,7 @@ class UserDetailViewModel @Inject constructor(
         userEmail: String?, userTel: String?, userHp: String?
     ) {
         viewModelScope.launch {
-            updateUserUseCase(id, corpName, userName, userEmail, userTel, userHp)
+            userRepository.updateUser(id, corpName, userName, userEmail, userTel, userHp)
                 .onSuccess { _event.send(UserDetailEvent.InfoUpdated) }
                 .onFailure { _event.send(UserDetailEvent.Error(it.message ?: "정보 수정 실패")) }
         }

@@ -1,4 +1,4 @@
-package com.example.flowdesk_android.presentation.ui.home
+package com.example.flowdesk_android.feature.main.home
 
 import android.os.Bundle
 import android.view.View

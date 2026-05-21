@@ -1,8 +1,8 @@
-package com.example.flowdesk_android.feature.role.domain.repository
+package com.example.flowdesk_android.core.domain.repository
 
-import com.example.flowdesk_android.feature.role.domain.model.PermissionCatalog
-import com.example.flowdesk_android.feature.role.domain.model.Role
-import com.example.flowdesk_android.feature.role.domain.model.RoleDetail
+import com.example.flowdesk_android.core.domain.model.PermissionCatalog
+import com.example.flowdesk_android.core.domain.model.Role
+import com.example.flowdesk_android.core.domain.model.RoleDetail
 
 interface RoleRepository {
     suspend fun getRoles(): Result<List<Role>>

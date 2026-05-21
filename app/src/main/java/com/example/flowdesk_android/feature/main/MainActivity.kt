@@ -1,4 +1,4 @@
-package com.example.flowdesk_android.presentation.ui
+package com.example.flowdesk_android.feature.main
 
 import android.os.Bundle
 import androidx.activity.viewModels

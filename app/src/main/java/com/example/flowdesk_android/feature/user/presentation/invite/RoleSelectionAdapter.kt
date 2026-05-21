@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.feature.role.domain.model.Role
+import com.example.flowdesk_android.core.domain.model.Role
 
 class RoleSelectionAdapter(
     private val onSelectionChanged: (Set<Int>) -> Unit

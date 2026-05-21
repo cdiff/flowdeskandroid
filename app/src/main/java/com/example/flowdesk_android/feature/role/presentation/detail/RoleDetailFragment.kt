@@ -17,9 +17,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.feature.role.domain.model.PermissionPage
-import com.example.flowdesk_android.feature.role.domain.model.RoleDetail
-import com.example.flowdesk_android.feature.role.domain.model.PermissionAction
+import com.example.flowdesk_android.core.domain.model.PermissionPage
+import com.example.flowdesk_android.core.domain.model.RoleDetail
+import com.example.flowdesk_android.core.domain.model.PermissionAction
 import com.example.flowdesk_android.databinding.RoleFragmentDetailBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch

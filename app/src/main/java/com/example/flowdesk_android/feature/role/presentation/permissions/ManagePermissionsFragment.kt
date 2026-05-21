@@ -12,7 +12,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.feature.role.domain.model.RoleDetail
+import com.example.flowdesk_android.core.domain.model.RoleDetail
 import com.example.flowdesk_android.databinding.FragmentManagePermissionsBinding
 import com.example.flowdesk_android.databinding.LayoutManageRoleInfoBinding
 import com.example.flowdesk_android.databinding.LayoutManageRolePermissionsBinding
@@ -194,7 +194,7 @@ class ManagePermissionsFragment : Fragment() {
         }.show(childFragmentManager, "RoleCopyBottomSheet")
     }
 
-    private fun showCopyConfirmationDialog(sourceRole: com.example.flowdesk_android.feature.role.domain.model.Role) {
+    private fun showCopyConfirmationDialog(sourceRole: com.example.flowdesk_android.core.domain.model.Role) {
         val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_confirm_role_copy, null)
         val dialog = android.app.AlertDialog.Builder(requireContext())
             .setView(dialogView)

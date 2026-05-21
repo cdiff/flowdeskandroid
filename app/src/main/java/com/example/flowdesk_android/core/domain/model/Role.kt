@@ -1,4 +1,4 @@
-package com.example.flowdesk_android.feature.role.domain.model
+package com.example.flowdesk_android.core.domain.model
 
 data class Role(
     val roleId: Int,

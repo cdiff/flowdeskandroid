@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.feature.role.domain.model.PermissionPage
+import com.example.flowdesk_android.core.domain.model.PermissionPage
 import com.example.flowdesk_android.databinding.ItemPermissionCatalogBinding
 import com.example.flowdesk_android.databinding.ItemPermissionCatalogGroupBinding
 

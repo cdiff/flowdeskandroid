@@ -2,9 +2,9 @@ package com.example.flowdesk_android.feature.user.presentation.invite
 
 import androidx.lifecycle.viewModelScope
 import com.example.flowdesk_android.core.base.BaseViewModel
-import com.example.flowdesk_android.feature.role.domain.model.Role
-import com.example.flowdesk_android.feature.role.domain.usecase.GetRolesUseCase
-import com.example.flowdesk_android.feature.user.domain.usecase.CreateUserUseCase
+import com.example.flowdesk_android.core.domain.model.Role
+import com.example.flowdesk_android.core.domain.repository.RoleRepository
+import com.example.flowdesk_android.core.domain.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -27,8 +27,8 @@ sealed class InviteTeamEvent {
 
 @HiltViewModel
 class InviteTeamViewModel @Inject constructor(
-    private val createUserUseCase: CreateUserUseCase,
-    private val getRolesUseCase: GetRolesUseCase
+    private val userRepository: UserRepository,
+    private val roleRepository: RoleRepository
 ) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow<InviteTeamUiState>(InviteTeamUiState.Idle)
@@ -46,7 +46,7 @@ class InviteTeamViewModel @Inject constructor(
 
     private fun fetchRoles() {
         viewModelScope.launch {
-            getRolesUseCase().onSuccess { roles ->
+            roleRepository.getRoles().onSuccess { roles ->
                 _allRoles.value = roles
             }
         }
@@ -64,7 +64,7 @@ class InviteTeamViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             _uiState.value = InviteTeamUiState.Loading
-            createUserUseCase(
+            userRepository.createUser(
                 userId = userId,
                 password = password,
                 corpName = corpName,

@@ -2,7 +2,7 @@ package com.example.flowdesk_android.feature.role.di
 
 import com.example.flowdesk_android.feature.role.data.api.RoleApi
 import com.example.flowdesk_android.feature.role.data.repository.RoleRepositoryImpl
-import com.example.flowdesk_android.feature.role.domain.repository.RoleRepository
+import com.example.flowdesk_android.core.domain.repository.RoleRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

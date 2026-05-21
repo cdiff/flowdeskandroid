@@ -1,4 +1,4 @@
-package com.example.flowdesk_android.feature.common.toast
+package com.example.flowdesk_android.core.ui.toast
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator

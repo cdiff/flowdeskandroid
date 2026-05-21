@@ -2,7 +2,7 @@ package com.example.flowdesk_android.feature.user.di
 
 import com.example.flowdesk_android.feature.user.data.api.UserApi
 import com.example.flowdesk_android.feature.user.data.repository.UserRepositoryImpl
-import com.example.flowdesk_android.feature.user.domain.repository.UserRepository
+import com.example.flowdesk_android.core.domain.repository.UserRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

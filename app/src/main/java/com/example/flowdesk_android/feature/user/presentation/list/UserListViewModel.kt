@@ -2,8 +2,8 @@ package com.example.flowdesk_android.feature.user.presentation.list
 
 import androidx.lifecycle.viewModelScope
 import com.example.flowdesk_android.core.base.BaseViewModel
-import com.example.flowdesk_android.feature.user.domain.model.User
-import com.example.flowdesk_android.feature.user.domain.usecase.GetUsersUseCase
+import com.example.flowdesk_android.core.domain.model.User
+import com.example.flowdesk_android.core.domain.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +20,7 @@ sealed class UserListUiState {
 
 @HiltViewModel
 class UserListViewModel @Inject constructor(
-    private val getUsersUseCase: GetUsersUseCase
+    private val userRepository: UserRepository
 ) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow<UserListUiState>(UserListUiState.Loading)
@@ -36,7 +36,7 @@ class UserListViewModel @Inject constructor(
     fun fetchUsers() {
         viewModelScope.launch {
             _uiState.value = UserListUiState.Loading
-            getUsersUseCase()
+            userRepository.getUsers()
                 .onSuccess { users ->
                     allUsers = users
                     _filteredUsers.value = users

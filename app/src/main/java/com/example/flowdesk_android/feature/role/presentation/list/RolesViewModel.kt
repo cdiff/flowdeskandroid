@@ -2,11 +2,8 @@ package com.example.flowdesk_android.feature.role.presentation.list
 
 import androidx.lifecycle.viewModelScope
 import com.example.flowdesk_android.core.base.BaseViewModel
-import com.example.flowdesk_android.feature.role.domain.model.Role
-import com.example.flowdesk_android.feature.role.domain.usecase.CreateRoleUseCase
-import com.example.flowdesk_android.feature.role.domain.usecase.DeleteRoleUseCase
-import com.example.flowdesk_android.feature.role.domain.usecase.GetRolesUseCase
-import com.example.flowdesk_android.feature.role.domain.usecase.ToggleRoleStatusUseCase
+import com.example.flowdesk_android.core.domain.model.Role
+import com.example.flowdesk_android.core.domain.repository.RoleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -33,10 +30,7 @@ sealed class RoleListEvent {
 
 @HiltViewModel
 class RolesViewModel @Inject constructor(
-    private val getRolesUseCase: GetRolesUseCase,
-    private val createRoleUseCase: CreateRoleUseCase,
-    private val deleteRoleUseCase: DeleteRoleUseCase,
-    private val toggleRoleStatusUseCase: ToggleRoleStatusUseCase
+    private val roleRepository: RoleRepository
 ) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow<RoleListUiState>(RoleListUiState.Loading)
@@ -53,7 +47,7 @@ class RolesViewModel @Inject constructor(
     fun fetchRoles() {
         viewModelScope.launch {
             _uiState.value = RoleListUiState.Loading
-            getRolesUseCase()
+            roleRepository.getRoles()
                 .onSuccess { roles ->
                     allRoles = roles
                     _filteredRoles.value = roles
@@ -75,7 +69,7 @@ class RolesViewModel @Inject constructor(
 
     fun createRole(roleName: String, displayName: String, description: String) {
         viewModelScope.launch {
-            createRoleUseCase(roleName, displayName, description)
+            roleRepository.createRole(roleName, displayName, description)
                 .onSuccess {
                     _event.send(RoleListEvent.RoleCreated)
                     fetchRoles()
@@ -86,7 +80,7 @@ class RolesViewModel @Inject constructor(
 
     fun deleteRole(roleId: Int) {
         viewModelScope.launch {
-            deleteRoleUseCase(roleId)
+            roleRepository.deleteRole(roleId)
                 .onSuccess {
                     _event.send(RoleListEvent.RoleDeleted)
                     fetchRoles()
@@ -98,7 +92,7 @@ class RolesViewModel @Inject constructor(
     fun toggleStatus(roleId: Int, currentIsActive: Boolean) {
         viewModelScope.launch {
             val newStatus = !currentIsActive
-            toggleRoleStatusUseCase(roleId, newStatus)
+            roleRepository.toggleRoleStatus(roleId, newStatus)
                 .onSuccess {
                     _event.send(RoleListEvent.StatusToggled)
                     fetchRoles()

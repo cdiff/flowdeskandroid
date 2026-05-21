@@ -7,9 +7,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.feature.role.domain.model.CatalogPage
-import com.example.flowdesk_android.feature.role.domain.model.CatalogPermission
-import com.example.flowdesk_android.feature.role.domain.model.PermissionCatalog
+import com.example.flowdesk_android.core.domain.model.CatalogPage
+import com.example.flowdesk_android.core.domain.model.CatalogPermission
+import com.example.flowdesk_android.core.domain.model.PermissionCatalog
 import com.example.flowdesk_android.databinding.ItemManagePermissionGroupBinding
 
 class ManagePermissionsAdapter(

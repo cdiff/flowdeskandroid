@@ -19,8 +19,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.databinding.UserFragmentDetailBinding
-import com.example.flowdesk_android.feature.user.domain.model.UserDetail
-import com.example.flowdesk_android.feature.user.domain.model.UserRole
+import com.example.flowdesk_android.core.domain.model.UserDetail
+import com.example.flowdesk_android.core.domain.model.UserRole
 import com.example.flowdesk_android.feature.user.presentation.detail.UserDetailEvent
 import com.example.flowdesk_android.feature.user.presentation.detail.UserDetailUiState
 import com.example.flowdesk_android.feature.user.presentation.detail.UserDetailViewModel

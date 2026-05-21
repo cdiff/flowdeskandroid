@@ -1,8 +1,8 @@
 package com.example.flowdesk_android.feature.user.data.dto
 
-import com.example.flowdesk_android.feature.user.domain.model.User
-import com.example.flowdesk_android.feature.user.domain.model.UserDetail
-import com.example.flowdesk_android.feature.user.domain.model.UserRole
+import com.example.flowdesk_android.core.domain.model.User
+import com.example.flowdesk_android.core.domain.model.UserDetail
+import com.example.flowdesk_android.core.domain.model.UserRole
 import com.google.gson.annotations.SerializedName
 
 // ──────────────────────────────────────────────────

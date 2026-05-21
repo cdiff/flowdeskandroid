@@ -1,14 +1,14 @@
 package com.example.flowdesk_android.feature.role.data.dto
 
-import com.example.flowdesk_android.feature.role.domain.model.CatalogAction
-import com.example.flowdesk_android.feature.role.domain.model.CatalogPage
-import com.example.flowdesk_android.feature.role.domain.model.CatalogPermission
-import com.example.flowdesk_android.feature.role.domain.model.PermissionAction
-import com.example.flowdesk_android.feature.role.domain.model.PermissionCatalog
-import com.example.flowdesk_android.feature.role.domain.model.PermissionPage
-import com.example.flowdesk_android.feature.role.domain.model.Role
-import com.example.flowdesk_android.feature.role.domain.model.RoleAssignedUser
-import com.example.flowdesk_android.feature.role.domain.model.RoleDetail
+import com.example.flowdesk_android.core.domain.model.CatalogAction
+import com.example.flowdesk_android.core.domain.model.CatalogPage
+import com.example.flowdesk_android.core.domain.model.CatalogPermission
+import com.example.flowdesk_android.core.domain.model.PermissionAction
+import com.example.flowdesk_android.core.domain.model.PermissionCatalog
+import com.example.flowdesk_android.core.domain.model.PermissionPage
+import com.example.flowdesk_android.core.domain.model.Role
+import com.example.flowdesk_android.core.domain.model.RoleAssignedUser
+import com.example.flowdesk_android.core.domain.model.RoleDetail
 import com.google.gson.annotations.SerializedName
 
 // ── Requests ────────────────────────────────────────────

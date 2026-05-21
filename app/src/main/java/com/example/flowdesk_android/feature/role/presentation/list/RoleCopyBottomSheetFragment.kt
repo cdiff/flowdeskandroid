@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.feature.role.domain.model.Role
+import com.example.flowdesk_android.core.domain.model.Role
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import android.widget.TextView
 import android.widget.ImageView

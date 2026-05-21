@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.feature.user.domain.model.User
+import com.example.flowdesk_android.core.domain.model.User
 import com.example.flowdesk_android.databinding.UserItemCardBinding
 
 class UserAdapter(private val onItemClick: (User) -> Unit) :

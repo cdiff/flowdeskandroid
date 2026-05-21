@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.transition.AutoTransition
 import android.transition.TransitionManager
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.feature.role.domain.model.Role
+import com.example.flowdesk_android.core.domain.model.Role
 import java.text.SimpleDateFormat
 import java.util.Locale
 

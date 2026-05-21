@@ -6,10 +6,10 @@ import com.example.flowdesk_android.feature.role.data.dto.CreateRoleRequest
 import com.example.flowdesk_android.feature.role.data.dto.UpdateRoleInfoRequest
 import com.example.flowdesk_android.feature.role.data.dto.UpdateRolePermissionsRequest
 import com.example.flowdesk_android.feature.role.data.dto.UpdateRoleStatusRequest
-import com.example.flowdesk_android.feature.role.domain.model.PermissionCatalog
-import com.example.flowdesk_android.feature.role.domain.model.Role
-import com.example.flowdesk_android.feature.role.domain.model.RoleDetail
-import com.example.flowdesk_android.feature.role.domain.repository.RoleRepository
+import com.example.flowdesk_android.core.domain.model.PermissionCatalog
+import com.example.flowdesk_android.core.domain.model.Role
+import com.example.flowdesk_android.core.domain.model.RoleDetail
+import com.example.flowdesk_android.core.domain.repository.RoleRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
