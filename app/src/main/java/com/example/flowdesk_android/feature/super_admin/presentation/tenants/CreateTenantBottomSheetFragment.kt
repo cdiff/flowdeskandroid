@@ -50,6 +50,7 @@ class CreateTenantBottomSheetFragment(private val onSuccess: () -> Unit) : Botto
                 val behavior = BottomSheetBehavior.from(it)
                 behavior.state = BottomSheetBehavior.STATE_EXPANDED
                 behavior.skipCollapsed = true
+                behavior.isShouldRemoveExpandedCorners = false
             }
         }
 

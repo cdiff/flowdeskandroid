@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.core.domain.model.Role
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import android.widget.TextView
 import android.widget.ImageView
@@ -38,6 +39,11 @@ class RoleCopyBottomSheetFragment(
         rvRoles.layoutManager = LinearLayoutManager(requireContext())
         
         return view
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (dialog as? BottomSheetDialog)?.behavior?.isShouldRemoveExpandedCorners = false
     }
 
     private class RoleCopyAdapter(

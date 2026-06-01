@@ -47,6 +47,7 @@ class InviteTeamBottomSheetFragment(private val onSuccess: () -> Unit) : BottomS
                 val behavior = com.google.android.material.bottomsheet.BottomSheetBehavior.from(it)
                 behavior.state = com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
                 behavior.skipCollapsed = true
+                behavior.isShouldRemoveExpandedCorners = false
             }
         }
 

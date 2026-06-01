@@ -20,6 +20,15 @@
 
     <style name="CustomBottomSheetStyle" parent="Widget.MaterialComponents.BottomSheet.Modal">
         <item name="android:background">@android:color/transparent</item>
+        <item name="shapeAppearanceOverlay">@style/BottomSheetShapeAppearance</item>
+    </style>
+
+    <style name="BottomSheetShapeAppearance" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">24dp</item>
+        <item name="cornerSizeTopRight">24dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
     </style>
 
     <style name="TabTextStyle" parent="TextAppearance.Design.Tab">

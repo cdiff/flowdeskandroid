@@ -8,6 +8,7 @@ import com.example.flowdesk_android.feature.role.presentation.catalog.Permission
 import com.example.flowdesk_android.feature.user.presentation.list.UserListFragment
 import com.example.flowdesk_android.feature.super_admin.presentation.dashboard.SuperDashboardFragment
 import com.example.flowdesk_android.feature.super_admin.presentation.tenants.TenantsFragment
+import com.example.flowdesk_android.feature.super_admin.presentation.pages.SuperAdminPagesFragment
 
 class DynamicTabPagerAdapter(
     fragment: Fragment,
@@ -23,7 +24,8 @@ class DynamicTabPagerAdapter(
             "roles" -> RolesFragment()
             "permissions" -> PermissionCatalogFragment.newInstance()
             "super.dashboard" -> SuperDashboardFragment()
-            "super.tenants" -> TenantsFragment()
+            "super.tenants"   -> TenantsFragment()
+            "super.pages"     -> SuperAdminPagesFragment()
             
             // 추후 슈퍼 관리자나 시스템 관리 자식 페이지들도 여기에 추가하면 됩니다.
             
