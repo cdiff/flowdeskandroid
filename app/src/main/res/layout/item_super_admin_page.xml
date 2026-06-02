@@ -6,46 +6,40 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
-    android:paddingHorizontal="20dp">
+    android:paddingTop="20dp"
+    android:paddingEnd="20dp"
+    android:paddingStart="20dp">
 
-    <!-- 페이지 아이콘 아바타 -->
-    <FrameLayout
-        android:id="@+id/fl_page_avatar"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/bg_oval_light_blue"
+    <!-- 자식 여부를 나타내는 가이드라인 (동적 마진용) -->
+    <!-- 어댑터에서 깊이(depth)에 따라 start padding/margin을 조절할 예정 -->
+
+    <!-- 펼침/접힘 화살표 (하위 페이지가 있을 때만 표시) -->
+    <ImageView
+        android:id="@+id/iv_expand"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/ic_chevron_right"
+        app:tint="@color/gray_text"
+        android:visibility="invisible"
+        android:layout_marginEnd="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/tv_page_initial"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            tools:text="S"
-            android:textColor="@color/login_blue"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-    </FrameLayout>
+        app:layout_constraintTop_toTopOf="@id/tv_page_name"
+        app:layout_constraintBottom_toBottomOf="@id/tv_page_name" />
 
     <!-- 페이지 이름 (pageName) -->
     <TextView
         android:id="@+id/tv_page_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="14dp"
-        android:layout_marginEnd="8dp"
         tools:text="super.dashboard"
         android:textColor="@color/black"
         android:textSize="14sp"
         android:textStyle="bold"
         android:fontFamily="monospace"
-        app:layout_constraintStart_toEndOf="@id/fl_page_avatar"
-        app:layout_constraintTop_toTopOf="@id/fl_page_avatar"
-        app:layout_constraintEnd_toStartOf="@id/tv_page_status"
-        app:layout_constraintBottom_toTopOf="@id/tv_page_display_name"
-        app:layout_constraintVertical_chainStyle="packed"/>
+        app:layout_constraintStart_toEndOf="@id/iv_expand"
+        app:layout_constraintTop_toTopOf="@id/iv_more"
+        app:layout_constraintBottom_toBottomOf="@id/iv_more"
+        app:layout_constraintEnd_toStartOf="@id/tv_page_status" />
 
     <!-- 표시 이름 (displayName) -->
     <TextView
@@ -58,8 +52,7 @@
         android:textSize="12sp"
         app:layout_constraintStart_toStartOf="@id/tv_page_name"
         app:layout_constraintEnd_toEndOf="@id/tv_page_name"
-        app:layout_constraintTop_toBottomOf="@id/tv_page_name"
-        app:layout_constraintBottom_toTopOf="@id/tv_page_path"/>
+        app:layout_constraintTop_toBottomOf="@id/tv_page_name" />
 
     <!-- 경로 (path) -->
     <TextView
@@ -75,8 +68,7 @@
         android:ellipsize="end"
         app:layout_constraintStart_toStartOf="@id/tv_page_name"
         app:layout_constraintEnd_toEndOf="@id/tv_page_name"
-        app:layout_constraintTop_toBottomOf="@id/tv_page_display_name"
-        app:layout_constraintBottom_toBottomOf="@id/fl_page_avatar"/>
+        app:layout_constraintTop_toBottomOf="@id/tv_page_display_name" />
 
     <!-- 상태 뱃지 -->
     <TextView
@@ -89,25 +81,24 @@
         android:textSize="11sp"
         android:paddingHorizontal="8dp"
         android:paddingVertical="4dp"
-        android:layout_marginEnd="12dp"
+        android:layout_marginEnd="4dp"
         app:layout_constraintEnd_toStartOf="@id/iv_more"
-        app:layout_constraintTop_toTopOf="@id/fl_page_avatar"
-        app:layout_constraintBottom_toBottomOf="@id/fl_page_avatar" />
+        app:layout_constraintTop_toTopOf="@id/iv_more"
+        app:layout_constraintBottom_toBottomOf="@id/iv_more" />
 
     <!-- 더보기 아이콘 -->
     <ImageView
         android:id="@+id/iv_more"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:src="@drawable/ic_chevron_right"
+        android:src="@drawable/ic_more_vert"
         android:padding="2dp"
         android:clickable="true"
         android:focusable="true"
         android:background="?attr/selectableItemBackgroundBorderless"
         app:tint="@color/gray_text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/fl_page_avatar"
-        app:layout_constraintBottom_toBottomOf="@id/fl_page_avatar" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- 정렬 / 하위 / 권한 정보 칩 행 -->
     <LinearLayout
@@ -116,9 +107,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="10dp"
-        android:layout_marginStart="58dp"
-        app:layout_constraintTop_toBottomOf="@id/fl_page_avatar"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_page_path"
+        app:layout_constraintStart_toStartOf="@id/tv_page_name"
         app:layout_constraintEnd_toEndOf="parent">
 
         <!-- 정렬 순서 -->
@@ -147,8 +137,9 @@
                 android:textStyle="bold"/>
         </LinearLayout>
 
-        <!-- 하위 페이지 수 -->
+        <!-- 하위 페이지 수 (클릭 가능하게 변경) -->
         <LinearLayout
+            android:id="@+id/ll_child_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -156,7 +147,9 @@
             android:background="@drawable/bg_card_rounded_border"
             android:paddingHorizontal="8dp"
             android:paddingVertical="4dp"
-            android:layout_marginEnd="8dp">
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:focusable="true">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -203,61 +196,57 @@
     <!-- 히든 메뉴 (expand) -->
     <LinearLayout
         android:id="@+id/ll_hidden_menu"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:visibility="gone"
         android:layout_marginTop="16dp"
-        android:layout_marginStart="58dp"
         app:layout_constraintTop_toBottomOf="@id/ll_meta_chips"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <TextView
             android:id="@+id/btn_toggle_status"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             tools:text="비활성화"
             android:textColor="@color/login_blue"
-            android:textSize="13sp"
+            android:textSize="12sp"
             android:textStyle="bold"
-            android:paddingVertical="8dp"
-            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:paddingHorizontal="14dp"
             android:background="@drawable/bg_banner_light_blue"
             android:gravity="center"
             android:clickable="true"
             android:focusable="true"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginEnd="6dp" />
 
         <TextView
             android:id="@+id/btn_edit"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="수정"
             android:textColor="@color/gray_text"
-            android:textSize="13sp"
+            android:textSize="12sp"
             android:textStyle="bold"
-            android:paddingVertical="8dp"
-            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:paddingHorizontal="14dp"
             android:background="@drawable/bg_card_rounded_border"
             android:gravity="center"
             android:clickable="true"
             android:focusable="true"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginEnd="6dp" />
 
         <TextView
             android:id="@+id/btn_delete"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="삭제"
             android:textColor="@color/red"
-            android:textSize="13sp"
+            android:textSize="12sp"
             android:textStyle="bold"
-            android:paddingVertical="8dp"
-            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:paddingHorizontal="14dp"
             android:background="@drawable/bg_card_danger"
             android:gravity="center"
             android:clickable="true"
@@ -270,7 +259,7 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:background="#4DE5E5E5"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintTop_toBottomOf="@id/ll_hidden_menu"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

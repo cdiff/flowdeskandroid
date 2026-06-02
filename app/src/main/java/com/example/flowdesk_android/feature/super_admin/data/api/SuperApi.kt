@@ -1,10 +1,14 @@
 package com.example.flowdesk_android.feature.super_admin.data.api
 
+import com.example.flowdesk_android.feature.super_admin.data.dto.CreatePageRequest
 import com.example.flowdesk_android.feature.super_admin.data.dto.CreateTenantRequest
+import com.example.flowdesk_android.feature.super_admin.data.dto.PageDto
+import com.example.flowdesk_android.feature.super_admin.data.dto.PagesResponse
 import com.example.flowdesk_android.feature.super_admin.data.dto.SuperDashboardResponse
 import com.example.flowdesk_android.feature.super_admin.data.dto.TenantDetailDto
 import com.example.flowdesk_android.feature.super_admin.data.dto.TenantDto
 import com.example.flowdesk_android.feature.super_admin.data.dto.TenantsResponse
+import com.example.flowdesk_android.feature.super_admin.data.dto.UpdatePageRequest
 import com.example.flowdesk_android.feature.super_admin.data.dto.UpdateTenantRequest
 import com.example.flowdesk_android.feature.super_admin.data.dto.UpdateTenantStatusRequest
 import retrofit2.Response
@@ -50,4 +54,28 @@ interface SuperApi {
         @Path("id") id: Int,
         @Body request: UpdateTenantStatusRequest
     ): Response<TenantDto>
+
+    // ── 페이지 관리 ──────────────────────────────────────
+
+    @GET("permissions/admin/pages")
+    suspend fun getPages(
+        @Query("page")   page: Int = 1,
+        @Query("limit")  limit: Int = 20,
+        @Query("search") search: String? = null
+    ): Response<PagesResponse>
+
+    @POST("permissions/admin/pages")
+    suspend fun createPage(@Body request: CreatePageRequest): Response<PageDto>
+
+    @GET("permissions/admin/pages/{id}")
+    suspend fun getPageDetail(@Path("id") id: Int): Response<PageDto>
+
+    @PATCH("permissions/admin/pages/{id}")
+    suspend fun updatePage(
+        @Path("id") id: Int,
+        @Body request: UpdatePageRequest
+    ): Response<PageDto>
+
+    @DELETE("permissions/admin/pages/{id}")
+    suspend fun deletePage(@Path("id") id: Int): Response<Unit>
 }

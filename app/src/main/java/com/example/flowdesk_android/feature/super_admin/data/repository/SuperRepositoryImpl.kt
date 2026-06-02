@@ -1,10 +1,13 @@
 package com.example.flowdesk_android.feature.super_admin.data.repository
 
 import com.example.flowdesk_android.feature.super_admin.data.api.SuperApi
+import com.example.flowdesk_android.feature.super_admin.data.dto.CreatePageRequest
 import com.example.flowdesk_android.feature.super_admin.data.dto.CreateTenantRequest
+import com.example.flowdesk_android.feature.super_admin.data.dto.UpdatePageRequest
 import com.example.flowdesk_android.feature.super_admin.data.dto.UpdateTenantRequest
 import com.example.flowdesk_android.feature.super_admin.data.dto.UpdateTenantStatusRequest
 import com.example.flowdesk_android.feature.super_admin.domain.model.DashboardStats
+import com.example.flowdesk_android.feature.super_admin.domain.model.Page
 import com.example.flowdesk_android.feature.super_admin.domain.model.Tenant
 import com.example.flowdesk_android.feature.super_admin.domain.model.TenantDetail
 import com.example.flowdesk_android.feature.super_admin.domain.repository.SuperRepository
@@ -104,6 +107,79 @@ class SuperRepositoryImpl @Inject constructor(
             } else {
                 throw Exception("상태 변경 실패 (${response.code()})")
             }
+        }
+    }
+
+    // ── 페이지 관리 ───────────────────────────────────────
+
+    override suspend fun getPages(
+        page: Int,
+        limit: Int,
+        search: String?
+    ): Result<List<Page>> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.getPages(page, limit, search)
+            if (response.isSuccessful) {
+                response.body()?.items?.map { it.toDomain() } ?: emptyList()
+            } else {
+                throw Exception("페이지 목록 조회 실패 (${response.code()})")
+            }
+        }
+    }
+
+    override suspend fun createPage(
+        pageName: String,
+        path: String,
+        displayName: String,
+        description: String?,
+        parentId: Int?,
+        sortOrder: Int
+    ): Result<Page> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.createPage(CreatePageRequest(pageName, path, displayName, description, parentId, sortOrder))
+            if (response.isSuccessful) {
+                response.body()?.toDomain() ?: throw Exception("응답 바디 없음")
+            } else {
+                throw Exception("페이지 생성 실패 (${response.code()})")
+            }
+        }
+    }
+
+    override suspend fun getPageDetail(pageId: Int): Result<Page> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.getPageDetail(pageId)
+            if (response.isSuccessful) {
+                response.body()?.toDomain() ?: throw Exception("응답 바디 없음")
+            } else {
+                throw Exception("페이지 상세 조회 실패 (${response.code()})")
+            }
+        }
+    }
+
+    override suspend fun updatePage(
+        pageId: Int,
+        pageName: String?,
+        path: String?,
+        displayName: String?,
+        description: String?,
+        parentId: Int?,
+        sortOrder: Int?,
+        isActive: Int?
+    ): Result<Page> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.updatePage(pageId, UpdatePageRequest(pageName, path, displayName, description, parentId, sortOrder, isActive))
+            if (response.isSuccessful) {
+                response.body()?.toDomain() ?: throw Exception("응답 바디 없음")
+            } else {
+                throw Exception("페이지 수정 실패 (${response.code()})")
+            }
+        }
+    }
+
+    override suspend fun deletePage(pageId: Int): Result<Unit> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.deletePage(pageId)
+            if (!response.isSuccessful) throw Exception("페이지 삭제 실패 (${response.code()})")
         }
     }
 }
