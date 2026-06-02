@@ -57,6 +57,16 @@
     </fragment>
 
     <fragment
+        android:id="@+id/tenantDetailFragment"
+        android:name="com.example.flowdesk_android.feature.super_admin.presentation.tenants.TenantDetailFragment"
+        android:label="TenantDetail"
+        tools:layout="@layout/fragment_super_admin_tenant_detail">
+        <argument
+            android:name="tenant_id"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
         android:id="@+id/managePermissionsFragment"
         android:name="com.example.flowdesk_android.feature.role.presentation.permissions.ManagePermissionsFragment"
         android:label="ManagePermissions"

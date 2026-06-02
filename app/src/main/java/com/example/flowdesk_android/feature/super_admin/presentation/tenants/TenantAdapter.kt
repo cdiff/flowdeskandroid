@@ -32,7 +32,6 @@ class TenantAdapter(
     }
 
     inner class TenantViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tvInitial: TextView     = itemView.findViewById(R.id.tv_tenant_initial)
         private val tvName: TextView        = itemView.findViewById(R.id.tv_tenant_name)
         private val tvDomain: TextView      = itemView.findViewById(R.id.tv_tenant_domain)
         private val tvStatus: TextView      = itemView.findViewById(R.id.tv_tenant_status)
@@ -43,8 +42,6 @@ class TenantAdapter(
 
         fun bind(tenant: Tenant) {
             // displayName이 있으면 표시, 없으면 tenantName
-            tvInitial.text = (tenant.displayName.ifBlank { tenant.tenantName })
-                .firstOrNull()?.uppercase() ?: "T"
             tvName.text   = tenant.displayName.ifBlank { tenant.tenantName }
             tvDomain.text = tenant.domain ?: tenant.tenantName
 

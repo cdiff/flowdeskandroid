@@ -15,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.feature.super_admin.domain.model.Tenant
@@ -30,10 +31,13 @@ class TenantsFragment : Fragment() {
     private lateinit var rvTenants: RecyclerView
     private lateinit var progressBar: ProgressBar
     private lateinit var etSearch: EditText
-    private lateinit var tvTotalCount: TextView
-    private lateinit var tvActiveCount: TextView
-    private lateinit var tvInactiveCount: TextView
+    private lateinit var tvBadgeTotal: TextView
+    private lateinit var tvBadgeActive: TextView
+    private lateinit var tvBadgeInactive: TextView
+    private lateinit var llEmpty: View
     private lateinit var btnCreateTenant: View
+    private lateinit var bannerInfo: View
+    private lateinit var btnCloseBanner: View
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,19 +55,20 @@ class TenantsFragment : Fragment() {
         rvTenants       = view.findViewById(R.id.rv_tenants)
         progressBar     = view.findViewById(R.id.progress_bar)
         etSearch        = view.findViewById(R.id.et_search)
-        tvTotalCount    = view.findViewById(R.id.tv_total_count)
-        tvActiveCount   = view.findViewById(R.id.tv_active_count)
-        tvInactiveCount = view.findViewById(R.id.tv_inactive_count)
+        tvBadgeTotal    = view.findViewById(R.id.tv_badge_total)
+        tvBadgeActive   = view.findViewById(R.id.tv_badge_active)
+        tvBadgeInactive = view.findViewById(R.id.tv_badge_inactive)
+        llEmpty         = view.findViewById(R.id.ll_empty)
         btnCreateTenant = view.findViewById(R.id.btn_create_tenant)
+        bannerInfo      = view.findViewById(R.id.banner_info)
+        btnCloseBanner  = view.findViewById(R.id.btn_close_banner)
     }
 
     private fun setupRecyclerView() {
         tenantAdapter = TenantAdapter(
             onItemClick = { tenant ->
-                // TODO: Navigation Graph에 tenantDetailFragment 등록 후 활성화
-                // val bundle = Bundle().apply { putInt("tenant_id", tenant.tenantId) }
-                // findNavController().navigate(R.id.tenantDetailFragment, bundle)
-                showTopToast("${tenant.tenantName} 상세 (준비 중)")
+                val bundle = Bundle().apply { putInt("tenant_id", tenant.tenantId) }
+                findNavController().navigate(R.id.tenantDetailFragment, bundle)
             },
             onToggleStatusClick = { tenant ->
                 viewModel.toggleStatus(tenant)
@@ -77,6 +82,10 @@ class TenantsFragment : Fragment() {
     }
 
     private fun setupListeners() {
+        btnCloseBanner.setOnClickListener {
+            bannerInfo.visibility = View.GONE
+        }
+
         btnCreateTenant.setOnClickListener {
             val bottomSheet = CreateTenantBottomSheetFragment {
                 viewModel.fetchTenants()
@@ -102,21 +111,30 @@ class TenantsFragment : Fragment() {
                             is TenantListUiState.Loading -> {
                                 progressBar.visibility = View.VISIBLE
                                 rvTenants.visibility = View.GONE
+                                llEmpty.visibility = View.GONE
                             }
                             is TenantListUiState.Success -> {
                                 progressBar.visibility = View.GONE
-                                rvTenants.visibility = View.VISIBLE
-
+                                
                                 val total    = state.tenants.size
                                 val active   = state.tenants.count { it.isActive }
                                 val inactive = total - active
-                                tvTotalCount.text    = "${total}개"
-                                tvActiveCount.text   = active.toString()
-                                tvInactiveCount.text = inactive.toString()
+                                tvBadgeTotal.text    = "총 ${total}개"
+                                tvBadgeActive.text   = "활성 ${active}개"
+                                tvBadgeInactive.text = "비활성 ${inactive}개"
+
+                                if (state.tenants.isEmpty()) {
+                                    rvTenants.visibility = View.GONE
+                                    llEmpty.visibility = View.VISIBLE
+                                } else {
+                                    rvTenants.visibility = View.VISIBLE
+                                    llEmpty.visibility = View.GONE
+                                }
                             }
                             is TenantListUiState.Error -> {
                                 progressBar.visibility = View.GONE
                                 rvTenants.visibility = View.VISIBLE
+                                llEmpty.visibility = View.GONE
                                 showTopToast(state.message)
                             }
                             else -> {}
