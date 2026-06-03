@@ -3,9 +3,9 @@ package com.example.flowdesk_android.feature.main.common
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.flowdesk_android.feature.auth.domain.model.Menu
-import com.example.flowdesk_android.feature.role.presentation.list.RolesFragment
-import com.example.flowdesk_android.feature.role.presentation.catalog.PermissionCatalogFragment
-import com.example.flowdesk_android.feature.user.presentation.list.UserListFragment
+import com.example.flowdesk_android.feature.user_management.presentation.roles.list.RolesFragment
+import com.example.flowdesk_android.feature.user_management.presentation.catalog.PermissionCatalogFragment
+import com.example.flowdesk_android.feature.user_management.presentation.users.list.UserListFragment
 import com.example.flowdesk_android.feature.super_admin.presentation.dashboard.SuperDashboardFragment
 import com.example.flowdesk_android.feature.super_admin.presentation.tenants.TenantsFragment
 import com.example.flowdesk_android.feature.super_admin.presentation.pages.SuperAdminPagesFragment

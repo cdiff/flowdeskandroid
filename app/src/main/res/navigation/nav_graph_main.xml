@@ -36,19 +36,19 @@
 
     <fragment
         android:id="@+id/userDetailFragment"
-        android:name="com.example.flowdesk_android.feature.user.presentation.detail.UserDetailFragment"
+        android:name="com.example.flowdesk_android.feature.user_management.presentation.users.detail.UserDetailFragment"
         android:label="UserDetail"
         tools:layout="@layout/fragment_user_detail" />
 
     <fragment
         android:id="@+id/rolesFragment"
-        android:name="com.example.flowdesk_android.feature.role.presentation.list.RolesFragment"
+        android:name="com.example.flowdesk_android.feature.user_management.presentation.roles.list.RolesFragment"
         android:label="Roles"
         tools:layout="@layout/fragment_roles" />
 
     <fragment
         android:id="@+id/roleDetailFragment"
-        android:name="com.example.flowdesk_android.feature.role.presentation.detail.RoleDetailFragment"
+        android:name="com.example.flowdesk_android.feature.user_management.presentation.roles.detail.RoleDetailFragment"
         android:label="RoleDetail"
         tools:layout="@layout/fragment_role_detail">
         <argument
@@ -68,7 +68,7 @@
 
     <fragment
         android:id="@+id/managePermissionsFragment"
-        android:name="com.example.flowdesk_android.feature.role.presentation.permissions.ManagePermissionsFragment"
+        android:name="com.example.flowdesk_android.feature.user_management.presentation.roles.permissions.ManagePermissionsFragment"
         android:label="ManagePermissions"
         tools:layout="@layout/fragment_role_manage_permissions">
         <argument
