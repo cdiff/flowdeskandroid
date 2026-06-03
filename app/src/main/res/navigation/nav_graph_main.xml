@@ -75,4 +75,10 @@
             android:name="role_id"
             app:argType="integer" />
     </fragment>
+
+    <fragment
+        android:id="@+id/superAdminActionsFragment"
+        android:name="com.example.flowdesk_android.feature.super_admin.presentation.actions.SuperAdminActionsFragment"
+        android:label="Actions"
+        tools:layout="@layout/fragment_super_admin_actions" />
 </navigation>

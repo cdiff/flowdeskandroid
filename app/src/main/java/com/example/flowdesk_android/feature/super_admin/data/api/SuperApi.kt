@@ -1,5 +1,8 @@
 package com.example.flowdesk_android.feature.super_admin.data.api
 
+import com.example.flowdesk_android.feature.super_admin.data.dto.ActionDto
+import com.example.flowdesk_android.feature.super_admin.data.dto.ActionsResponse
+import com.example.flowdesk_android.feature.super_admin.data.dto.CreateActionRequest
 import com.example.flowdesk_android.feature.super_admin.data.dto.CreatePageRequest
 import com.example.flowdesk_android.feature.super_admin.data.dto.CreateTenantRequest
 import com.example.flowdesk_android.feature.super_admin.data.dto.PageDto
@@ -8,6 +11,8 @@ import com.example.flowdesk_android.feature.super_admin.data.dto.SuperDashboardR
 import com.example.flowdesk_android.feature.super_admin.data.dto.TenantDetailDto
 import com.example.flowdesk_android.feature.super_admin.data.dto.TenantDto
 import com.example.flowdesk_android.feature.super_admin.data.dto.TenantsResponse
+import com.example.flowdesk_android.feature.super_admin.data.dto.UpdateActionRequest
+import com.example.flowdesk_android.feature.super_admin.data.dto.UpdateActionStatusRequest
 import com.example.flowdesk_android.feature.super_admin.data.dto.UpdatePageRequest
 import com.example.flowdesk_android.feature.super_admin.data.dto.UpdateTenantRequest
 import com.example.flowdesk_android.feature.super_admin.data.dto.UpdateTenantStatusRequest
@@ -78,4 +83,34 @@ interface SuperApi {
 
     @DELETE("permissions/admin/pages/{id}")
     suspend fun deletePage(@Path("id") id: Int): Response<Unit>
+
+    // ── 액션 관리 ──────────────────────────────────────────
+
+    @GET("permissions/admin/actions")
+    suspend fun getActions(
+        @Query("page")   page: Int = 1,
+        @Query("limit")  limit: Int = 20,
+        @Query("search") search: String? = null
+    ): Response<ActionsResponse>
+
+    @POST("permissions/admin/actions")
+    suspend fun createAction(@Body request: CreateActionRequest): Response<ActionDto>
+
+    @GET("permissions/admin/actions/{id}")
+    suspend fun getActionDetail(@Path("id") id: Int): Response<ActionDto>
+
+    @PATCH("permissions/admin/actions/{id}")
+    suspend fun updateAction(
+        @Path("id") id: Int,
+        @Body request: UpdateActionRequest
+    ): Response<ActionDto>
+
+    @DELETE("permissions/admin/actions/{id}")
+    suspend fun deleteAction(@Path("id") id: Int): Response<Unit>
+
+    @PATCH("permissions/admin/actions/{id}/status")
+    suspend fun updateActionStatus(
+        @Path("id") id: Int,
+        @Body request: UpdateActionStatusRequest
+    ): Response<ActionDto>
 }

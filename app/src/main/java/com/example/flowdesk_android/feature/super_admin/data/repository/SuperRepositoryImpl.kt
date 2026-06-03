@@ -1,11 +1,15 @@
 package com.example.flowdesk_android.feature.super_admin.data.repository
 
 import com.example.flowdesk_android.feature.super_admin.data.api.SuperApi
+import com.example.flowdesk_android.feature.super_admin.data.dto.CreateActionRequest
 import com.example.flowdesk_android.feature.super_admin.data.dto.CreatePageRequest
 import com.example.flowdesk_android.feature.super_admin.data.dto.CreateTenantRequest
+import com.example.flowdesk_android.feature.super_admin.data.dto.UpdateActionRequest
+import com.example.flowdesk_android.feature.super_admin.data.dto.UpdateActionStatusRequest
 import com.example.flowdesk_android.feature.super_admin.data.dto.UpdatePageRequest
 import com.example.flowdesk_android.feature.super_admin.data.dto.UpdateTenantRequest
 import com.example.flowdesk_android.feature.super_admin.data.dto.UpdateTenantStatusRequest
+import com.example.flowdesk_android.feature.super_admin.domain.model.Action
 import com.example.flowdesk_android.feature.super_admin.domain.model.DashboardStats
 import com.example.flowdesk_android.feature.super_admin.domain.model.Page
 import com.example.flowdesk_android.feature.super_admin.domain.model.Tenant
@@ -180,6 +184,82 @@ class SuperRepositoryImpl @Inject constructor(
         runCatching {
             val response = api.deletePage(pageId)
             if (!response.isSuccessful) throw Exception("페이지 삭제 실패 (${response.code()})")
+        }
+    }
+
+    // ── 액션 관리 ─────────────────────────────────────────────
+
+    override suspend fun getActions(
+        page: Int,
+        limit: Int,
+        search: String?
+    ): Result<List<Action>> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.getActions(page, limit, search)
+            if (response.isSuccessful) {
+                response.body()?.items?.map { it.toDomain() } ?: emptyList()
+            } else {
+                throw Exception("액션 목록 조회 실패 (${response.code()})")
+            }
+        }
+    }
+
+    override suspend fun createAction(
+        actionName: String,
+        displayName: String
+    ): Result<Action> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.createAction(CreateActionRequest(actionName, displayName))
+            if (response.isSuccessful) {
+                response.body()?.toDomain() ?: throw Exception("응답 바디 없음")
+            } else {
+                throw Exception("액션 생성 실패 (${response.code()})")
+            }
+        }
+    }
+
+    override suspend fun getActionDetail(actionId: Int): Result<Action> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.getActionDetail(actionId)
+            if (response.isSuccessful) {
+                response.body()?.toDomain() ?: throw Exception("응답 바디 없음")
+            } else {
+                throw Exception("액션 상세 조회 실패 (${response.code()})")
+            }
+        }
+    }
+
+    override suspend fun updateAction(
+        actionId: Int,
+        actionName: String?,
+        displayName: String?,
+        isActive: Int?
+    ): Result<Action> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.updateAction(actionId, UpdateActionRequest(actionName, displayName, isActive))
+            if (response.isSuccessful) {
+                response.body()?.toDomain() ?: throw Exception("응답 바디 없음")
+            } else {
+                throw Exception("액션 수정 실패 (${response.code()})")
+            }
+        }
+    }
+
+    override suspend fun deleteAction(actionId: Int): Result<Unit> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.deleteAction(actionId)
+            if (!response.isSuccessful) throw Exception("액션 삭제 실패 (${response.code()})")
+        }
+    }
+
+    override suspend fun updateActionStatus(actionId: Int, isActive: Boolean): Result<Action> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.updateActionStatus(actionId, UpdateActionStatusRequest(if (isActive) 1 else 0))
+            if (response.isSuccessful) {
+                response.body()?.toDomain() ?: throw Exception("응답 바디 없음")
+            } else {
+                throw Exception("액션 상태 변경 실패 (${response.code()})")
+            }
         }
     }
 }
