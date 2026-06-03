@@ -3,8 +3,7 @@ package com.example.flowdesk_android.feature.super_admin.presentation.tenants
 import androidx.lifecycle.viewModelScope
 import com.example.flowdesk_android.core.base.BaseViewModel
 import com.example.flowdesk_android.feature.super_admin.domain.model.TenantDetail
-import com.example.flowdesk_android.feature.super_admin.domain.usecase.GetTenantDetailUseCase
-import com.example.flowdesk_android.feature.super_admin.domain.usecase.UpdateTenantUseCase
+import com.example.flowdesk_android.feature.super_admin.domain.repository.SuperRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -30,8 +29,7 @@ sealed class TenantDetailEvent {
 
 @HiltViewModel
 class TenantDetailViewModel @Inject constructor(
-    private val getTenantDetailUseCase: GetTenantDetailUseCase,
-    private val updateTenantUseCase: UpdateTenantUseCase
+    private val superRepository: SuperRepository
 ) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow<TenantDetailUiState>(TenantDetailUiState.Loading)
@@ -47,7 +45,7 @@ class TenantDetailViewModel @Inject constructor(
     fun fetchDetail(tenantId: Int) {
         viewModelScope.launch {
             _uiState.value = TenantDetailUiState.Loading
-            getTenantDetailUseCase(tenantId)
+            superRepository.getTenantDetail(tenantId)
                 .onSuccess { _uiState.value = TenantDetailUiState.Success(it) }
                 .onFailure { _uiState.value = TenantDetailUiState.Error(it.message ?: "상세 조회 실패") }
         }
@@ -62,11 +60,12 @@ class TenantDetailViewModel @Inject constructor(
         if (_isSaving.value) return
         viewModelScope.launch {
             _isSaving.value = true
-            updateTenantUseCase(
+            superRepository.updateTenant(
                 tenantId   = tenantId,
                 tenantName  = tenantName.trim().takeIf { it.isNotBlank() },
                 displayName = displayName.trim().takeIf { it.isNotBlank() },
-                domain      = domain.trim().takeIf { it.isNotBlank() }
+                domain      = domain.trim().takeIf { it.isNotBlank() },
+                isActive    = null
             )
                 .onSuccess { _event.send(TenantDetailEvent.SaveSuccess) }
                 .onFailure { _event.send(TenantDetailEvent.Error(it.message ?: "수정 실패")) }

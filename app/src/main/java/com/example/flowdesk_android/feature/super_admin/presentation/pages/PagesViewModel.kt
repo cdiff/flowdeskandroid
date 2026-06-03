@@ -3,10 +3,7 @@ package com.example.flowdesk_android.feature.super_admin.presentation.pages
 import androidx.lifecycle.viewModelScope
 import com.example.flowdesk_android.core.base.BaseViewModel
 import com.example.flowdesk_android.feature.super_admin.domain.model.Page
-import com.example.flowdesk_android.feature.super_admin.domain.usecase.CreatePageUseCase
-import com.example.flowdesk_android.feature.super_admin.domain.usecase.DeletePageUseCase
-import com.example.flowdesk_android.feature.super_admin.domain.usecase.GetPagesUseCase
-import com.example.flowdesk_android.feature.super_admin.domain.usecase.UpdatePageUseCase
+import com.example.flowdesk_android.feature.super_admin.domain.repository.SuperRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -35,10 +32,7 @@ sealed class PageListEvent {
 
 @HiltViewModel
 class PagesViewModel @Inject constructor(
-    private val getPagesUseCase: GetPagesUseCase,
-    private val createPageUseCase: CreatePageUseCase,
-    private val updatePageUseCase: UpdatePageUseCase,
-    private val deletePageUseCase: DeletePageUseCase
+    private val superRepository: SuperRepository
 ) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow<PageListUiState>(PageListUiState.Loading)
@@ -59,7 +53,7 @@ class PagesViewModel @Inject constructor(
     fun fetchPages() {
         viewModelScope.launch {
             _uiState.value = PageListUiState.Loading
-            getPagesUseCase()
+            superRepository.getPages()
                 .onSuccess { pages ->
                     allPages = pages
                     updateFilteredPages()
@@ -116,7 +110,7 @@ class PagesViewModel @Inject constructor(
         sortOrder: Int
     ) {
         viewModelScope.launch {
-            createPageUseCase(pageName, path, displayName, description, parentId, sortOrder)
+            superRepository.createPage(pageName, path, displayName, description, parentId, sortOrder)
                 .onSuccess {
                     _event.send(PageListEvent.PageCreated)
                     fetchPages()
@@ -127,7 +121,7 @@ class PagesViewModel @Inject constructor(
 
     fun updatePageStatus(page: Page, isActive: Boolean) {
         viewModelScope.launch {
-            updatePageUseCase(pageId = page.pageId, isActive = if (isActive) 1 else 0)
+            superRepository.updatePage(pageId = page.pageId, pageName = null, path = null, displayName = null, description = null, parentId = null, sortOrder = null, isActive = if (isActive) 1 else 0)
                 .onSuccess {
                     _event.send(PageListEvent.PageUpdated)
                     fetchPages()
@@ -138,7 +132,7 @@ class PagesViewModel @Inject constructor(
 
     fun deletePage(pageId: Int) {
         viewModelScope.launch {
-            deletePageUseCase(pageId)
+            superRepository.deletePage(pageId)
                 .onSuccess {
                     _event.send(PageListEvent.PageDeleted)
                     fetchPages()

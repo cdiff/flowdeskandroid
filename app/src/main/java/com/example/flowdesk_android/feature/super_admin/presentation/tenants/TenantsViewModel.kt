@@ -3,10 +3,7 @@ package com.example.flowdesk_android.feature.super_admin.presentation.tenants
 import androidx.lifecycle.viewModelScope
 import com.example.flowdesk_android.core.base.BaseViewModel
 import com.example.flowdesk_android.feature.super_admin.domain.model.Tenant
-import com.example.flowdesk_android.feature.super_admin.domain.usecase.CreateTenantUseCase
-import com.example.flowdesk_android.feature.super_admin.domain.usecase.DeleteTenantUseCase
-import com.example.flowdesk_android.feature.super_admin.domain.usecase.GetTenantsUseCase
-import com.example.flowdesk_android.feature.super_admin.domain.usecase.UpdateTenantStatusUseCase
+import com.example.flowdesk_android.feature.super_admin.domain.repository.SuperRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -35,10 +32,7 @@ sealed class TenantListEvent {
 
 @HiltViewModel
 class TenantsViewModel @Inject constructor(
-    private val getTenantsUseCase: GetTenantsUseCase,
-    private val createTenantUseCase: CreateTenantUseCase,
-    private val deleteTenantUseCase: DeleteTenantUseCase,
-    private val updateTenantStatusUseCase: UpdateTenantStatusUseCase
+    private val superRepository: SuperRepository
 ) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow<TenantListUiState>(TenantListUiState.Loading)
@@ -57,7 +51,7 @@ class TenantsViewModel @Inject constructor(
     fun fetchTenants() {
         viewModelScope.launch {
             _uiState.value = TenantListUiState.Loading
-            getTenantsUseCase()
+            superRepository.getTenants()
                 .onSuccess { tenants ->
                     allTenants = tenants
                     _filteredTenants.value = tenants
@@ -79,7 +73,7 @@ class TenantsViewModel @Inject constructor(
 
     fun createTenant(tenantName: String, displayName: String, domain: String) {
         viewModelScope.launch {
-            createTenantUseCase(tenantName, displayName, domain)
+            superRepository.createTenant(tenantName, displayName, domain)
                 .onSuccess {
                     _event.send(TenantListEvent.TenantCreated)
                     fetchTenants()
@@ -90,7 +84,7 @@ class TenantsViewModel @Inject constructor(
 
     fun deleteTenant(tenantId: Int) {
         viewModelScope.launch {
-            deleteTenantUseCase(tenantId)
+            superRepository.deleteTenant(tenantId)
                 .onSuccess {
                     _event.send(TenantListEvent.TenantDeleted)
                     fetchTenants()
@@ -102,7 +96,7 @@ class TenantsViewModel @Inject constructor(
     fun toggleStatus(tenant: Tenant) {
         val newIsActive = !tenant.isActive
         viewModelScope.launch {
-            updateTenantStatusUseCase(tenant.tenantId, newIsActive)
+            superRepository.updateTenantStatus(tenant.tenantId, newIsActive)
                 .onSuccess {
                     _event.send(TenantListEvent.StatusToggled)
                     fetchTenants()

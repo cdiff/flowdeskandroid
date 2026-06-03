@@ -3,10 +3,7 @@ package com.example.flowdesk_android.feature.super_admin.presentation.actions
 import androidx.lifecycle.viewModelScope
 import com.example.flowdesk_android.core.base.BaseViewModel
 import com.example.flowdesk_android.feature.super_admin.domain.model.Action
-import com.example.flowdesk_android.feature.super_admin.domain.usecase.CreateActionUseCase
-import com.example.flowdesk_android.feature.super_admin.domain.usecase.DeleteActionUseCase
-import com.example.flowdesk_android.feature.super_admin.domain.usecase.GetActionsUseCase
-import com.example.flowdesk_android.feature.super_admin.domain.usecase.UpdateActionStatusUseCase
+import com.example.flowdesk_android.feature.super_admin.domain.repository.SuperRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -35,10 +32,7 @@ sealed class ActionListEvent {
 
 @HiltViewModel
 class ActionsViewModel @Inject constructor(
-    private val getActionsUseCase: GetActionsUseCase,
-    private val createActionUseCase: CreateActionUseCase,
-    private val deleteActionUseCase: DeleteActionUseCase,
-    private val updateActionStatusUseCase: UpdateActionStatusUseCase
+    private val superRepository: SuperRepository
 ) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow<ActionListUiState>(ActionListUiState.Loading)
@@ -58,7 +52,7 @@ class ActionsViewModel @Inject constructor(
     fun fetchActions() {
         viewModelScope.launch {
             _uiState.value = ActionListUiState.Loading
-            getActionsUseCase()
+            superRepository.getActions()
                 .onSuccess { actions ->
                     allActions = actions
                     applyFilter()
@@ -87,7 +81,7 @@ class ActionsViewModel @Inject constructor(
 
     fun createAction(actionName: String, displayName: String) {
         viewModelScope.launch {
-            createActionUseCase(actionName, displayName)
+            superRepository.createAction(actionName, displayName)
                 .onSuccess {
                     _event.send(ActionListEvent.ActionCreated)
                     fetchActions()
@@ -98,7 +92,7 @@ class ActionsViewModel @Inject constructor(
 
     fun toggleStatus(action: Action) {
         viewModelScope.launch {
-            updateActionStatusUseCase(action.actionId, !action.isActive)
+            superRepository.updateActionStatus(action.actionId, !action.isActive)
                 .onSuccess {
                     _event.send(ActionListEvent.ActionStatusChanged)
                     fetchActions()
@@ -109,7 +103,7 @@ class ActionsViewModel @Inject constructor(
 
     fun deleteAction(actionId: Int) {
         viewModelScope.launch {
-            deleteActionUseCase(actionId)
+            superRepository.deleteAction(actionId)
                 .onSuccess {
                     _event.send(ActionListEvent.ActionDeleted)
                     fetchActions()
