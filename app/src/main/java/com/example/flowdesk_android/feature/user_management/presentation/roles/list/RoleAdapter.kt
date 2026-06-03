@@ -43,8 +43,7 @@ class RoleAdapter(
         private val tvPermissionCount: TextView = itemView.findViewById(R.id.tv_permission_count)
         
         private val btnManagePermissions: TextView = itemView.findViewById(R.id.btn_manage_permissions)
-        private val btnEditRole: TextView = itemView.findViewById(R.id.btn_edit_role)
-        private val ivMoreOptions: ImageView = itemView.findViewById(R.id.iv_more_options)
+        private val ivMore: ImageView = itemView.findViewById(R.id.iv_more)
         
         private val llHiddenMenu: View = itemView.findViewById(R.id.ll_hidden_menu)
         private val btnToggleStatus: TextView = itemView.findViewById(R.id.btn_toggle_status)
@@ -58,11 +57,11 @@ class RoleAdapter(
             if (role.isActive) {
                 tvStatus.text = "활성"
                 tvStatus.setTextColor(itemView.context.getColor(R.color.green_accent))
-                tvStatus.setBackgroundColor(android.graphics.Color.parseColor("#E8F5E9"))
+                tvStatus.setBackgroundResource(R.drawable.bg_tag_light_green)
             } else {
                 tvStatus.text = "비활성"
                 tvStatus.setTextColor(itemView.context.getColor(R.color.red))
-                tvStatus.setBackgroundColor(android.graphics.Color.parseColor("#FFEBEE"))
+                tvStatus.setBackgroundResource(R.drawable.bg_card_danger)
             }
 
             // formatting createdAt
@@ -85,7 +84,7 @@ class RoleAdapter(
             
             btnToggleStatus.text = if (role.isActive) "비활성화" else "활성화"
 
-            ivMoreOptions.setOnClickListener { 
+            ivMore.setOnClickListener { 
                 val isCurrentlyExpanded = expandedRoles.contains(role.roleId)
                 if (isCurrentlyExpanded) {
                     expandedRoles.remove(role.roleId)
@@ -124,7 +123,7 @@ class RoleAdapter(
             }
 
             btnManagePermissions.setOnClickListener { onManagePermissionsClick(role) }
-            btnEditRole.setOnClickListener { onEditRoleClick(role) }
+            itemView.setOnClickListener { onEditRoleClick(role) }
         }
     }
 }

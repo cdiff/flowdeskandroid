@@ -36,6 +36,8 @@ class RolesFragment : Fragment() {
     private lateinit var tvActiveCount: TextView
     private lateinit var tvInactiveCount: TextView
     private lateinit var btnCreateRole: View
+    private lateinit var bannerInfo: View
+    private lateinit var btnCloseBanner: View
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,6 +63,8 @@ class RolesFragment : Fragment() {
         tvActiveCount = view.findViewById(R.id.tv_active_count)
         tvInactiveCount = view.findViewById(R.id.tv_inactive_count)
         btnCreateRole = view.findViewById(R.id.btn_create_role)
+        bannerInfo = view.findViewById(R.id.banner_info)
+        btnCloseBanner = view.findViewById(R.id.btn_close_banner)
     }
 
     private fun setupRecyclerView() {
@@ -112,6 +116,10 @@ class RolesFragment : Fragment() {
     }
 
     private fun setupListeners() {
+        btnCloseBanner.setOnClickListener {
+            bannerInfo.visibility = View.GONE
+        }
+
         btnCreateRole.setOnClickListener {
             val bottomSheet = CreateRoleBottomSheetFragment {
                 viewModel.fetchRoles()
@@ -146,9 +154,9 @@ class RolesFragment : Fragment() {
                                 val active = state.roles.count { it.isActive }
                                 val inactive = total - active
 
-                                tvTotalCount.text = "${total}개"
-                                tvActiveCount.text = active.toString()
-                                tvInactiveCount.text = inactive.toString()
+                                tvTotalCount.text = "총 ${total}개"
+                                tvActiveCount.text = "활성 ${active}개"
+                                tvInactiveCount.text = "비활성 ${inactive}개"
                             }
                             is RoleListUiState.Error -> {
                                 progressBar.visibility = View.GONE
