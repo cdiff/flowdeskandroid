@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="16dp">
 
             <!-- ─── 안내 배너 (닫기 가능) ─── -->
             <androidx.constraintlayout.widget.ConstraintLayout

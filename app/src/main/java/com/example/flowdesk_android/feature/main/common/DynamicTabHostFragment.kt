@@ -68,6 +68,8 @@ class DynamicTabHostFragment : Fragment() {
                                 // TabLayoutMediator를 다시 연결하기 전에 이전 것 해제 (필요시)
                                 TabLayoutMediator(tabLayout, viewPager) { tab, position ->
                                     tab.text = currentTabs[position].displayName
+                                        .replace(" 관리", "")
+                                        .trim()
                                 }.attach()
                             }
                         }
