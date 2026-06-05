@@ -117,7 +117,7 @@ class MainActivity : AppCompatActivity() {
             val bundle = Bundle().apply { putString("parent_page_name", pageName) }
             
             when {
-                pageName == "user_management" || pageName == "super" || pageName == "system_management" || pageName == "content_management" || pageName == "cousel_management" -> {
+                pageName == "user_management" || pageName == "super" || pageName == "system_management" || pageName == "content_management" || pageName == "counsel_management" -> {
                     navController.navigate(R.id.usersFragment, bundle, navOptions)
                 }
                 pageName == "users" || pageName == "permissions" || selectedMenu.displayName.contains("사용자") || selectedMenu.displayName.contains("권한") -> {

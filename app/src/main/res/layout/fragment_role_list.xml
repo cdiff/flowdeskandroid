@@ -106,17 +106,46 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- List Container -->
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <!-- ─── 검색바 (독립형 둥근 카드) ─── -->
+            <LinearLayout
+                android:id="@+id/ll_search"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_white_rounded_12dp"
-                android:elevation="2dp"
-                android:layout_marginHorizontal="2dp"
-                android:layout_marginTop="2dp"
+                android:elevation="1dp"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="12dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
                 android:layout_marginBottom="24dp">
 
-                <!-- ── 헤더 행: 제목 + 새 역할 버튼 ── -->
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@android:drawable/ic_menu_search"
+                    app:tint="@color/gray_text"
+                    android:layout_marginEnd="8dp" />
+
+                <EditText
+                    android:id="@+id/et_search"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:hint="역할 이름 검색..."
+                    android:textColorHint="@color/gray_text"
+                    android:textSize="13sp"
+                    android:textColor="@color/black"
+                    android:maxLines="1"
+                    android:inputType="text" />
+            </LinearLayout>
+
+            <!-- ─── 리스트 헤더 (제목 + 추가 버튼) ─── -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="4dp"
+                android:layout_marginBottom="8dp">
+
                 <TextView
                     android:id="@+id/tv_list_title"
                     android:layout_width="0dp"
@@ -125,140 +154,88 @@
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="4dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/btn_create_role"
-                    app:layout_constraintBottom_toBottomOf="@+id/btn_create_role" />
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_create_role" />
 
                 <!-- + 새 역할 버튼 -->
-                <LinearLayout
+                <ImageView
                     android:id="@+id/btn_create_role"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:background="@drawable/bg_rect_rounded_blue"
-                    android:paddingHorizontal="14dp"
-                    android:paddingVertical="8dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginTop="18dp"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_add_thin"
+                    app:tint="@color/black"
+                    android:padding="8dp"
                     android:clickable="true"
                     android:focusable="true"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@android:drawable/ic_input_add"
-                        app:tint="@color/white"
-                        android:layout_marginEnd="6dp" />
+            <!-- ─── 헤더 하단 소형 통계 텍스트 ─── -->
+            <LinearLayout
+                android:id="@+id/ll_badges"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="16dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="새 역할"
-                        android:textColor="@color/white"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <!-- 뱃지 행: 총 / 활성 / 비활성 -->
-                <LinearLayout
-                    android:id="@+id/ll_badges"
+                <TextView
+                    android:id="@+id/tv_total_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="6dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/btn_create_role">
+                    tools:text="총 12개"
+                    android:textColor="@color/gray_text"
+                    android:textSize="12sp" />
 
-                    <TextView
-                        android:id="@+id/tv_total_count"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        tools:text="총 12개"
-                        android:textColor="@color/gray_text"
-                        android:textSize="12sp"
-                        android:layout_marginEnd="10dp" />
-
-                    <TextView
-                        android:id="@+id/tv_active_count"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        tools:text="활성 10개"
-                        android:textColor="@color/green_accent"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:layout_marginEnd="10dp" />
-
-                    <TextView
-                        android:id="@+id/tv_inactive_count"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        tools:text="비활성 2개"
-                        android:textColor="@color/red"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <!-- Search Bar -->
-                <LinearLayout
-                    android:id="@+id/ll_search"
-                    android:layout_width="0dp"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_card_rounded_border"
-                    android:paddingHorizontal="14dp"
-                    android:paddingVertical="10dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginHorizontal="20dp"
-                    android:layout_marginTop="14dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ll_badges">
+                    android:text="  •  "
+                    android:textColor="#D1D5DB"
+                    android:textSize="10sp" />
 
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:src="@android:drawable/ic_menu_search"
-                        app:tint="@color/gray_text"
-                        android:layout_marginEnd="8dp"/>
+                <TextView
+                    android:id="@+id/tv_active_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="활성 10개"
+                    android:textColor="@color/green_accent"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
 
-                    <EditText
-                        android:id="@+id/et_search"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@null"
-                        android:hint="역할 이름 검색..."
-                        android:textColorHint="@color/gray_text"
-                        android:textSize="13sp"
-                        android:textColor="@color/black"
-                        android:maxLines="1"
-                        android:inputType="text"/>
-                </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="  •  "
+                    android:textColor="#D1D5DB"
+                    android:textSize="10sp" />
 
-                <View
-                    android:id="@+id/divider_list"
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:background="#E5E7EB"
-                    android:layout_marginTop="14dp"
-                    app:layout_constraintTop_toBottomOf="@id/ll_search"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                <TextView
+                    android:id="@+id/tv_inactive_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="비활성 2개"
+                    android:textColor="@color/red"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- ─── 리스트 영역 (RecyclerView 및 상태 뷰) ─── -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_roles"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@id/divider_list"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="3"
@@ -274,23 +251,21 @@
                     android:layout_height="wrap_content"
                     android:visibility="gone"
                     android:layout_margin="40dp"
-                    app:layout_constraintTop_toBottomOf="@id/divider_list"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                    app:layout_constraintEnd_toEndOf="parent" />
 
-                <!-- 빈 상태 (Optional: Role list에 맞게 적용) -->
                 <LinearLayout
                     android:id="@+id/ll_empty"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center"
                     android:padding="40dp"
                     android:visibility="gone"
-                    app:layout_constraintTop_toBottomOf="@id/divider_list"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent">
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
 
                     <ImageView
                         android:layout_width="48dp"
@@ -310,11 +285,10 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="새 역할 버튼으로 추가해보세요"
+                        android:text="플러스(+) 버튼으로 추가해보세요"
                         android:textColor="#CBD5E1"
                         android:textSize="12sp" />
                 </LinearLayout>
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
