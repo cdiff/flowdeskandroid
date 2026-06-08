@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 상태별 분포 행 레이아웃 -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingTop="12dp"
+    android:paddingBottom="12dp">
+
+    <!-- 컬러 도트 -->
+    <View
+        android:id="@+id/v_status_color_dot"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:background="@drawable/bg_circle_blue"
+        android:layout_marginEnd="12dp" />
+
+    <!-- 상태명 및 비율 -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_stat_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="#111827"
+            tools:text="신규접수" />
+
+        <TextView
+            android:id="@+id/tv_stat_percent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="11sp"
+            android:textColor="@color/gray_text"
+            android:layout_marginTop="2dp"
+            tools:text="27.8%" />
+    </LinearLayout>
+
+    <!-- 건수 -->
+    <TextView
+        android:id="@+id/tv_stat_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:textColor="#374151"
+        android:textStyle="bold"
+        tools:text="5건" />
+
+</LinearLayout>
