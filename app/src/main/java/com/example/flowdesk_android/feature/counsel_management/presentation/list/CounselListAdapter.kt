@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.databinding.ItemCounselListBinding
 import com.example.flowdesk_android.feature.counsel_management.domain.model.CounselItem
+import com.example.flowdesk_android.feature.counsel_management.domain.model.CounselStatusStat
 
 class CounselListAdapter(
     private val onCopyClick: (String) -> Unit,
@@ -24,6 +25,19 @@ class CounselListAdapter(
 
     private val items = mutableListOf<CounselItem>()
     private val checkedItems = mutableSetOf<Int>() // Tracks counselSeq of checked items
+    private val statusColorMap = mutableMapOf<String, Int>()
+
+    fun setStatusColors(stats: List<CounselStatusStat>) {
+        statusColorMap.clear()
+        stats.forEach { stat ->
+            try {
+                statusColorMap[stat.statusName] = Color.parseColor(stat.color)
+            } catch (e: Exception) {
+                // Ignore parsing errors
+            }
+        }
+        notifyDataSetChanged()
+    }
 
     fun submitList(newList: List<CounselItem>) {
         items.clear()
@@ -85,7 +99,7 @@ class CounselListAdapter(
             binding.tvStatusTag.text = item.statusName
 
             // 3. Duplicate Tag
-            binding.tvDuplicateTag.visibility = if (item.duplicateState == "Y") View.VISIBLE else View.GONE
+            binding.tvDuplicateTag.visibility = if (item.duplicateState == "Y" && item.statusName != "중복") View.VISIBLE else View.GONE
 
             // 4. Website and Option Menu
             binding.tvWebsite.text = item.webTitle
@@ -155,15 +169,7 @@ class CounselListAdapter(
         }
 
         private fun getStatusColor(statusName: String): Int {
-            return when (statusName) {
-                "신규접수", "접수" -> Color.parseColor("#4285F4") // 블루
-                "연락완료" -> Color.parseColor("#10B981")        // 그린
-                "상담예약" -> Color.parseColor("#8B5CF6")        // 퍼플
-                "상담진행중" -> Color.parseColor("#06B6D4")       // 하늘
-                "중복" -> Color.parseColor("#EF4444")           // 레드
-                "연락시도" -> Color.parseColor("#F59E0B")         // 오렌지
-                else -> Color.parseColor("#9CA3AF")             // 그레이
-            }
+            return statusColorMap[statusName] ?: Color.parseColor("#9CA3AF")
         }
 
         private fun formatDateTime(isoString: String?): String? {

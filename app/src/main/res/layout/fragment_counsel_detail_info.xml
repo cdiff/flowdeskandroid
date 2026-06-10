@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <!-- 1. 유입 정보 (UTM) 카드 -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardUseCompatPadding="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="유입 정보 (UTM)"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#0F172A"
+                android:layout_marginBottom="16dp" />
+
+            <!-- 소스 (Source) -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="소스 (Source)"
+                android:layout_marginBottom="12dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxStrokeColor="#4285F4"
+                app:hintTextColor="#4285F4">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_utm_source"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="#1E293B"
+                    android:inputType="text"
+                    tools:text="naver" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 매체 (Medium) -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="매체 (Medium)"
+                android:layout_marginBottom="12dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxStrokeColor="#4285F4"
+                app:hintTextColor="#4285F4">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_utm_medium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="#1E293B"
+                    android:inputType="text"
+                    tools:text="cpc" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 캠페인 (Campaign) -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="캠페인 (Campaign)"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxStrokeColor="#4285F4"
+                app:hintTextColor="#4285F4">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_utm_campaign"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="#1E293B"
+                    android:inputType="text"
+                    tools:text="march_ad" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- 2. 예약 정보 카드 -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardUseCompatPadding="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="예약 정보"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#0F172A"
+                android:layout_marginBottom="16dp" />
+
+            <!-- 예약 일시 -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="예약 일시"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxStrokeColor="#4285F4"
+                app:hintTextColor="#4285F4"
+                app:endIconMode="custom"
+                app:endIconDrawable="@android:drawable/ic_menu_my_calendar"
+                app:endIconTint="#64748B">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_reserve_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="#1E293B"
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="true"
+                    tools:text="2026-04-14 23:00:00" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- 3. 수정 완료 버튼 -->
+    <TextView
+        android:id="@+id/btn_save_info"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_rect_rounded_blue"
+        android:gravity="center"
+        android:text="수정 완료"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:clickable="true"
+        android:focusable="true" />
+
+</LinearLayout>

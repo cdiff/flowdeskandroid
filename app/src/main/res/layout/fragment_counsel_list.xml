@@ -25,8 +25,6 @@
                 android:layout_height="wrap_content"
                 android:background="#F3F4F6"
                 android:orientation="vertical"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
                 android:paddingTop="32dp"
                 android:paddingBottom="0dp">
 
@@ -38,6 +36,8 @@
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="#111827"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
                     android:layout_marginBottom="4dp" />
 
                 <!-- 설명 -->
@@ -46,18 +46,18 @@
                     android:layout_height="wrap_content"
                     android:text="인입된 고객 상담 신청 내역을 관리하고 배정합니다."
                     android:textSize="13sp"
+                    android:layout_marginBottom="32dp"
                     android:textColor="@color/gray_text"
-                    android:layout_marginBottom="24dp" />
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="32dp" />
 
-                <!-- 상태 써클 탭 컨테이너 (바닥 경계면에 밀착 배치) -->
+                <!-- 상태 써클 탭 컨테이너 (양옆 공백 없이 화면 가로로 꽉 차게, 바탕색 더 어둡게) -->
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layout_circle_tabs_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="0dp"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="0dp"
-                    android:clipChildren="true"
-                    android:clipToPadding="true">
+                    android:paddingBottom="0dp">
 
                     <!-- 1. 전체 요약 탭 라벨 (직접 배치) -->
                     <TextView
@@ -87,7 +87,7 @@
                         android:clipChildren="true"
                         app:layout_constraintTop_toBottomOf="@id/tv_status_total_label"
                         app:layout_constraintStart_toStartOf="parent"
-                        android:layout_marginStart="10dp">
+                        android:layout_marginStart="16dp">
 
                         <TextView
                             android:id="@+id/tv_status_total_count_badge"
@@ -119,7 +119,7 @@
                         android:layout_width="1.5dp"
                         android:layout_height="24dp"
                         android:background="#D1D5DB"
-                        android:layout_marginStart="20dp"
+                        android:layout_marginStart="16dp"
                         app:layout_constraintTop_toTopOf="@id/card_total_circle"
                         app:layout_constraintBottom_toBottomOf="@id/card_total_circle"
                         app:layout_constraintStart_toEndOf="@id/card_total_circle" />
@@ -131,8 +131,8 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:overScrollMode="never"
-                        android:clipToPadding="true"
-                        android:clipChildren="true"
+                        android:clipToPadding="false"
+                        android:paddingStart="6dp"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         tools:listitem="@layout/item_counsel_status_tab"
                         tools:itemCount="5"
@@ -189,132 +189,24 @@
                         android:inputType="text" />
                 </LinearLayout>
 
-                <!-- 필터 칩 영역 (가로 스크롤) -->
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scrollbars="none"
-                    android:overScrollMode="never"
-                    android:layout_marginBottom="20dp"
-                    android:clipToPadding="false">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingVertical="2dp">
-
-                        <!-- 기간 필터 칩 -->
-                        <LinearLayout
-                            android:id="@+id/btn_filter_date"
-                            android:layout_width="wrap_content"
-                            android:layout_height="32dp"
-                            android:background="@drawable/bg_chip_filter"
-                            android:gravity="center_vertical"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:orientation="horizontal"
-                            android:paddingHorizontal="12dp"
-                            android:layout_marginEnd="8dp">
-
-                            <ImageView
-                                android:layout_width="12dp"
-                                android:layout_height="12dp"
-                                android:src="@drawable/ic_calendar"
-                                app:tint="#475569"
-                                android:layout_marginEnd="6dp" />
-
-                            <TextView
-                                android:id="@+id/tv_filter_date"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="최근 7일"
-                                android:textSize="12sp"
-                                android:textColor="#475569" />
-
-                            <ImageView
-                                android:layout_width="14dp"
-                                android:layout_height="14dp"
-                                android:src="@drawable/ic_arrow_drop_down"
-                                app:tint="#475569"
-                                android:layout_marginStart="4dp" />
-                        </LinearLayout>
-
-                        <!-- 담당자 필터 칩 -->
-                        <LinearLayout
-                            android:id="@+id/btn_filter_manager"
-                            android:layout_width="wrap_content"
-                            android:layout_height="32dp"
-                            android:background="@drawable/bg_chip_filter"
-                            android:gravity="center_vertical"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:orientation="horizontal"
-                            android:paddingHorizontal="12dp"
-                            android:layout_marginEnd="8dp">
-
-                            <TextView
-                                android:id="@+id/tv_filter_manager"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="담당자: 전체"
-                                android:textSize="12sp"
-                                android:textColor="#475569" />
-
-                            <ImageView
-                                android:layout_width="14dp"
-                                android:layout_height="14dp"
-                                android:src="@drawable/ic_arrow_drop_down"
-                                app:tint="#475569"
-                                android:layout_marginStart="4dp" />
-                        </LinearLayout>
-
-                        <!-- 웹사이트 필터 칩 -->
-                        <LinearLayout
-                            android:id="@+id/btn_filter_website"
-                            android:layout_width="wrap_content"
-                            android:layout_height="32dp"
-                            android:background="@drawable/bg_chip_filter"
-                            android:gravity="center_vertical"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:orientation="horizontal"
-                            android:paddingHorizontal="12dp">
-
-                            <TextView
-                                android:id="@+id/tv_filter_website"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="웹사이트: 전체"
-                                android:textSize="12sp"
-                                android:textColor="#475569" />
-
-                            <ImageView
-                                android:layout_width="14dp"
-                                android:layout_height="14dp"
-                                android:src="@drawable/ic_arrow_drop_down"
-                                app:tint="#475569"
-                                android:layout_marginStart="4dp" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </HorizontalScrollView>
-
                 <!-- 리스트 정보 영역 -->
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
                     android:layout_marginBottom="10dp"
                     android:layout_marginHorizontal="4dp">
 
                     <TextView
+                        android:id="@+id/tv_list_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="상담 내역"
                         android:textSize="14sp"
                         android:textStyle="bold"
-                        android:textColor="#1E293B" />
+                        android:textColor="#1E293B"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
 
                     <TextView
                         android:id="@+id/tv_counsel_count"
@@ -323,8 +215,44 @@
                         android:layout_marginStart="6dp"
                         android:textSize="12sp"
                         android:textColor="@color/gray_text"
-                        tools:text="총 20건" />
-                </LinearLayout>
+                        tools:text="총 20건"
+                        app:layout_constraintTop_toTopOf="@id/tv_list_title"
+                        app:layout_constraintBottom_toBottomOf="@id/tv_list_title"
+                        app:layout_constraintStart_toEndOf="@id/tv_list_title" />
+
+                    <!-- 필터 버튼 영역 (아이콘 + 활성 점 뱃지) -->
+                    <FrameLayout
+                        android:id="@+id/btn_filter_dialog"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
+
+                        <ImageView
+                            android:id="@+id/iv_filter_icon"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_filter"
+                            app:tint="#475569" />
+
+                        <!-- 활성 필터 점 (필터가 걸려있을 때 보임) -->
+                        <View
+                            android:id="@+id/view_filter_active_dot"
+                            android:layout_width="6dp"
+                            android:layout_height="6dp"
+                            android:layout_gravity="top|end"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginEnd="5dp"
+                            android:background="@drawable/bg_circle_blue"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
+                    </FrameLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <!-- 상담 목록 카드 리사이클러뷰 컨테이너 -->
                 <FrameLayout

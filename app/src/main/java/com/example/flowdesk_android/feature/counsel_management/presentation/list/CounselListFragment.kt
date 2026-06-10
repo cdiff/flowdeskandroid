@@ -51,21 +51,13 @@ class CounselListFragment : Fragment() {
     private lateinit var tvStatusTotalCountBadge: TextView
     private lateinit var rvStatusTabs: RecyclerView
     private lateinit var etSearch: EditText
-    private lateinit var btnFilterDate: View
-    private lateinit var tvFilterDate: TextView
-    private lateinit var btnFilterManager: View
-    private lateinit var tvFilterManager: TextView
-    private lateinit var btnFilterWebsite: View
-    private lateinit var tvFilterWebsite: TextView
+    private lateinit var btnFilterDialog: View
+    private lateinit var viewFilterActiveDot: View
     private lateinit var tvCounselCount: TextView
     private lateinit var rvCounsels: RecyclerView
     private lateinit var progressBar: ProgressBar
     private lateinit var llEmpty: View
     private lateinit var nestedScrollView: NestedScrollView
-
-    // Dynamic Lists for Popup Filters
-    private val employeeList = mutableListOf<EmployeeStat>()
-    private val websiteList = mutableListOf<TopWebsite>()
 
     // Search Job
     private var searchJob: Job? = null
@@ -92,12 +84,8 @@ class CounselListFragment : Fragment() {
         tvStatusTotalCountBadge = view.findViewById(R.id.tv_status_total_count_badge)
         rvStatusTabs = view.findViewById(R.id.rv_status_tabs)
         etSearch = view.findViewById(R.id.et_search)
-        btnFilterDate = view.findViewById(R.id.btn_filter_date)
-        tvFilterDate = view.findViewById(R.id.tv_filter_date)
-        btnFilterManager = view.findViewById(R.id.btn_filter_manager)
-        tvFilterManager = view.findViewById(R.id.tv_filter_manager)
-        btnFilterWebsite = view.findViewById(R.id.btn_filter_website)
-        tvFilterWebsite = view.findViewById(R.id.tv_filter_website)
+        btnFilterDialog = view.findViewById(R.id.btn_filter_dialog)
+        viewFilterActiveDot = view.findViewById(R.id.view_filter_active_dot)
         tvCounselCount = view.findViewById(R.id.tv_counsel_count)
         rvCounsels = view.findViewById(R.id.rv_counsels)
         progressBar = view.findViewById(R.id.progress_bar)
@@ -164,19 +152,10 @@ class CounselListFragment : Fragment() {
             }
         })
 
-        // Date Filter menu click
-        btnFilterDate.setOnClickListener { view ->
-            showDateFilterMenu(view)
-        }
-
-        // Manager Filter menu click
-        btnFilterManager.setOnClickListener { view ->
-            showManagerFilterMenu(view)
-        }
-
-        // Website Filter menu click
-        btnFilterWebsite.setOnClickListener { view ->
-            showWebsiteFilterMenu(view)
+        // Open Filter Bottom Sheet Click
+        btnFilterDialog.setOnClickListener {
+            val filterBottomSheet = CounselFilterBottomSheetFragment()
+            filterBottomSheet.show(childFragmentManager, "CounselFilterBottomSheet")
         }
     }
 
@@ -201,109 +180,6 @@ class CounselListFragment : Fragment() {
         popup.menu.add("삭제")
         popup.setOnMenuItemClickListener { menuItem ->
             Toast.makeText(requireContext(), "${menuItem.title} - 준비 중인 기능입니다.", Toast.LENGTH_SHORT).show()
-            true
-        }
-        popup.show()
-    }
-
-    private fun showDateFilterMenu(anchorView: View) {
-        val popup = PopupMenu(requireContext(), anchorView)
-        popup.menu.add(0, 1, 0, "전체 기간")
-        popup.menu.add(0, 2, 0, "오늘")
-        popup.menu.add(0, 3, 0, "최근 7일")
-        popup.menu.add(0, 4, 0, "직접 선택")
-        popup.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                1 -> {
-                    tvFilterDate.text = "전체 기간"
-                    viewModel.updateDateFilter(null, null)
-                }
-                2 -> {
-                    val today = LocalDate.now().format(dateFormatter)
-                    tvFilterDate.text = "오늘"
-                    viewModel.updateDateFilter(today, today)
-                }
-                3 -> {
-                    val start = LocalDate.now().minusDays(7).format(dateFormatter)
-                    val end = LocalDate.now().format(dateFormatter)
-                    tvFilterDate.text = "최근 7일"
-                    viewModel.updateDateFilter(start, end)
-                }
-                4 -> {
-                    showCustomDatePickerFlow()
-                }
-            }
-            true
-        }
-        popup.show()
-    }
-
-    private fun showCustomDatePickerFlow() {
-        val now = LocalDate.now()
-        DatePickerDialog(
-            requireContext(),
-            { _, year, month, dayOfMonth ->
-                val startDate = LocalDate.of(year, month + 1, dayOfMonth)
-                DatePickerDialog(
-                    requireContext(),
-                    { _, endYear, endMonth, endDayOfMonth ->
-                        val endDate = LocalDate.of(endYear, endMonth + 1, endDayOfMonth)
-                        if (startDate.isAfter(endDate)) {
-                            Toast.makeText(requireContext(), "시작일은 종료일보다 이전이어야 합니다.", Toast.LENGTH_SHORT).show()
-                        } else {
-                            val startStr = startDate.format(dateFormatter)
-                            val endStr = endDate.format(dateFormatter)
-                            tvFilterDate.text = "${startDate.format(displayFormatter)} ~ ${endDate.format(displayFormatter)}"
-                            viewModel.updateDateFilter(startStr, endStr)
-                        }
-                    },
-                    now.year, now.monthValue - 1, now.dayOfMonth
-                ).apply {
-                    setTitle("종료일 선택")
-                    show()
-                }
-            },
-            now.year, now.monthValue - 1, now.dayOfMonth
-        ).apply {
-            setTitle("시작일 선택")
-            show()
-        }
-    }
-
-    private fun showManagerFilterMenu(anchorView: View) {
-        val popup = PopupMenu(requireContext(), anchorView)
-        popup.menu.add(0, 0, 0, "담당자: 전체")
-        employeeList.forEachIndexed { index, emp ->
-            popup.menu.add(0, emp.empSeq, index + 1, emp.empName)
-        }
-        popup.setOnMenuItemClickListener { menuItem ->
-            if (menuItem.itemId == 0) {
-                tvFilterManager.text = "담당자: 전체"
-                viewModel.updateManagerFilter(null)
-            } else {
-                tvFilterManager.text = "담당자: ${menuItem.title}"
-                viewModel.updateManagerFilter(menuItem.itemId)
-            }
-            true
-        }
-        popup.show()
-    }
-
-    private fun showWebsiteFilterMenu(anchorView: View) {
-        val popup = PopupMenu(requireContext(), anchorView)
-        popup.menu.add(0, 0, 0, "웹사이트: 전체")
-        websiteList.forEachIndexed { index, web ->
-            popup.menu.add(0, index + 1, index + 1, web.webTitle)
-        }
-        popup.setOnMenuItemClickListener { menuItem ->
-            if (menuItem.itemId == 0) {
-                tvFilterWebsite.text = "웹사이트: 전체"
-                viewModel.updateWebsiteFilter(null)
-            } else {
-                val selectedWeb = websiteList[menuItem.itemId - 1]
-                tvFilterWebsite.text = "웹사이트: ${selectedWeb.webTitle}"
-                viewModel.updateWebsiteFilter(selectedWeb.webCode)
-            }
             true
         }
         popup.show()
@@ -346,24 +222,20 @@ class CounselListFragment : Fragment() {
                 launch {
                     viewModel.statusCounts.collectLatest { list ->
                         statusAdapter.submitList(list)
+                        counselAdapter.setStatusColors(list)
                         val totalSum = list.sumOf { it.count }
                         tvStatusTotalCountBadge.text = totalSum.toString()
                     }
                 }
 
-                // Observe Manager List to refresh dropdown menu options
+                // Observe Filter State to update active badge dot
                 launch {
-                    viewModel.employeeList.collectLatest { list ->
-                        employeeList.clear()
-                        employeeList.addAll(list)
-                    }
-                }
-
-                // Observe Website List to refresh dropdown menu options
-                launch {
-                    viewModel.websiteList.collectLatest { list ->
-                        websiteList.clear()
-                        websiteList.addAll(list)
+                    viewModel.filterState.collectLatest { filter ->
+                        val isAnyFilterActive = filter.startDate != null ||
+                                filter.endDate != null ||
+                                filter.empSeq != null ||
+                                filter.webCode != null
+                        viewFilterActiveDot.visibility = if (isAnyFilterActive) View.VISIBLE else View.GONE
                     }
                 }
             }

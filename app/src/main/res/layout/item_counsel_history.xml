@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="16dp">
+
+    <!-- 1. 타임라인 수직 선 -->
+    <View
+        android:id="@+id/v_timeline_line"
+        android:layout_width="2dp"
+        android:layout_height="0dp"
+        android:background="#E2E8F0"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="24dp" />
+
+    <!-- 2. 타임라인 도트 (CardView를 이용한 드로어블 없는 원형 뷰) -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv_timeline_dot"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        app:cardCornerRadius="6dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="#4285F4"
+        app:layout_constraintTop_toTopOf="@id/tv_history_title"
+        app:layout_constraintBottom_toBottomOf="@id/tv_history_title"
+        app:layout_constraintStart_toStartOf="@id/v_timeline_line"
+        app:layout_constraintEnd_toEndOf="@id/v_timeline_line" />
+
+    <!-- 3. 변경 상세 정보 -->
+    <TextView
+        android:id="@+id/tv_history_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="16dp"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#1E293B"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/cv_timeline_dot"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="상태 변경: 신규접수 ➔ 상담예약" />
+
+    <TextView
+        android:id="@+id/tv_history_author"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textSize="12sp"
+        android:textColor="#64748B"
+        app:layout_constraintTop_toBottomOf="@id/tv_history_title"
+        app:layout_constraintStart_toStartOf="@id/tv_history_title"
+        app:layout_constraintEnd_toEndOf="@id/tv_history_title"
+        tools:text="변경자: 슈퍼 관리자" />
+
+    <TextView
+        android:id="@+id/tv_history_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textSize="11sp"
+        android:textColor="#94A3B8"
+        app:layout_constraintTop_toBottomOf="@id/tv_history_author"
+        app:layout_constraintStart_toStartOf="@id/tv_history_title"
+        app:layout_constraintEnd_toEndOf="@id/tv_history_title"
+        tools:text="2026-06-07 14:48:53" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
