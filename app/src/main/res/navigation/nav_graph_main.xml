@@ -87,4 +87,15 @@
         android:name="com.example.flowdesk_android.feature.counsel_management.presentation.dashboard.CounselDashboardFragment"
         android:label="CounselDashboard"
         tools:layout="@layout/fragment_counsel_dashboard" />
+
+    <fragment
+        android:id="@+id/counselDetailFragment"
+        android:name="com.example.flowdesk_android.feature.counsel_management.presentation.detail.CounselDetailFragment"
+        android:label="CounselDetail"
+        tools:layout="@layout/fragment_counsel_detail">
+        <argument
+            android:name="counselSeq"
+            app:argType="integer" />
+    </fragment>
+
 </navigation>

@@ -151,6 +151,93 @@
 
     </androidx.cardview.widget.CardView>
 
+    <!-- 2-1. 상담 요약 메모 카드 -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardUseCompatPadding="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="상담 요약 메모"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#0F172A"
+                android:layout_marginBottom="16dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="요약 메모"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxStrokeColor="#4285F4"
+                app:hintTextColor="#4285F4">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_counsel_memo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="#1E293B"
+                    android:inputType="textMultiLine"
+                    android:gravity="top|start"
+                    android:minLines="3" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- 2-2. 추가 정보 (동적 필드) 카드 -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_dynamic_fields"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardUseCompatPadding="true"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="추가 정보"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#0F172A"
+                android:layout_marginBottom="16dp" />
+
+            <LinearLayout
+                android:id="@+id/ll_dynamic_fields_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
     <!-- 3. 수정 완료 버튼 -->
     <TextView
         android:id="@+id/btn_save_info"

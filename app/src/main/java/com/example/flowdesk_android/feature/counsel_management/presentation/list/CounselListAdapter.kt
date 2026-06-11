@@ -20,7 +20,8 @@ import com.example.flowdesk_android.feature.counsel_management.domain.model.Coun
 
 class CounselListAdapter(
     private val onCopyClick: (String) -> Unit,
-    private val onOptionsClick: (CounselItem, View) -> Unit
+    private val onOptionsClick: (CounselItem, View) -> Unit,
+    private val onItemClick: (CounselItem) -> Unit = {}
 ) : RecyclerView.Adapter<CounselListAdapter.CounselViewHolder>() {
 
     private val items = mutableListOf<CounselItem>()
@@ -76,7 +77,8 @@ class CounselListAdapter(
         fun bind(item: CounselItem) {
             val context = itemView.context
 
-            // 1. Checkbox bind
+            // 0. 카드 전체 클릭 → 상세 화면 이동
+            itemView.setOnClickListener { onItemClick(item) }
             binding.cbSelect.setOnCheckedChangeListener(null)
             binding.cbSelect.isChecked = checkedItems.contains(item.counselSeq)
             binding.cbSelect.setOnCheckedChangeListener { _, isChecked ->

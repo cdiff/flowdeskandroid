@@ -36,6 +36,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import androidx.navigation.fragment.findNavController
 
 @AndroidEntryPoint
 class CounselListFragment : Fragment() {
@@ -116,6 +117,12 @@ class CounselListFragment : Fragment() {
             },
             onOptionsClick = { item, anchorView ->
                 showItemOptionsMenu(item, anchorView)
+            },
+            onItemClick = { item ->
+                val bundle = android.os.Bundle().apply {
+                    putInt("counselSeq", item.counselSeq)
+                }
+                findNavController().navigate(R.id.counselDetailFragment, bundle)
             }
         )
         rvCounsels.layoutManager = LinearLayoutManager(requireContext())
