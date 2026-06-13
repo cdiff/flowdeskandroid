@@ -7,7 +7,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,8 +20,6 @@ import com.example.flowdesk_android.R
 import com.example.flowdesk_android.feature.counsel_management.data.dto.CounselUpdateRequest
 import com.example.flowdesk_android.feature.counsel_management.data.dto.FieldValueRequest
 import com.example.flowdesk_android.feature.counsel_management.domain.model.CounselFieldValue
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -33,11 +33,11 @@ class CounselDetailInfoFragment : Fragment() {
     // 부모 Fragment(CounselDetailFragment)와 같은 ViewModel 공유
     private val viewModel: CounselDetailViewModel by viewModels({ requireParentFragment() })
 
-    private lateinit var etUtmSource: TextInputEditText
-    private lateinit var etUtmMedium: TextInputEditText
-    private lateinit var etUtmCampaign: TextInputEditText
-    private lateinit var etReserveTime: TextInputEditText
-    private lateinit var etCounselMemo: TextInputEditText
+    private lateinit var etUtmSource: EditText
+    private lateinit var etUtmMedium: EditText
+    private lateinit var etUtmCampaign: EditText
+    private lateinit var etReserveTime: EditText
+    private lateinit var etCounselMemo: EditText
     private lateinit var cardDynamicFields: View
     private lateinit var llDynamicFieldsContainer: LinearLayout
     private lateinit var btnSave: View
@@ -124,8 +124,8 @@ class CounselDetailInfoFragment : Fragment() {
             // 동적 필드 정보 수집
             val dynamicFieldValues = mutableListOf<FieldValueRequest>()
             for (i in 0 until llDynamicFieldsContainer.childCount) {
-                val textInputLayout = llDynamicFieldsContainer.getChildAt(i) as? TextInputLayout ?: continue
-                val editText = textInputLayout.editText ?: continue
+                val container = llDynamicFieldsContainer.getChildAt(i) as? LinearLayout ?: continue
+                val editText = container.getChildAt(1) as? EditText ?: continue
                 val tag = editText.tag as? FieldTag ?: continue
                 val rawVal = editText.text?.toString()?.trim()
 
@@ -169,23 +169,35 @@ class CounselDetailInfoFragment : Fragment() {
         val margin12 = (12 * density).toInt()
 
         fields.forEach { field ->
-            val textInputLayout = TextInputLayout(context, null, com.google.android.material.R.style.Widget_MaterialComponents_TextInputLayout_OutlinedBox).apply {
+            val fieldContainer = LinearLayout(context).apply {
+                orientation = LinearLayout.VERTICAL
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 ).apply {
                     setMargins(0, 0, 0, margin12)
                 }
-                hint = field.label
-                boxStrokeColor = Color.parseColor("#4285F4")
-                setHintTextColor(android.content.res.ColorStateList.valueOf(Color.parseColor("#4285F4")))
             }
 
-            val textInputEditText = TextInputEditText(context).apply {
+            val labelView = TextView(context).apply {
                 layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 )
+                text = field.label
+                textSize = 13f
+                setTextColor(Color.parseColor("#334155"))
+                typeface = android.graphics.Typeface.DEFAULT_BOLD
+                setPadding((4 * density).toInt(), 0, 0, (6 * density).toInt())
+            }
+
+            val editTextView = EditText(context).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    (40 * density).toInt()
+                )
+                setBackgroundResource(R.drawable.bg_edit_text)
+                setPadding((12 * density).toInt(), 0, (12 * density).toInt(), 0)
                 textSize = 14f
                 setTextColor(Color.parseColor("#1E293B"))
                 tag = FieldTag(field.fieldId, field.fieldType)
@@ -207,6 +219,13 @@ class CounselDetailInfoFragment : Fragment() {
                         inputType = android.text.InputType.TYPE_NULL
                         isFocusable = false
                         isClickable = true
+                        val calendarDrawable = androidx.core.content.ContextCompat.getDrawable(context, R.drawable.ic_calendar)?.mutate()
+                        if (calendarDrawable != null) {
+                            val sizePx = (18 * density).toInt()
+                            calendarDrawable.setBounds(0, 0, sizePx, sizePx)
+                            androidx.core.graphics.drawable.DrawableCompat.setTint(calendarDrawable, Color.parseColor("#94A3B8"))
+                            setCompoundDrawables(null, null, calendarDrawable, null)
+                        }
                         setOnClickListener {
                             val cal = Calendar.getInstance()
                             DatePickerDialog(context, { _, year, month, day ->
@@ -219,6 +238,13 @@ class CounselDetailInfoFragment : Fragment() {
                         inputType = android.text.InputType.TYPE_NULL
                         isFocusable = false
                         isClickable = true
+                        val calendarDrawable = androidx.core.content.ContextCompat.getDrawable(context, R.drawable.ic_calendar)?.mutate()
+                        if (calendarDrawable != null) {
+                            val sizePx = (18 * density).toInt()
+                            calendarDrawable.setBounds(0, 0, sizePx, sizePx)
+                            androidx.core.graphics.drawable.DrawableCompat.setTint(calendarDrawable, Color.parseColor("#94A3B8"))
+                            setCompoundDrawables(null, null, calendarDrawable, null)
+                        }
                         setOnClickListener {
                             val cal = Calendar.getInstance()
                             DatePickerDialog(context, { _, year, month, day ->
@@ -235,8 +261,9 @@ class CounselDetailInfoFragment : Fragment() {
                 }
             }
 
-            textInputLayout.addView(textInputEditText)
-            llDynamicFieldsContainer.addView(textInputLayout)
+            fieldContainer.addView(labelView)
+            fieldContainer.addView(editTextView)
+            llDynamicFieldsContainer.addView(fieldContainer)
         }
     }
 

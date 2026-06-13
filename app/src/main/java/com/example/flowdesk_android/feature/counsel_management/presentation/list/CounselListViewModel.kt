@@ -59,7 +59,7 @@ class CounselListViewModel @Inject constructor(
     private var isPagingLoading = false
 
     init {
-        refreshAll()
+        // refreshAll()은 Fragment의 onViewCreated에서 호출하여 뷰가 그려질 때마다 최신화합니다.
     }
 
     fun refreshAll() {

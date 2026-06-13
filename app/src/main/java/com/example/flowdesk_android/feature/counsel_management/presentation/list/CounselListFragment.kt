@@ -78,6 +78,9 @@ class CounselListFragment : Fragment() {
         setupAdapters()
         setupListeners()
         observeState()
+        
+        // 상세화면 등에서 상태 변경 후 목록으로 복귀할 때 데이터를 갱신하기 위해 새로고침 수행
+        viewModel.refreshAll()
     }
 
     private fun bindViews(view: View) {

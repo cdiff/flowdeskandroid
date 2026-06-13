@@ -29,7 +29,7 @@ interface CounselRepository {
 
     suspend fun updateCounsel(id: Int, request: CounselUpdateRequest): Result<CounselDetail>
 
-    suspend fun updateCounselStatus(id: Int, request: CounselStatusUpdateRequest): Result<CounselDetail>
+    suspend fun updateCounselStatus(id: Int, request: CounselStatusUpdateRequest): Result<Unit>
 
     suspend fun addCounselMemo(id: Int, memoText: String): Result<CounselMemo>
 

@@ -25,6 +25,7 @@ class CounselDetailMemoFragment : Fragment() {
     private lateinit var rvMemos: RecyclerView
     private lateinit var etMemoInput: EditText
     private lateinit var btnSendMemo: View
+    private lateinit var llEmptyMemo: View
 
     private val memoAdapter = CounselMemoAdapter()
 
@@ -39,6 +40,7 @@ class CounselDetailMemoFragment : Fragment() {
         rvMemos = view.findViewById(R.id.rv_memos)
         etMemoInput = view.findViewById(R.id.et_memo_input)
         btnSendMemo = view.findViewById(R.id.btn_send_memo)
+        llEmptyMemo = view.findViewById(R.id.ll_empty_memo)
 
         rvMemos.layoutManager = LinearLayoutManager(requireContext())
         rvMemos.adapter = memoAdapter
@@ -53,6 +55,13 @@ class CounselDetailMemoFragment : Fragment() {
                 launch {
                     viewModel.memoList.collect { list ->
                         memoAdapter.submitList(list)
+                        if (list.isEmpty()) {
+                            llEmptyMemo.visibility = View.VISIBLE
+                            rvMemos.visibility = View.GONE
+                        } else {
+                            llEmptyMemo.visibility = View.GONE
+                            rvMemos.visibility = View.VISIBLE
+                        }
                     }
                 }
 

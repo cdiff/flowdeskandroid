@@ -81,13 +81,12 @@ class CounselRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateCounselStatus(id: Int, request: CounselStatusUpdateRequest): Result<CounselDetail> = withContext(Dispatchers.IO) {
+    override suspend fun updateCounselStatus(id: Int, request: CounselStatusUpdateRequest): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
             val response = api.updateCounselStatus(id, request)
-            if (response.isSuccessful) {
-                response.body()?.toDomain() ?: throw Exception("응답 바디 없음")
-            } else {
-                throw Exception("상담 상태 변경 실패 (${response.code()})")
+            if (!response.isSuccessful) {
+                val errorMsg = response.errorBody()?.string()?.take(200) ?: "없음"
+                throw Exception("상태 변경 실패 (${response.code()}): $errorMsg")
             }
         }
     }

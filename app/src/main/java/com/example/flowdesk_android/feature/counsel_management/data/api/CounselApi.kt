@@ -54,7 +54,7 @@ interface CounselApi {
     suspend fun updateCounselStatus(
         @Path("id") id: Int,
         @Body request: CounselStatusUpdateRequest
-    ): Response<CounselDetailResponse>
+    ): Response<Unit>
 
     @POST("counsels/{id}/memo")
     suspend fun addCounselMemo(

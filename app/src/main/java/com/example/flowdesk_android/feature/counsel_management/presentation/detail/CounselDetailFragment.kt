@@ -1,21 +1,22 @@
 package com.example.flowdesk_android.feature.counsel_management.presentation.detail
 
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.Spinner
+import android.widget.ListPopupWindow
 import android.widget.TextView
 import android.widget.Toast
+import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.feature.counsel_management.domain.model.CounselDetail
 import com.example.flowdesk_android.feature.counsel_management.domain.model.CounselStatusStat
@@ -31,7 +32,7 @@ class CounselDetailFragment : Fragment() {
 
     // Views
     private lateinit var btnBack: View
-    private lateinit var btnClose: View
+
     private lateinit var tvName: TextView
     private lateinit var tvStatusTag: TextView
     private lateinit var tvPhone: TextView
@@ -40,15 +41,30 @@ class CounselDetailFragment : Fragment() {
     private lateinit var tvManager: TextView
     private lateinit var tvCreatedAt: TextView
     private lateinit var tvUpdatedAt: TextView
-    private lateinit var spinnerStatus: Spinner
-    private lateinit var spinnerManager: Spinner
+
+    // 커스텀 스피너 버튼 뷰
+    private lateinit var spinnerStatusAnchor: View
+    private lateinit var tvStatusSelected: TextView
+    private lateinit var vStatusDot: CardView
+
+    private lateinit var spinnerManagerAnchor: View
+    private lateinit var tvManagerSelected: TextView
+
     private lateinit var tabLayout: TabLayout
     private lateinit var tabContentContainer: ViewGroup
+
+    // 팝업 윈도우
+    private var statusPopup: ListPopupWindow? = null
+    private var managerPopup: ListPopupWindow? = null
 
     // Spinner data
     private var statusList: List<CounselStatusStat> = emptyList()
     private var employeeList: List<EmployeeStat> = emptyList()
     private var currentDetail: CounselDetail? = null
+
+    // 현재 선택된 인덱스
+    private var selectedStatusIndex: Int = 0
+    private var selectedManagerIndex: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,6 +74,15 @@ class CounselDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bindViews(view)
+
+        // Handle window insets for status bar
+        val toolbarLayout = view.findViewById<View>(R.id.layout_toolbar)
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(toolbarLayout) { v, insets ->
+            val systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
+            v.setPadding(v.paddingLeft, systemBars.top, v.paddingRight, v.paddingBottom)
+            insets
+        }
+
         setupTabLayout()
         setupListeners()
         observeViewModel()
@@ -68,7 +93,7 @@ class CounselDetailFragment : Fragment() {
 
     private fun bindViews(view: View) {
         btnBack = view.findViewById(R.id.btn_back)
-        btnClose = view.findViewById(R.id.btn_close)
+
         tvName = view.findViewById(R.id.tv_detail_name)
         tvStatusTag = view.findViewById(R.id.tv_detail_status_tag)
         tvPhone = view.findViewById(R.id.tv_detail_phone)
@@ -77,14 +102,20 @@ class CounselDetailFragment : Fragment() {
         tvManager = view.findViewById(R.id.tv_detail_manager)
         tvCreatedAt = view.findViewById(R.id.tv_detail_created_at)
         tvUpdatedAt = view.findViewById(R.id.tv_detail_updated_at)
-        spinnerStatus = view.findViewById(R.id.spinner_status)
-        spinnerManager = view.findViewById(R.id.spinner_manager)
+
+        // 커스텀 스피너 버튼 뷰 바인딩
+        spinnerStatusAnchor = view.findViewById(R.id.spinner_status)
+        tvStatusSelected = view.findViewById(R.id.tv_status_selected)
+        vStatusDot = view.findViewById(R.id.v_status_dot)
+
+        spinnerManagerAnchor = view.findViewById(R.id.spinner_manager)
+        tvManagerSelected = view.findViewById(R.id.tv_manager_selected)
+
         tabLayout = view.findViewById(R.id.tab_layout)
         tabContentContainer = view.findViewById(R.id.tab_content_container)
     }
 
     private fun setupTabLayout() {
-        // 초기 탭: 기본 정보
         replaceTabContent(0)
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -112,20 +143,117 @@ class CounselDetailFragment : Fragment() {
         btnBack.setOnClickListener {
             findNavController().navigateUp()
         }
-        btnClose.setOnClickListener {
-            findNavController().navigateUp()
+
+        spinnerStatusAnchor.setOnClickListener {
+            statusPopup?.let { if (it.isShowing) { it.dismiss(); return@setOnClickListener } }
+            showStatusPopup()
+        }
+
+        spinnerManagerAnchor.setOnClickListener {
+            managerPopup?.let { if (it.isShowing) { it.dismiss(); return@setOnClickListener } }
+            showManagerPopup()
         }
     }
+
+    // ── 상태 변경 팝업 ──────────────────────────────────────────────────────────
+
+    private fun showStatusPopup() {
+        if (statusList.isEmpty()) return
+
+        val popup = ListPopupWindow(requireContext())
+        popup.anchorView = spinnerStatusAnchor
+
+        // ① 너비 1:1 동기화
+        popup.width = spinnerStatusAnchor.width
+        // ② 무조건 아래 방향으로만
+        popup.isModal = true
+        popup.setDropDownGravity(android.view.Gravity.START)
+        // ③ 스피너와 겹치지 않는 정렬 — yOffset=0 이면 앵커 바로 밑에 붙음
+        popup.verticalOffset = 0
+        popup.horizontalOffset = 0
+
+        popup.setBackgroundDrawable(
+            androidx.core.content.ContextCompat.getDrawable(requireContext(), R.drawable.bg_spinner_popup)
+        )
+        popup.height = ListPopupWindow.WRAP_CONTENT
+
+        val adapter = StatusDropdownAdapter(requireContext(), statusList, selectedStatusIndex)
+        popup.setAdapter(adapter)
+
+        popup.setOnItemClickListener { _, _, position, _ ->
+            val selected = statusList.getOrNull(position) ?: return@setOnItemClickListener
+            val current = currentDetail ?: return@setOnItemClickListener
+            if (selected.counselStat != current.counselStat) {
+                // 서버 스펙상 counselResvDtm 필수 → 기존 값 유지하여 전달
+                viewModel.updateCounselStatus(selected.counselStat, current.counselResvDtm)
+            }
+            selectedStatusIndex = position
+            bindStatusButton(selected)
+            popup.dismiss()
+        }
+
+        popup.show()
+        // 팝업 ListView 에 클립 해제 (둥근 모서리 잘림 방지) + elevation 적용
+        popup.listView?.clipToOutline = false
+        popup.listView?.elevation = resources.displayMetrics.density * 8
+        statusPopup = popup
+    }
+
+    private fun showManagerPopup() {
+        val labels = mutableListOf("미배정") + employeeList.map { it.empName }
+        if (labels.isEmpty()) return
+
+        val popup = ListPopupWindow(requireContext())
+        popup.anchorView = spinnerManagerAnchor
+
+        // ① 너비 1:1 동기화
+        popup.width = spinnerManagerAnchor.width
+        // ② 무조건 아래 방향으로만
+        popup.isModal = true
+        popup.setDropDownGravity(android.view.Gravity.START)
+        // ③ 스피너와 겹치지 않는 정렬
+        popup.verticalOffset = 0
+        popup.horizontalOffset = 0
+
+        popup.setBackgroundDrawable(
+            androidx.core.content.ContextCompat.getDrawable(requireContext(), R.drawable.bg_spinner_popup)
+        )
+        popup.height = ListPopupWindow.WRAP_CONTENT
+
+        val adapter = ManagerDropdownAdapter(requireContext(), labels, selectedManagerIndex)
+        popup.setAdapter(adapter)
+
+        popup.setOnItemClickListener { _, _, position, _ ->
+            val empSeq = if (position == 0) null else employeeList.getOrNull(position - 1)?.empSeq
+            val current = currentDetail ?: return@setOnItemClickListener
+            if (empSeq != current.empSeq) {
+                viewModel.updateCounsel(
+                    com.example.flowdesk_android.feature.counsel_management.data.dto.CounselUpdateRequest(
+                        empSeq = empSeq
+                    )
+                )
+            }
+            selectedManagerIndex = position
+            tvManagerSelected.text = labels[position]
+            popup.dismiss()
+        }
+
+        popup.show()
+        popup.listView?.clipToOutline = false
+        popup.listView?.elevation = resources.displayMetrics.density * 8
+        managerPopup = popup
+    }
+
+    // ── ViewModel 관찰 ──────────────────────────────────────────────────────────
 
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
 
-                // 상세 데이터 관찰
                 launch {
                     viewModel.uiState.collect { state ->
                         when (state) {
-                            is CounselDetailUiState.Loading -> { /* 로딩 처리 (필요 시 ProgressBar 추가) */ }
+                            is CounselDetailUiState.Loading -> {}
                             is CounselDetailUiState.Success -> {
                                 currentDetail = state.detail
                                 bindDetail(state.detail)
@@ -137,23 +265,22 @@ class CounselDetailFragment : Fragment() {
                     }
                 }
 
-                // 담당자 목록 관찰
                 launch {
                     viewModel.employeeList.collect { employees ->
                         employeeList = employees
-                        setupManagerSpinner(employees)
+                        // 현재 선택된 담당자 표시 갱신
+                        currentDetail?.let { syncManagerButton(it.empSeq) }
                     }
                 }
 
-                // 상태 목록 관찰
                 launch {
                     viewModel.statusList.collect { statuses ->
                         statusList = statuses
-                        setupStatusSpinner(statuses)
+                        // 현재 선택된 상태 표시 갱신
+                        currentDetail?.let { syncStatusButton(it.counselStat) }
                     }
                 }
 
-                // 상태 변경 결과 관찰
                 launch {
                     viewModel.statusUpdateState.collect { state ->
                         when (state) {
@@ -173,6 +300,8 @@ class CounselDetailFragment : Fragment() {
         }
     }
 
+    // ── 상세 데이터 바인딩 ─────────────────────────────────────────────────────
+
     private fun bindDetail(detail: CounselDetail) {
         tvName.text = detail.name
         tvStatusTag.text = detail.statusName
@@ -183,62 +312,53 @@ class CounselDetailFragment : Fragment() {
         tvCreatedAt.text = "등록: ${formatDateTime(detail.regDtm)}"
         tvUpdatedAt.text = "수정: ${formatDateTime(detail.editDtm)}"
 
-        // 상태 Spinner 현재 선택값 동기화
-        syncStatusSpinnerSelection(detail.counselStat)
-
-        // 담당자 Spinner 현재 선택값 동기화
-        syncManagerSpinnerSelection(detail.empSeq)
+        syncStatusButton(detail.counselStat)
+        syncManagerButton(detail.empSeq)
     }
 
-    private fun setupStatusSpinner(statuses: List<CounselStatusStat>) {
-        val labels = statuses.map { it.statusName }
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, labels)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerStatus.adapter = adapter
-
-        // 현재 상태 선택
-        currentDetail?.let { syncStatusSpinnerSelection(it.counselStat) }
-
-        spinnerStatus.setOnItemSelectedListenerSafe { position ->
-            val selected = statuses.getOrNull(position) ?: return@setOnItemSelectedListenerSafe
-            val current = currentDetail ?: return@setOnItemSelectedListenerSafe
-            if (selected.counselStat != current.counselStat) {
-                viewModel.updateCounselStatus(selected.counselStat)
-            }
-        }
-    }
-
-    private fun setupManagerSpinner(employees: List<EmployeeStat>) {
-        val labels = mutableListOf("미배정") + employees.map { it.empName }
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, labels)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerManager.adapter = adapter
-
-        // 현재 담당자 선택
-        currentDetail?.let { syncManagerSpinnerSelection(it.empSeq) }
-
-        spinnerManager.setOnItemSelectedListenerSafe { position ->
-            val empSeq = if (position == 0) null else employees.getOrNull(position - 1)?.empSeq
-            val current = currentDetail ?: return@setOnItemSelectedListenerSafe
-            if (empSeq != current.empSeq) {
-                viewModel.updateCounsel(
-                    com.example.flowdesk_android.feature.counsel_management.data.dto.CounselUpdateRequest(
-                        empSeq = empSeq
-                    )
-                )
-            }
-        }
-    }
-
-    private fun syncStatusSpinnerSelection(counselStat: Int) {
+    private fun syncStatusButton(counselStat: Int) {
         val idx = statusList.indexOfFirst { it.counselStat == counselStat }
-        if (idx >= 0) spinnerStatus.setSelection(idx)
+        if (idx >= 0) {
+            selectedStatusIndex = idx
+            bindStatusButton(statusList[idx])
+        }
     }
 
-    private fun syncManagerSpinnerSelection(empSeq: Int?) {
+    private fun bindStatusButton(status: CounselStatusStat) {
+        tvStatusSelected.text = status.statusName
+        try {
+            vStatusDot.visibility = View.VISIBLE
+            vStatusDot.setCardBackgroundColor(Color.parseColor(status.color))
+        } catch (e: Exception) {
+            vStatusDot.visibility = View.GONE
+        }
+
+        try {
+            val statusColor = Color.parseColor(status.color)
+            val softBg = Color.argb(25, Color.red(statusColor), Color.green(statusColor), Color.blue(statusColor))
+            val badgeBg = GradientDrawable().apply {
+                setColor(softBg)
+                cornerRadius = 4.dpToPx(requireContext()).toFloat()
+            }
+            tvStatusTag.background = badgeBg
+            tvStatusTag.setTextColor(statusColor)
+            tvStatusTag.text = status.statusName
+        } catch (e: Exception) {
+            tvStatusTag.text = status.statusName
+            tvStatusTag.setTextColor(Color.parseColor("#8B5CF6"))
+        }
+    }
+
+    private fun Int.dpToPx(context: android.content.Context): Int {
+        return (this * context.resources.displayMetrics.density).toInt()
+    }
+
+    private fun syncManagerButton(empSeq: Int?) {
         val idx = if (empSeq == null) 0
         else employeeList.indexOfFirst { it.empSeq == empSeq }.let { if (it < 0) 0 else it + 1 }
-        spinnerManager.setSelection(idx)
+        selectedManagerIndex = idx
+        val labels = mutableListOf("미배정") + employeeList.map { it.empName }
+        tvManagerSelected.text = labels.getOrNull(idx) ?: "미배정"
     }
 
     private fun formatDateTime(iso: String?): String {
@@ -247,21 +367,81 @@ class CounselDetailFragment : Fragment() {
             "${iso.substring(0, 10)} ${iso.substring(11, 19)}"
         } catch (e: Exception) { iso }
     }
-}
 
-// ── Spinner 편의 확장 함수 (초기 onItemSelected 콜백 무시용) ────────────────────
+    // ── 드롭다운 어댑터 ────────────────────────────────────────────────────────
 
-private fun android.widget.Spinner.setOnItemSelectedListenerSafe(
-    onSelected: (Int) -> Unit
-) {
-    var initialized = false
-    this.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
-        override fun onItemSelected(
-            parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long
-        ) {
-            if (!initialized) { initialized = true; return }
-            onSelected(position)
+    inner class StatusDropdownAdapter(
+        context: android.content.Context,
+        private val items: List<CounselStatusStat>,
+        private val selectedIndex: Int
+    ) : ArrayAdapter<CounselStatusStat>(context, R.layout.item_spinner_dropdown, items) {
+
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            return getDropDownView(position, convertView, parent)
         }
-        override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
+
+        override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+            val view = convertView ?: LayoutInflater.from(context)
+                .inflate(R.layout.item_spinner_dropdown, parent, false)
+            val item = getItem(position) ?: return view
+            val tvText = view.findViewById<TextView>(android.R.id.text1)
+            val vDot = view.findViewById<CardView>(R.id.v_spinner_dot)
+            val layoutRoot = view.findViewById<View>(R.id.layout_dropdown_root)
+
+            tvText.text = item.statusName
+
+            try {
+                vDot.visibility = View.VISIBLE
+                vDot.setCardBackgroundColor(Color.parseColor(item.color))
+            } catch (e: Exception) {
+                vDot.visibility = View.GONE
+            }
+
+            val isSelected = position == selectedIndex
+            layoutRoot.isSelected = isSelected
+            if (isSelected) {
+                tvText.setTextColor(Color.parseColor("#1D4ED8"))
+                tvText.setTypeface(null, android.graphics.Typeface.BOLD)
+            } else {
+                tvText.setTextColor(Color.parseColor("#475569"))
+                tvText.setTypeface(null, android.graphics.Typeface.NORMAL)
+            }
+
+            return view
+        }
+    }
+
+    inner class ManagerDropdownAdapter(
+        context: android.content.Context,
+        private val items: List<String>,
+        private val selectedIndex: Int
+    ) : ArrayAdapter<String>(context, R.layout.item_spinner_dropdown, items) {
+
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            return getDropDownView(position, convertView, parent)
+        }
+
+        override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+            val view = convertView ?: LayoutInflater.from(context)
+                .inflate(R.layout.item_spinner_dropdown, parent, false)
+            val tvText = view.findViewById<TextView>(android.R.id.text1)
+            val vDot = view.findViewById<View>(R.id.v_spinner_dot)
+            val layoutRoot = view.findViewById<View>(R.id.layout_dropdown_root)
+
+            tvText.text = getItem(position)
+            vDot.visibility = View.GONE
+
+            val isSelected = position == selectedIndex
+            layoutRoot.isSelected = isSelected
+            if (isSelected) {
+                tvText.setTextColor(Color.parseColor("#1D4ED8"))
+                tvText.setTypeface(null, android.graphics.Typeface.BOLD)
+            } else {
+                tvText.setTextColor(Color.parseColor("#475569"))
+                tvText.setTypeface(null, android.graphics.Typeface.NORMAL)
+            }
+
+            return view
+        }
     }
 }

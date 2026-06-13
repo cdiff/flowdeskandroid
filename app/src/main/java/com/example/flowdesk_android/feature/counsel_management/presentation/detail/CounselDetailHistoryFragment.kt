@@ -41,8 +41,15 @@ class CounselDetailHistoryFragment : Fragment() {
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.logList.collect { list ->
-                    historyAdapter.submitList(list)
+                launch {
+                    viewModel.logList.collect { list ->
+                        historyAdapter.submitList(list)
+                    }
+                }
+                launch {
+                    viewModel.statusList.collect { statuses ->
+                        historyAdapter.setStatusColors(statuses)
+                    }
                 }
             }
         }

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:paddingVertical="8dp">
 
     <!-- 1. 유입 정보 (UTM) 카드 -->
     <androidx.cardview.widget.CardView
@@ -13,8 +13,7 @@
         android:layout_height="wrap_content"
         app:cardCornerRadius="12dp"
         app:cardElevation="0dp"
-        app:cardBackgroundColor="@android:color/white"
-        app:cardUseCompatPadding="true">
+        app:cardBackgroundColor="@android:color/white">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,66 +31,72 @@
                 android:layout_marginBottom="16dp" />
 
             <!-- 소스 (Source) -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="소스 (Source)"
-                android:layout_marginBottom="12dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                app:boxStrokeColor="#4285F4"
-                app:hintTextColor="#4285F4">
+                android:text="소스 (Source)"
+                android:textSize="13sp"
+                android:textColor="#334155"
+                android:textStyle="bold"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="6dp" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_utm_source"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:textColor="#1E293B"
-                    android:inputType="text"
-                    tools:text="naver" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+            <EditText
+                android:id="@+id/et_utm_source"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_edit_text"
+                android:paddingHorizontal="12dp"
+                android:textSize="14sp"
+                android:textColor="#1E293B"
+                android:inputType="text"
+                android:layout_marginBottom="16dp"
+                tools:text="naver" />
 
             <!-- 매체 (Medium) -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="매체 (Medium)"
-                android:layout_marginBottom="12dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                app:boxStrokeColor="#4285F4"
-                app:hintTextColor="#4285F4">
+                android:text="매체 (Medium)"
+                android:textSize="13sp"
+                android:textColor="#334155"
+                android:textStyle="bold"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="6dp" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_utm_medium"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:textColor="#1E293B"
-                    android:inputType="text"
-                    tools:text="cpc" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+            <EditText
+                android:id="@+id/et_utm_medium"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_edit_text"
+                android:paddingHorizontal="12dp"
+                android:textSize="14sp"
+                android:textColor="#1E293B"
+                android:inputType="text"
+                android:layout_marginBottom="16dp"
+                tools:text="cpc" />
 
             <!-- 캠페인 (Campaign) -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="캠페인 (Campaign)"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                app:boxStrokeColor="#4285F4"
-                app:hintTextColor="#4285F4">
+                android:text="캠페인 (Campaign)"
+                android:textSize="13sp"
+                android:textColor="#334155"
+                android:textStyle="bold"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="6dp" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_utm_campaign"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:textColor="#1E293B"
-                    android:inputType="text"
-                    tools:text="march_ad" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+            <EditText
+                android:id="@+id/et_utm_campaign"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_edit_text"
+                android:paddingHorizontal="12dp"
+                android:textSize="14sp"
+                android:textColor="#1E293B"
+                android:inputType="text"
+                tools:text="march_ad" />
 
         </LinearLayout>
 
@@ -104,8 +109,7 @@
         android:layout_marginTop="8dp"
         app:cardCornerRadius="12dp"
         app:cardElevation="0dp"
-        app:cardBackgroundColor="@android:color/white"
-        app:cardUseCompatPadding="true">
+        app:cardBackgroundColor="@android:color/white">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -123,21 +127,27 @@
                 android:layout_marginBottom="16dp" />
 
             <!-- 예약 일시 -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="예약 일시"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                app:boxStrokeColor="#4285F4"
-                app:hintTextColor="#4285F4"
-                app:endIconMode="custom"
-                app:endIconDrawable="@android:drawable/ic_menu_my_calendar"
-                app:endIconTint="#64748B">
+                android:text="예약 일시"
+                android:textSize="13sp"
+                android:textColor="#334155"
+                android:textStyle="bold"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="6dp" />
 
-                <com.google.android.material.textfield.TextInputEditText
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
                     android:id="@+id/et_reserve_time"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_edit_text"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="40dp"
                     android:textSize="14sp"
                     android:textColor="#1E293B"
                     android:inputType="none"
@@ -145,7 +155,16 @@
                     android:clickable="true"
                     tools:text="2026-04-14 23:00:00" />
 
-            </com.google.android.material.textfield.TextInputLayout>
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/ic_calendar"
+                    app:tint="#94A3B8"
+                    android:clickable="false"
+                    android:focusable="false" />
+            </FrameLayout>
 
         </LinearLayout>
 
@@ -158,8 +177,7 @@
         android:layout_marginTop="8dp"
         app:cardCornerRadius="12dp"
         app:cardElevation="0dp"
-        app:cardBackgroundColor="@android:color/white"
-        app:cardUseCompatPadding="true">
+        app:cardBackgroundColor="@android:color/white">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -176,25 +194,28 @@
                 android:textColor="#0F172A"
                 android:layout_marginBottom="16dp" />
 
-            <com.google.android.material.textfield.TextInputLayout
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="요약 메모"
+                android:textSize="13sp"
+                android:textColor="#334155"
+                android:textStyle="bold"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="6dp" />
+
+            <EditText
+                android:id="@+id/et_counsel_memo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="요약 메모"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                app:boxStrokeColor="#4285F4"
-                app:hintTextColor="#4285F4">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_counsel_memo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:textColor="#1E293B"
-                    android:inputType="textMultiLine"
-                    android:gravity="top|start"
-                    android:minLines="3" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+                android:minHeight="80dp"
+                android:background="@drawable/bg_edit_text"
+                android:padding="12dp"
+                android:textSize="14sp"
+                android:textColor="#1E293B"
+                android:inputType="textMultiLine"
+                android:gravity="top|start"
+                android:minLines="3" />
 
         </LinearLayout>
 
@@ -209,7 +230,6 @@
         app:cardCornerRadius="12dp"
         app:cardElevation="0dp"
         app:cardBackgroundColor="@android:color/white"
-        app:cardUseCompatPadding="true"
         android:visibility="gone"
         tools:visibility="visible">
 

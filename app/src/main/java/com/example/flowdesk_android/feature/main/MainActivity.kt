@@ -143,7 +143,14 @@ class MainActivity : AppCompatActivity() {
         }
         
         navController.addOnDestinationChangedListener { _, destination, arguments ->
-            if (destination.id == R.id.editProfileFragment || destination.id == R.id.changePasswordFragment) {
+            if (destination.id == R.id.editProfileFragment ||
+                destination.id == R.id.changePasswordFragment ||
+                destination.id == R.id.counselDetailFragment ||
+                destination.id == R.id.userDetailFragment ||
+                destination.id == R.id.roleDetailFragment ||
+                destination.id == R.id.tenantDetailFragment ||
+                destination.id == R.id.managePermissionsFragment
+            ) {
                 binding.bottomNavigation.visibility = android.view.View.GONE
                 binding.topBar.visibility = android.view.View.GONE
             } else {
