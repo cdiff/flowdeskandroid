@@ -14,13 +14,14 @@ import javax.inject.Inject
 sealed class LoginUiState {
     object Idle : LoginUiState()
     object Loading : LoginUiState()
-    data class Success(val user: AuthUser) : LoginUiState()
+    data class Success(val info: com.example.flowdesk_android.feature.auth.domain.model.AuthMeInfo) : LoginUiState()
     data class Error(val message: String) : LoginUiState()
 }
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val authSessionUseCase: AuthenticateSessionUseCase
+    private val authSessionUseCase: AuthenticateSessionUseCase,
+    private val authRepository: com.example.flowdesk_android.feature.auth.domain.repository.AuthRepository
 ) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
@@ -34,7 +35,14 @@ class LoginViewModel @Inject constructor(
                 .onSuccess {
                     val session = authSessionUseCase.sessionState.value
                     if (session is AuthSession.Active) {
-                        _uiState.value = LoginUiState.Success(session.user)
+                        // 로그인 성공 후 메뉴 권한 정보를 선조회
+                        authRepository.getMe()
+                            .onSuccess { info ->
+                                _uiState.value = LoginUiState.Success(info)
+                            }
+                            .onFailure { exception ->
+                                _uiState.value = LoginUiState.Error(exception.message ?: "권한 정보를 가져오는데 실패했습니다.")
+                            }
                     } else {
                         _uiState.value = LoginUiState.Error("세션 정보가 활성화되지 않았습니다.")
                     }

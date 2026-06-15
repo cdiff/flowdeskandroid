@@ -92,10 +92,13 @@ class LoginFragment : Fragment(R.layout.fragment_auth_login) {
                 binding.etUserId.isEnabled = true
                 binding.etPassword.isEnabled = true
 
-                val welcomeMsg = "환영합니다, ${state.user.name} (${state.user.corpName})님!"
+                val welcomeMsg = "환영합니다, ${state.info.user.name} (${state.info.user.corpName})님!"
                 Toast.makeText(requireContext(), welcomeMsg, Toast.LENGTH_LONG).show()
 
-                val intent = android.content.Intent(requireActivity(), com.example.flowdesk_android.feature.main.MainActivity::class.java)
+                val intent = android.content.Intent(requireActivity(), com.example.flowdesk_android.feature.main.MainActivity::class.java).apply {
+                    val jsonInfo = com.google.gson.Gson().toJson(state.info)
+                    putExtra("EXTRA_AUTH_ME_INFO", jsonInfo)
+                }
                 startActivity(intent)
                 requireActivity().finish()
             }

@@ -48,9 +48,45 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        observeViewModel()
         setupBottomNavigationListener()
         setupTopBarListeners()
+
+        // 1. 전달받은 인증 및 권한 데이터가 있는지 확인
+        val authMeInfoJson = intent.getStringExtra("EXTRA_AUTH_ME_INFO")
+        if (!authMeInfoJson.isNullOrEmpty()) {
+            try {
+                val authMeInfo = com.google.gson.Gson().fromJson(authMeInfoJson, com.example.flowdesk_android.feature.auth.domain.model.AuthMeInfo::class.java)
+                setupDynamicNavigation(authMeInfo)
+            } catch (e: Exception) {
+                observeViewModel()
+            }
+        } else {
+            // 2. 전달된 데이터가 없으면 기존 방식(비동기 호출 관찰)으로 폴백
+            observeViewModel()
+        }
+    }
+
+    private fun setupDynamicNavigation(info: com.example.flowdesk_android.feature.auth.domain.model.AuthMeInfo) {
+        val menuTree = info.menuTree ?: emptyList()
+        if (menuTree.isNotEmpty()) {
+            // 네비게이션 그래프 동적 설정
+            val navGraph = navController.navInflater.inflate(R.navigation.nav_graph_main)
+            val firstMenu = menuTree.sortedBy { it.order }.firstOrNull()
+            
+            val startDestId = when (firstMenu?.pageName) {
+                "super", "system_management" -> R.id.usersFragment
+                "counsel_management" -> R.id.counselDashboardFragment
+                else -> R.id.homeFragment
+            }
+            
+            navGraph.setStartDestination(startDestId)
+            navController.graph = navGraph
+            
+            // 하단 탭바 바인딩
+            setupBottomNavigation(menuTree)
+        } else {
+            observeViewModel()
+        }
     }
 
     private fun observeViewModel() {
@@ -59,6 +95,15 @@ class MainActivity : AppCompatActivity() {
                 viewModel.dashboardState.collect { state ->
                     when (state) {
                         is DashboardState.Success -> {
+                            val navGraph = navController.navInflater.inflate(R.navigation.nav_graph_main)
+                            val firstMenu = state.data.menuTree?.sortedBy { it.order }?.firstOrNull()
+                            val startDestId = when (firstMenu?.pageName) {
+                                "super", "system_management" -> R.id.usersFragment
+                                "counsel_management" -> R.id.counselDashboardFragment
+                                else -> R.id.homeFragment
+                            }
+                            navGraph.setStartDestination(startDestId)
+                            navController.graph = navGraph
                             setupBottomNavigation(state.data.menuTree ?: emptyList())
                         }
                         else -> {}
