@@ -88,7 +88,21 @@ class MainActivity : AppCompatActivity() {
             menuItem.setIcon(iconRes)
         }
 
-        if (isFirstLoad && currentMenuTree.isNotEmpty()) {
+        // 복원된 navController의 백스택 parent_page_name이 있는지 확인
+        val currentBackStackEntry = navController.currentBackStackEntry
+        val restoredPageName = currentBackStackEntry?.arguments?.getString("parent_page_name")
+        var restoredIndex = -1
+        if (restoredPageName != null) {
+            restoredIndex = currentMenuTree.indexOfFirst { it.pageName == restoredPageName }
+        }
+
+        if (restoredIndex != -1) {
+            isFirstLoad = false
+            // 선택 변경 리스너를 잠시 해제해 중복 전환 방지 후 탭 선택 상태만 강제 복원
+            binding.bottomNavigation.setOnItemSelectedListener(null)
+            binding.bottomNavigation.selectedItemId = restoredIndex
+            setupBottomNavigationListener()
+        } else if (isFirstLoad && currentMenuTree.isNotEmpty()) {
             isFirstLoad = false
             navigateToMenu(currentMenuTree.first())
         }
