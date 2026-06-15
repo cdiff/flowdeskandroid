@@ -6,12 +6,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F3F4F6"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:clipToPadding="false"
+    android:clipChildren="false">
 
     <!-- 로딩 오버레이 -->
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:clipChildren="false">
 
         <LinearLayout
             android:id="@+id/ll_content"
@@ -22,6 +26,8 @@
             android:paddingEnd="16dp"
             android:paddingTop="32dp"
             android:paddingBottom="24dp"
+            android:clipToPadding="false"
+            android:clipChildren="false"
             android:visibility="gone"
             tools:visibility="visible">
 
@@ -449,7 +455,9 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingTop="4dp"
-                    android:paddingBottom="8dp">
+                    android:paddingBottom="8dp"
+                    android:clipToPadding="false"
+                    android:clipChildren="false">
 
                     <!-- ─── ⑤ 웹사이트별 상담 (Top 5) ─── -->
                     <LinearLayout

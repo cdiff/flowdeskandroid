@@ -22,11 +22,12 @@ import com.example.flowdesk_android.feature.counsel_management.domain.model.Coun
 import com.example.flowdesk_android.feature.counsel_management.domain.model.CounselStatusStat
 import com.example.flowdesk_android.feature.counsel_management.domain.model.EmployeeStat
 import com.google.android.material.tabs.TabLayout
+import com.example.flowdesk_android.core.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class CounselDetailFragment : Fragment() {
+class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
 
     private val viewModel: CounselDetailViewModel by viewModels()
 
@@ -66,26 +67,15 @@ class CounselDetailFragment : Fragment() {
     private var selectedStatusIndex: Int = 0
     private var selectedManagerIndex: Int = 0
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_counsel_detail, container, false)
+    override fun getToolbarView(view: View): View? {
+        return view.findViewById(R.id.layout_toolbar)
+    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun initView() {
+        val view = requireView()
         bindViews(view)
-
-        // Handle window insets for status bar
-        val toolbarLayout = view.findViewById<View>(R.id.layout_toolbar)
-        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(toolbarLayout) { v, insets ->
-            val systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
-            v.setPadding(v.paddingLeft, systemBars.top, v.paddingRight, v.paddingBottom)
-            insets
-        }
-
         setupTabLayout()
         setupListeners()
-        observeViewModel()
 
         val counselSeq = arguments?.getInt("counselSeq") ?: -1
         viewModel.init(counselSeq)
@@ -246,7 +236,7 @@ class CounselDetailFragment : Fragment() {
 
     // ── ViewModel 관찰 ──────────────────────────────────────────────────────────
 
-    private fun observeViewModel() {
+    override fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
 

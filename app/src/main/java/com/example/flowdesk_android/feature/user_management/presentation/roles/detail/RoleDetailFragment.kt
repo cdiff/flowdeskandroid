@@ -21,43 +21,38 @@ import com.example.flowdesk_android.feature.user_management.domain.model.Permiss
 import com.example.flowdesk_android.feature.user_management.domain.model.RoleDetail
 import com.example.flowdesk_android.feature.user_management.domain.model.PermissionAction
 import com.example.flowdesk_android.databinding.FragmentRoleDetailBinding
+import com.example.flowdesk_android.core.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class RoleDetailFragment : Fragment() {
+class RoleDetailFragment : BaseFragment(R.layout.fragment_role_detail) {
 
     private var _binding: FragmentRoleDetailBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: RoleDetailViewModel by viewModels()
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentRoleDetailBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
+    override fun getToolbarView(view: View): View? = view.findViewById(R.id.toolbar)
+ 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        _binding = FragmentRoleDetailBinding.bind(view)
         super.onViewCreated(view, savedInstanceState)
-
+    }
+ 
+    override fun initView() {
         val roleId = arguments?.getInt("roleId") ?: return
-
         setupToolbar()
-        observeViewModel()
-        
         viewModel.loadRoleDetail(roleId)
     }
 
     private fun setupToolbar() {
-        binding.toolbar.setNavigationOnClickListener {
+        binding.btnBack.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
     }
 
-    private fun observeViewModel() {
+    override fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->

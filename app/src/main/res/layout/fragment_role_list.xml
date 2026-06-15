@@ -229,7 +229,9 @@
             <!-- ─── 리스트 영역 (RecyclerView 및 상태 뷰) ─── -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:clipChildren="false">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_roles"
@@ -243,7 +245,8 @@
                     android:nestedScrollingEnabled="false"
                     android:overScrollMode="never"
                     android:paddingBottom="12dp"
-                    android:clipToPadding="false" />
+                    android:clipToPadding="false"
+                    android:clipChildren="false" />
 
                 <ProgressBar
                     android:id="@+id/progress_bar"

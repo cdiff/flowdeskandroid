@@ -18,6 +18,7 @@ import com.example.flowdesk_android.R
 import com.example.flowdesk_android.feature.super_admin.domain.model.TenantDetail
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.example.flowdesk_android.core.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -25,11 +26,12 @@ import java.util.Locale
 import java.util.TimeZone
 
 @AndroidEntryPoint
-class TenantDetailFragment : Fragment() {
+class TenantDetailFragment : BaseFragment(R.layout.fragment_super_admin_tenant_detail) {
 
     private val viewModel: TenantDetailViewModel by viewModels()
 
     // ── Views ──────────────────────────────────────────────
+    private lateinit var clHeader: View
     private lateinit var btnBack: View
     private lateinit var btnAction: TextView
     private lateinit var progressBar: ProgressBar
@@ -61,25 +63,19 @@ class TenantDetailFragment : Fragment() {
     private var currentTenant: TenantDetail? = null
 
     // ──────────────────────────────────────────────────────
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return inflater.inflate(R.layout.fragment_super_admin_tenant_detail, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun getToolbarView(view: View): View? = view.findViewById(R.id.cl_header)
+ 
+    override fun initView() {
+        val view = requireView()
         tenantId = arguments?.getInt("tenant_id", -1) ?: -1
         initViews(view)
         setupListeners()
-        observeViewModel()
         if (tenantId != -1) viewModel.fetchDetail(tenantId)
     }
 
     // ── View 초기화 ────────────────────────────────────────
     private fun initViews(v: View) {
+        clHeader         = v.findViewById(R.id.cl_header)
         btnBack          = v.findViewById(R.id.btn_back)
         btnAction        = v.findViewById(R.id.btn_action)
         progressBar      = v.findViewById(R.id.progress_bar)
@@ -133,7 +129,7 @@ class TenantDetailFragment : Fragment() {
     }
 
     // ── ViewModel 관찰 ─────────────────────────────────────
-    private fun observeViewModel() {
+    override fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
 

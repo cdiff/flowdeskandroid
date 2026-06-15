@@ -26,13 +26,14 @@ import com.example.flowdesk_android.feature.user_management.presentation.users.d
 import com.example.flowdesk_android.feature.user_management.presentation.users.detail.UserDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import com.example.flowdesk_android.core.base.BaseFragment
 import androidx.navigation.fragment.findNavController
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
 
 @AndroidEntryPoint
-class UserDetailFragment : Fragment() {
+class UserDetailFragment : BaseFragment(R.layout.fragment_user_detail) {
 
     private var _binding: FragmentUserDetailBinding? = null
     private val binding get() = _binding!!
@@ -49,30 +50,25 @@ class UserDetailFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentUserDetailBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
+    override fun getToolbarView(view: View): View? = view.findViewById(R.id.toolbar)
+ 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        _binding = FragmentUserDetailBinding.bind(view)
         super.onViewCreated(view, savedInstanceState)
-
+    }
+ 
+    override fun initView() {
         if (userId != -1) {
             viewModel.loadUserDetail(userId)
         } else {
             Toast.makeText(requireContext(), "잘못된 접근입니다.", Toast.LENGTH_SHORT).show()
             findNavController().popBackStack()
         }
-
         setupListeners()
-        observeViewModel()
     }
 
     private fun setupListeners() {
-        binding.toolbar.setNavigationOnClickListener {
+        binding.btnBack.setOnClickListener {
             if (!findNavController().navigateUp()) {
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }
@@ -162,7 +158,7 @@ class UserDetailFragment : Fragment() {
         }
     }
 
-    private fun observeViewModel() {
+    override fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {

@@ -19,11 +19,12 @@ import com.example.flowdesk_android.databinding.ViewRoleManagePermissionsBinding
 import com.example.flowdesk_android.feature.user_management.presentation.roles.list.RolesViewModel
 import com.example.flowdesk_android.feature.user_management.presentation.roles.list.RoleCopyBottomSheetFragment
 import com.google.android.material.tabs.TabLayoutMediator
+import com.example.flowdesk_android.core.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class ManagePermissionsFragment : Fragment() {
+class ManagePermissionsFragment : BaseFragment(R.layout.fragment_role_manage_permissions) {
 
     private var _binding: FragmentRoleManagePermissionsBinding? = null
     private val binding get() = _binding!!
@@ -45,21 +46,16 @@ class ManagePermissionsFragment : Fragment() {
         roleId = arguments?.getInt("role_id", -1) ?: -1
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentRoleManagePermissionsBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    override fun getToolbarView(view: View): View? = view.findViewById(R.id.toolbar)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        _binding = FragmentRoleManagePermissionsBinding.bind(view)
         super.onViewCreated(view, savedInstanceState)
+    }
 
+    override fun initView() {
         setupTabs()
         setupToolbar()
-        observeViewModel()
-
         if (roleId != -1) {
             viewModel.load(roleId)
             rolesViewModel.fetchRoles()
@@ -67,7 +63,7 @@ class ManagePermissionsFragment : Fragment() {
     }
 
     private fun setupToolbar() {
-        binding.toolbar.setNavigationOnClickListener {
+        binding.btnBack.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
         binding.btnSaveAll.setOnClickListener {
@@ -108,7 +104,7 @@ class ManagePermissionsFragment : Fragment() {
         }
     }
 
-    private fun observeViewModel() {
+    override fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {

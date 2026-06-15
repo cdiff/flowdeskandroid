@@ -12,12 +12,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:clipToPadding="false">
+        android:clipToPadding="false"
+        android:clipChildren="false">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:clipToPadding="false"
+            android:clipChildren="false">
 
             <!-- ─── 1. 상단 실버-그레이 헤더 영역 (써클 탭 포함) ─── -->
             <LinearLayout
@@ -154,7 +157,9 @@
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:paddingTop="32dp"
-                android:paddingBottom="24dp">
+                android:paddingBottom="24dp"
+                android:clipToPadding="false"
+                android:clipChildren="false">
 
                 <!-- 검색 필드 (독립형 라운드 카드) -->
                 <LinearLayout
@@ -258,7 +263,9 @@
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="200dp">
+                    android:minHeight="200dp"
+                    android:clipToPadding="false"
+                    android:clipChildren="false">
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rv_counsels"
@@ -266,6 +273,8 @@
                         android:layout_height="wrap_content"
                         android:nestedScrollingEnabled="false"
                         android:overScrollMode="never"
+                        android:clipToPadding="false"
+                        android:clipChildren="false"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         tools:listitem="@layout/item_counsel_list"
                         tools:itemCount="3" />

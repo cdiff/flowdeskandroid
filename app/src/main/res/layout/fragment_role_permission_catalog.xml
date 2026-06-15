@@ -10,12 +10,16 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:clipChildren="false">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:clipToPadding="false"
+            android:clipChildren="false">
 
             <!-- Summary Header Card -->
             <LinearLayout
@@ -84,6 +88,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
+                android:clipChildren="false"
                 android:nestedScrollingEnabled="false"
                 android:padding="16dp"
                 tools:listitem="@layout/item_role_permission_catalog_group" />

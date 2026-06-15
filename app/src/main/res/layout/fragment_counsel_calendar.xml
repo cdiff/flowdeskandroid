@@ -6,12 +6,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F3F4F6"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:clipToPadding="false"
+    android:clipChildren="false">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:clipToPadding="false"
+        android:clipChildren="false">
 
         <!-- ── 제목 / 부제목 ── -->
         <LinearLayout
@@ -201,7 +205,9 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="@android:color/transparent"
-            android:minHeight="180dp">
+            android:minHeight="180dp"
+            android:clipToPadding="false"
+            android:clipChildren="false">
 
             <!-- 선택 날짜 헤더 -->
             <LinearLayout
@@ -284,6 +290,7 @@
                 android:paddingTop="4dp"
                 android:paddingBottom="24dp"
                 android:clipToPadding="false"
+                android:clipChildren="false"
                 android:nestedScrollingEnabled="false"
                 android:visibility="gone" />
 

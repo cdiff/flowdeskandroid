@@ -11,20 +11,24 @@
         android:layout_height="match_parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:clipChildren="false">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:clipToPadding="false"
+            android:clipChildren="false">
 
             <!-- Summary Card -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_white_rounded_12dp"
-                android:elevation="2dp"
+                android:elevation="1dp"
                 android:layout_marginBottom="16dp"
                 android:padding="20dp"
                 android:layout_marginHorizontal="2dp"
@@ -224,7 +228,9 @@
                 android:background="@drawable/bg_card_rounded_border"
                 android:paddingTop="20dp"
                 android:paddingBottom="8dp"
-                android:layout_marginBottom="24dp">
+                android:layout_marginBottom="24dp"
+                android:clipToPadding="false"
+                android:clipChildren="false">
 
                 <TextView
                     android:id="@+id/tv_list_title"
@@ -255,7 +261,9 @@
                     tools:itemCount="3"
                     tools:listitem="@layout/item_user"
                     android:nestedScrollingEnabled="false"
-                    android:overScrollMode="never" />
+                    android:overScrollMode="never"
+                    android:clipToPadding="false"
+                    android:clipChildren="false" />
 
                 <ProgressBar
                     android:id="@+id/progress_bar"
