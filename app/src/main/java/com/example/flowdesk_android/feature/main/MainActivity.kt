@@ -51,6 +51,26 @@ class MainActivity : AppCompatActivity() {
         setupBottomNavigationListener()
         setupTopBarListeners()
 
+        // 뒤로가기 더블 클릭 종료 처리
+        var backPressedTime: Long = 0
+        val onBackPressedCallback = object : androidx.activity.OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // 상세 화면 등 백스택이 존재할 경우 이전 화면으로 이동
+                if (navController.currentDestination?.id != navController.graph.startDestinationId) {
+                    navController.popBackStack()
+                } else {
+                    // 최하단 탭 화면일 경우 2초 이내 더블 클릭 시 종료
+                    if (System.currentTimeMillis() - backPressedTime < 2000) {
+                        finish()
+                    } else {
+                        backPressedTime = System.currentTimeMillis()
+                        android.widget.Toast.makeText(this@MainActivity, "한 번 더 누르면 앱이 종료됩니다.", android.widget.Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+
         // 1. 전달받은 인증 및 권한 데이터가 있는지 확인
         val authMeInfoJson = intent.getStringExtra("EXTRA_AUTH_ME_INFO")
         if (!authMeInfoJson.isNullOrEmpty()) {
