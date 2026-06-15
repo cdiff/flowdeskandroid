@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Purple left accent line -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#A855F7" />
+            <corners android:radius="4dp" />
+        </shape>
+    </item>
+    <!-- Light purple background (offset from left by 3dp to show the border) -->
+    <item android:left="3dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#FAF5FF" />
+            <corners
+                android:topRightRadius="4dp"
+                android:bottomRightRadius="4dp"
+                android:topLeftRadius="0dp"
+                android:bottomLeftRadius="0dp" />
+        </shape>
+    </item>
+</layer-list>

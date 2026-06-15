@@ -44,10 +44,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
-import android.app.DatePickerDialog
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import com.example.flowdesk_android.feature.counsel_management.presentation.list.CustomCalendarDialogFragment
 
 @AndroidEntryPoint
 class CounselDashboardFragment : Fragment() {
@@ -443,41 +443,15 @@ class CounselDashboardFragment : Fragment() {
     }
 
     private fun showDatePickerFlow() {
-        // 1. Show Start Date Picker
-        val startDialog = DatePickerDialog(
-            requireContext(),
-            { _, year, month, dayOfMonth ->
-                val newStartDate = LocalDate.of(year, month + 1, dayOfMonth)
-
-                // 2. Immediately Show End Date Picker after Start Date is chosen
-                val endDialog = DatePickerDialog(
-                    requireContext(),
-                    { _, endYear, endMonth, endDayOfMonth ->
-                        val newEndDate = LocalDate.of(endYear, endMonth + 1, endDayOfMonth)
-
-                        // Validate dates
-                        if (newStartDate.isAfter(newEndDate)) {
-                            Toast.makeText(requireContext(), "시작일은 종료일보다 이전이어야 합니다.", Toast.LENGTH_SHORT).show()
-                        } else {
-                            selectedStartDate = newStartDate
-                            selectedEndDate = newEndDate
-                            updateDateTextViews()
-                            reloadDashboardData()
-                        }
-                    },
-                    selectedEndDate.year,
-                    selectedEndDate.monthValue - 1,
-                    selectedEndDate.dayOfMonth
-                )
-                endDialog.setTitle("종료일 선택")
-                endDialog.show()
-            },
-            selectedStartDate.year,
-            selectedStartDate.monthValue - 1,
-            selectedStartDate.dayOfMonth
-        )
-        startDialog.setTitle("시작일 선택")
-        startDialog.show()
+        val customCalendar = CustomCalendarDialogFragment()
+        customCalendar.setInitialRange(selectedStartDate, selectedEndDate)
+        customCalendar.setOnDateRangeSelectedListener { start, end ->
+            selectedStartDate = start
+            selectedEndDate = end
+            updateDateTextViews()
+            reloadDashboardData()
+        }
+        customCalendar.show(childFragmentManager, "custom_calendar_dialog")
     }
 
     private fun reloadDashboardData() {

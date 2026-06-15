@@ -123,4 +123,14 @@ class CounselRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    override suspend fun deleteCounsel(id: Int): Result<Unit> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.deleteCounsel(id)
+            if (!response.isSuccessful) {
+                val errorMsg = response.errorBody()?.string()?.take(200) ?: "없음"
+                throw Exception("상담 삭제 실패 (${response.code()}): $errorMsg")
+            }
+        }
+    }
 }

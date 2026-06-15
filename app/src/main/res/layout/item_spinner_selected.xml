@@ -24,8 +24,10 @@
         android:layout_weight="1"
         android:singleLine="true"
         android:textColor="#1E293B"
-        android:textSize="14sp"
+        android:textSize="11sp"
+        android:paddingStart="8dp"
+        android:paddingEnd="20dp"
         android:ellipsize="end"
-        tools:text="상담예약" />
+        tools:text="모든 담당자" />
 
 </LinearLayout>

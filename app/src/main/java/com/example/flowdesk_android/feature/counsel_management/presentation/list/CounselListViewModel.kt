@@ -8,6 +8,7 @@ import com.example.flowdesk_android.feature.counsel_management.domain.model.Coun
 import com.example.flowdesk_android.feature.counsel_management.domain.model.EmployeeStat
 import com.example.flowdesk_android.feature.counsel_management.domain.model.TopWebsite
 import com.example.flowdesk_android.feature.counsel_management.domain.repository.CounselRepository
+import com.example.flowdesk_android.feature.counsel_management.data.dto.CounselUpdateRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -187,5 +188,38 @@ class CounselListViewModel @Inject constructor(
     fun clearFilters() {
         _filterState.value = CounselFilterState()
         refreshAll()
+    }
+
+    fun updateCounselInfo(id: Int, name: String, counselHp: String, counselMemo: String?) {
+        _uiState.value = CounselListUiState.Loading
+        viewModelScope.launch {
+            val request = CounselUpdateRequest(
+                name = name,
+                counselHp = counselHp,
+                counselMemo = counselMemo
+            )
+            counselRepository.updateCounsel(id, request)
+                .onSuccess {
+                    refreshAll()
+                }
+                .onFailure { err ->
+                    _uiState.value = CounselListUiState.Error(err.message ?: "상담 수정에 실패했습니다.")
+                    sendError(err.message ?: "상담 수정 실패")
+                }
+        }
+    }
+
+    fun deleteCounsel(id: Int) {
+        _uiState.value = CounselListUiState.Loading
+        viewModelScope.launch {
+            counselRepository.deleteCounsel(id)
+                .onSuccess {
+                    refreshAll()
+                }
+                .onFailure { err ->
+                    _uiState.value = CounselListUiState.Error(err.message ?: "상담 삭제에 실패했습니다.")
+                    sendError(err.message ?: "상담 삭제 실패")
+                }
+        }
     }
 }

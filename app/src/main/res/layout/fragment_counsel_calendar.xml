@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F3F4F6"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- ── 제목 / 부제목 ── -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@android:color/transparent"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="45dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="예약 캘린더"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#111827"
+                android:layout_marginBottom="2dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="상담 예약 일정을 확인하고 관리합니다."
+                android:textSize="13sp"
+                android:textColor="#9CA3AF" />
+        </LinearLayout>
+
+        <!-- ── 상단: 월 스위처 + 담당자 스피너 ── -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@android:color/transparent"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:gravity="center_vertical">
+
+            <!-- 월 switcher -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageButton
+                    android:id="@+id/btn_prev_month"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_chevron_left_custom"
+                    app:tint="#4B5563"
+                    android:contentDescription="이전 달" />
+
+                <TextView
+                    android:id="@+id/tv_selected_month"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:textColor="#111827"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    tools:text="2026년 6월" />
+
+                <ImageButton
+                    android:id="@+id/btn_next_month"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_chevron_right"
+                    app:tint="#4B5563"
+                    android:contentDescription="다음 달" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <!-- 담당자 Spinner -->
+            <Spinner
+                android:id="@+id/spinner_manager"
+                android:layout_width="76dp"
+                android:layout_height="24dp"
+                android:background="@drawable/bg_spinner"
+                android:overlapAnchor="false"
+                android:spinnerMode="dropdown" />
+        </LinearLayout>
+
+        <!-- ── 이번 달 요약 바 ── -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@android:color/transparent"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="6dp"
+            android:gravity="center_vertical">
+
+            <!-- 범례 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <View
+                    android:layout_width="7dp"
+                    android:layout_height="7dp"
+                    android:background="@drawable/bg_circle_blue"
+                    android:layout_marginEnd="4dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="오늘"
+                    android:textColor="#1D4ED8"
+                    android:textSize="11sp"
+                    android:layout_marginEnd="12dp" />
+
+                <View
+                    android:layout_width="7dp"
+                    android:layout_height="7dp"
+                    android:background="@drawable/bg_reservation_indicator"
+                    android:layout_marginEnd="4dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="예약 있음"
+                    android:textColor="#7C3AED"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <!-- 이번 달 예약 건수 -->
+            <TextView
+                android:id="@+id/tv_monthly_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="#374151"
+                tools:text="이번 달 예약: 5건" />
+        </LinearLayout>
+
+        <!-- ── 요일 헤더 ── -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:orientation="horizontal"
+            android:background="@android:color/transparent"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp">
+
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:text="일" android:textColor="#EF4444" android:textStyle="bold" android:gravity="center" android:textSize="12sp" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:text="월" android:textColor="#6B7280" android:textStyle="bold" android:gravity="center" android:textSize="12sp" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:text="화" android:textColor="#6B7280" android:textStyle="bold" android:gravity="center" android:textSize="12sp" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:text="수" android:textColor="#6B7280" android:textStyle="bold" android:gravity="center" android:textSize="12sp" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:text="목" android:textColor="#6B7280" android:textStyle="bold" android:gravity="center" android:textSize="12sp" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:text="금" android:textColor="#6B7280" android:textStyle="bold" android:gravity="center" android:textSize="12sp" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:text="토" android:textColor="#3B82F6" android:textStyle="bold" android:gravity="center" android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- ── 달력 그리드 (ViewPager2로 개편) ── -->
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/vp_calendar"
+            android:layout_width="match_parent"
+            android:layout_height="340dp"
+            android:background="@android:color/transparent" />
+
+        <!-- ── 선택된 날짜 예약 패널 (하단) ── -->
+        <LinearLayout
+            android:id="@+id/ll_selected_day_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@android:color/transparent"
+            android:minHeight="180dp">
+
+            <!-- 선택 날짜 헤더 -->
+            <LinearLayout
+                android:id="@+id/ll_selected_date_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tv_selected_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#111827"
+                    tools:text="6월 13일 금요일" />
+
+                <TextView
+                    android:id="@+id/tv_selected_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:textColor="#7C3AED"
+                    android:textStyle="bold"
+                    tools:text="2건" />
+            </LinearLayout>
+
+            <!-- 날짜 미선택 안내 -->
+            <LinearLayout
+                android:id="@+id/ll_no_selection"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="visible">
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="날짜를 선택하면\n예약 내역이 표시됩니다"
+                    android:textSize="14sp"
+                    android:textColor="#9CA3AF"
+                    android:gravity="center"
+                    android:lineSpacingMultiplier="1.4" />
+            </LinearLayout>
+
+            <!-- 예약 없는 날 안내 -->
+            <LinearLayout
+                android:id="@+id/ll_empty_reservations"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="이 날은 예약이 없습니다"
+                    android:textSize="14sp"
+                    android:textColor="#9CA3AF"
+                    android:gravity="center" />
+            </LinearLayout>
+
+            <!-- 예약 카드 목록 (스크롤 없이 전체 펼침) -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_day_reservations"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="24dp"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <!-- 로딩 인디케이터 -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone" />
+        </FrameLayout>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

@@ -25,7 +25,6 @@ class CounselListAdapter(
 ) : RecyclerView.Adapter<CounselListAdapter.CounselViewHolder>() {
 
     private val items = mutableListOf<CounselItem>()
-    private val checkedItems = mutableSetOf<Int>() // Tracks counselSeq of checked items
     private val statusColorMap = mutableMapOf<String, Int>()
 
     fun setStatusColors(stats: List<CounselStatusStat>) {
@@ -52,15 +51,6 @@ class CounselListAdapter(
         notifyItemRangeInserted(start, additionalList.size)
     }
 
-    fun getCheckedCounselSeqs(): List<Int> {
-        return checkedItems.toList()
-    }
-
-    fun clearCheckedItems() {
-        checkedItems.clear()
-        notifyDataSetChanged()
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CounselViewHolder {
         val binding = ItemCounselListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CounselViewHolder(binding)
@@ -79,15 +69,6 @@ class CounselListAdapter(
 
             // 0. 카드 전체 클릭 → 상세 화면 이동
             itemView.setOnClickListener { onItemClick(item) }
-            binding.cbSelect.setOnCheckedChangeListener(null)
-            binding.cbSelect.isChecked = checkedItems.contains(item.counselSeq)
-            binding.cbSelect.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
-                    checkedItems.add(item.counselSeq)
-                } else {
-                    checkedItems.remove(item.counselSeq)
-                }
-            }
 
             // 2. Status Tag (Dynamic Background with Soft Tint matching Status Color)
             val statusColor = getStatusColor(item.statusName)

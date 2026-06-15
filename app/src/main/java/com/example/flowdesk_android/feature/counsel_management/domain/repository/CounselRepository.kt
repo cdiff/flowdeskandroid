@@ -36,4 +36,6 @@ interface CounselRepository {
     suspend fun getCounselMemos(id: Int): Result<List<CounselMemo>>
 
     suspend fun getCounselLogs(id: Int): Result<List<CounselLog>>
+
+    suspend fun deleteCounsel(id: Int): Result<Unit>
 }

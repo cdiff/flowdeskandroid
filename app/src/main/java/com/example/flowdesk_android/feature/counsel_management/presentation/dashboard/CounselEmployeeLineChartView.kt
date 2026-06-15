@@ -156,7 +156,7 @@ class CounselEmployeeLineChartView @JvmOverloads constructor(
         val density = resources.displayMetrics.density
         val paddingLeft = 38f * density
         val paddingRight = 12f * density
-        val paddingTop = 28f * density
+        val paddingTop = 42f * density
         val paddingBottom = 40f * density
 
         val chartWidth = width - paddingLeft - paddingRight

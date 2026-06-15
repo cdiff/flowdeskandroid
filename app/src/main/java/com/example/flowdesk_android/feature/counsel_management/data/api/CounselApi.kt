@@ -7,6 +7,7 @@ import com.example.flowdesk_android.feature.counsel_management.data.dto.CounselS
 import com.example.flowdesk_android.feature.counsel_management.data.dto.CounselUpdateRequest
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
@@ -71,4 +72,9 @@ interface CounselApi {
     suspend fun getCounselLogs(
         @Path("id") id: Int
     ): Response<List<CounselLogDto>>
+
+    @DELETE("counsels/{id}")
+    suspend fun deleteCounsel(
+        @Path("id") id: Int
+    ): Response<Unit>
 }

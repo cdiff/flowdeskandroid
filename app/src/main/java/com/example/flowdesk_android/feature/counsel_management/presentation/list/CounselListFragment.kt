@@ -185,14 +185,51 @@ class CounselListFragment : Fragment() {
 
     private fun showItemOptionsMenu(item: CounselItem, view: View) {
         val popup = PopupMenu(requireContext(), view)
-        popup.menu.add("상태 변경")
-        popup.menu.add("담당자 지정")
+        popup.menu.add("수정")
         popup.menu.add("삭제")
         popup.setOnMenuItemClickListener { menuItem ->
-            Toast.makeText(requireContext(), "${menuItem.title} - 준비 중인 기능입니다.", Toast.LENGTH_SHORT).show()
+            when (menuItem.title) {
+                "수정" -> showEditDialog(item)
+                "삭제" -> showDeleteConfirmDialog(item)
+            }
             true
         }
         popup.show()
+    }
+
+    private fun showEditDialog(item: CounselItem) {
+        val editBottomSheet = CounselEditBottomSheetFragment.newInstance(item.counselSeq, item.name, item.counselHp)
+        editBottomSheet.show(childFragmentManager, "CounselEditBottomSheet")
+    }
+
+    private fun showDeleteConfirmDialog(item: CounselItem) {
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_common_confirm, null)
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        val tvTitle = dialogView.findViewById<TextView>(R.id.tv_title)
+        val tvMessage = dialogView.findViewById<TextView>(R.id.tv_message)
+        val cbConfirm = dialogView.findViewById<View>(R.id.cb_confirm)
+        val btnCancel = dialogView.findViewById<View>(R.id.btn_cancel)
+        val btnConfirm = dialogView.findViewById<View>(R.id.btn_confirm)
+
+        tvTitle.text = "상담 삭제"
+        tvMessage.text = "'${item.name}' 고객의 상담 정보를 정말 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다."
+        cbConfirm.visibility = View.GONE
+
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        btnConfirm.setOnClickListener {
+            viewModel.deleteCounsel(item.counselSeq)
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun observeState() {
