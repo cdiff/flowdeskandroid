@@ -81,7 +81,7 @@
         android:src="@drawable/ic_triangle_up"
         android:scaleType="fitXY"
         android:visibility="invisible"
-        app:tint="#F9FAFB"
+        app:tint="#F8FAFC"
         app:layout_constraintTop_toBottomOf="@id/card_circle_container"
         app:layout_constraintStart_toStartOf="@id/card_circle_container"
         app:layout_constraintEnd_toEndOf="@id/card_circle_container"

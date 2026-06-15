@@ -141,7 +141,9 @@ class MainActivity : AppCompatActivity() {
         menu.clear()
 
         currentMenuTree.forEachIndexed { index, menuDto ->
-            val menuItem = menu.add(0, index, menuDto.order, menuDto.displayName)
+            val cleanDisplayName = menuDto.displayName
+                .replace("&", "·")
+            val menuItem = menu.add(0, index, menuDto.order, cleanDisplayName)
             
             val iconRes = when (menuDto.pageName) {
                 "super", "system_management" -> com.example.flowdesk_android.R.drawable.ic_super_admin
@@ -230,19 +232,22 @@ class MainActivity : AppCompatActivity() {
                 destination.id == R.id.tenantDetailFragment ||
                 destination.id == R.id.managePermissionsFragment
             ) {
-                binding.bottomNavigation.visibility = android.view.View.GONE
-                binding.topBar.visibility = android.view.View.GONE
-            } else {
-                binding.bottomNavigation.visibility = android.view.View.VISIBLE
-                binding.topBar.visibility = android.view.View.VISIBLE
+                 binding.bottomNavigation.visibility = android.view.View.GONE
+                 binding.bottomNavigationDivider.visibility = android.view.View.GONE
+                 binding.topBar.visibility = android.view.View.GONE
+             } else {
+                 binding.bottomNavigation.visibility = android.view.View.VISIBLE
+                 binding.bottomNavigationDivider.visibility = android.view.View.VISIBLE
+                 binding.topBar.visibility = android.view.View.VISIBLE
                 
                 when (destination.id) {
                     R.id.myPageFragment -> binding.tvTitle.text = "마이페이지"
                     R.id.homeFragment -> binding.tvTitle.text = "대시보드"
                     R.id.usersFragment -> {
                         val pageName = arguments?.getString("parent_page_name")
-                        val menuTitle = currentMenuTree.find { it.pageName == pageName }?.displayName
-                            ?: "사용자 & 권한"
+                        val rawTitle = currentMenuTree.find { it.pageName == pageName }?.displayName
+                            ?: "사용자 · 권한"
+                        val menuTitle = rawTitle.replace("&", "·")
                         binding.tvTitle.text = menuTitle
                     }
                 }

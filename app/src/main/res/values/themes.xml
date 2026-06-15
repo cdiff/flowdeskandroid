@@ -61,4 +61,10 @@
         <item name="colorOnSurface">#1E293B</item>
     </style>
 
+    <style name="BottomNavTextAppearance" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">10sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">-0.04</item>
+    </style>
+
 </resources>
