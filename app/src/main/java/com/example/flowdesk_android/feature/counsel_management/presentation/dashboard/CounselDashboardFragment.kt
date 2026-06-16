@@ -24,6 +24,10 @@ import com.example.flowdesk_android.feature.counsel_management.domain.model.Hour
 import com.example.flowdesk_android.feature.counsel_management.domain.model.TopWebsite
 import com.example.flowdesk_android.feature.counsel_management.domain.model.UpcomingReservation
 import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -36,10 +40,13 @@ import com.github.mikephil.charting.data.RadarEntry
 import android.graphics.Canvas
 import android.content.Context
 import android.util.AttributeSet
+import android.view.MotionEvent
 import com.github.mikephil.charting.renderer.XAxisRendererRadarChart
 import com.github.mikephil.charting.utils.MPPointF
 import com.github.mikephil.charting.utils.Utils
 import com.github.mikephil.charting.utils.ViewPortHandler
+import com.github.mikephil.charting.listener.OnChartGestureListener
+import com.github.mikephil.charting.listener.ChartTouchListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -55,6 +62,8 @@ class CounselDashboardFragment : Fragment() {
     private val viewModel: CounselDashboardViewModel by viewModels()
 
     // ── 파이프라인 분석 ──
+    private lateinit var btnSummaryInfo: View
+    private lateinit var btnDailyTrendInfo: View
     private lateinit var gaugeNew: SingleCircularProgressView
     private lateinit var gaugeProgress: SingleCircularProgressView
     private lateinit var gaugeCompleted: SingleCircularProgressView
@@ -70,7 +79,7 @@ class CounselDashboardFragment : Fragment() {
     private lateinit var lineChartEmployee: CounselEmployeeLineChartView
     private lateinit var barChartDaily: DailyBarChartView
     private lateinit var llTopWebsites: LinearLayout
-    private lateinit var barChartHourly: BarChart
+    private lateinit var lineChartHourly: CounselHourlyLineChartView
     private lateinit var llUpcomingReservations: LinearLayout
 
     // ── 상태 분포 차트 ──
@@ -84,8 +93,17 @@ class CounselDashboardFragment : Fragment() {
     private lateinit var tvDateRange: TextView
     private var selectedStartDate = LocalDate.now().minusDays(30)
     private var selectedEndDate = LocalDate.now()
+    private var isDateFilterApplied = false
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault())
     private val displayFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd", Locale.getDefault())
+
+    // ── 일별 추이 1주/2주/한달 전환 ──
+    private var fullDailyTrends: List<DailyTrend> = emptyList()
+    private lateinit var vSegmentSelector: View
+    private lateinit var btnPeriod1w: TextView
+    private lateinit var btnPeriod2w: TextView
+    private lateinit var btnPeriod1m: TextView
+    private var currentPeriodIndex = 0
 
     // ── 로딩 / 콘텐츠 ──
     private lateinit var progressBar: ProgressBar
@@ -100,6 +118,7 @@ class CounselDashboardFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         bindViews(view)
         observeState()
+        viewModel.loadDashboard(null, null) // Load all-time data initially
     }
 
     private fun bindViews(view: View) {
@@ -107,7 +126,7 @@ class CounselDashboardFragment : Fragment() {
         lineChartEmployee       = view.findViewById(R.id.line_chart_employee)
         barChartDaily           = view.findViewById(R.id.bar_chart_daily)
         llTopWebsites           = view.findViewById(R.id.ll_top_websites)
-        barChartHourly          = view.findViewById(R.id.bar_chart_hourly)
+        lineChartHourly         = view.findViewById(R.id.line_chart_hourly)
         llUpcomingReservations  = view.findViewById(R.id.ll_upcoming_reservations)
 
         gaugeNew                = view.findViewById(R.id.gauge_new)
@@ -137,6 +156,54 @@ class CounselDashboardFragment : Fragment() {
 
         progressBar = view.findViewById(R.id.progress_bar)
         llContent   = view.findViewById(R.id.ll_content)
+
+        btnSummaryInfo          = view.findViewById(R.id.btn_summary_info)
+        setupSummaryInfoTooltip()
+
+        btnDailyTrendInfo       = view.findViewById(R.id.btn_daily_trend_info)
+        setupDailyTrendInfoTooltip()
+
+        vSegmentSelector        = view.findViewById(R.id.v_segment_selector)
+        btnPeriod1w             = view.findViewById(R.id.btn_period_1w)
+        btnPeriod2w             = view.findViewById(R.id.btn_period_2w)
+        btnPeriod1m             = view.findViewById(R.id.btn_period_1m)
+        setupDailyPeriodTabs()
+    }
+
+    private fun setupSummaryInfoTooltip() {
+        btnSummaryInfo.setOnClickListener { v ->
+            val inflater = LayoutInflater.from(requireContext())
+            val popupView = inflater.inflate(R.layout.layout_tooltip_dashboard_summary, null)
+            val popupWindow = android.widget.PopupWindow(
+                popupView,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                true
+            ).apply {
+                elevation = 16f
+                setBackgroundDrawable(android.graphics.drawable.ColorDrawable(Color.TRANSPARENT))
+                isOutsideTouchable = true
+            }
+            popupWindow.showAsDropDown(v, 0, 8)
+        }
+    }
+
+    private fun setupDailyTrendInfoTooltip() {
+        btnDailyTrendInfo.setOnClickListener { v ->
+            val inflater = LayoutInflater.from(requireContext())
+            val popupView = inflater.inflate(R.layout.layout_tooltip_dashboard_daily_trend, null)
+            val popupWindow = android.widget.PopupWindow(
+                popupView,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                true
+            ).apply {
+                elevation = 16f
+                setBackgroundDrawable(android.graphics.drawable.ColorDrawable(Color.TRANSPARENT))
+                isOutsideTouchable = true
+            }
+            popupWindow.showAsDropDown(v, 0, 8)
+        }
     }
 
     private fun observeState() {
@@ -183,13 +250,15 @@ class CounselDashboardFragment : Fragment() {
             tvGaugeProgressCount.text = String.format(Locale.getDefault(), "%.1f%%", completionRate)
             gaugeProgress.setProgress(completionRate.toFloat())
 
-            // 완료율 상태 분석 텍스트 매핑 (예: 안정 / 보통 / 주의)
-            val statusText = when {
-                completionRate >= 50.0 -> "안정"
-                completionRate >= 20.0 -> "보통"
-                else -> "주의"
+            // 완료율 상태 분석 텍스트 및 컬러 매핑 (예: 안정 / 보통 / 주의)
+            val (statusText, statusColor) = when {
+                completionRate >= 50.0 -> "안정" to Color.parseColor("#10B981") // 초록색
+                completionRate >= 20.0 -> "보통" to Color.parseColor("#F59E0B") // 주황색
+                else -> "주의" to Color.parseColor("#EF4444") // 빨간색
             }
             tvGaugeProgressPercent.text = statusText
+            tvGaugeProgressPercent.setTextColor(statusColor)
+            gaugeProgress.setActiveColor(statusColor)
         }
 
         // ② 상태별 분포
@@ -198,8 +267,9 @@ class CounselDashboardFragment : Fragment() {
         // ③ 담당자별 현황
         renderEmployeeStats(data.employeeStats)
 
-        // ④ 일별 추이 바 차트
-        renderDailyChart(data.dailyTrends)
+        // ④ 일별 추이 데이터 백업 및 기간 필터링 차트 노출
+        this.fullDailyTrends = data.dailyTrends
+        updateDailyChartByPeriod()
 
         // ⑤ 웹사이트 Top 5
         renderTopWebsites(data.topWebsites)
@@ -310,6 +380,104 @@ class CounselDashboardFragment : Fragment() {
         barChartDaily.setData(trends)
     }
 
+    private fun setupDailyPeriodTabs() {
+        btnPeriod1w.setOnClickListener { selectPeriod(0) }
+        btnPeriod2w.setOnClickListener { selectPeriod(1) }
+        btnPeriod1m.setOnClickListener { selectPeriod(2) }
+
+        btnPeriod1w.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
+            override fun onLayoutChange(
+                v: View, left: Int, top: Int, right: Int, bottom: Int,
+                oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int
+            ) {
+                val btnWidth = btnPeriod1w.width
+                if (btnWidth > 0) {
+                    btnPeriod1w.removeOnLayoutChangeListener(this)
+                    val lp = vSegmentSelector.layoutParams
+                    lp.width = btnWidth
+                    vSegmentSelector.layoutParams = lp
+                    vSegmentSelector.translationX = when (currentPeriodIndex) {
+                        0 -> btnPeriod1w.left.toFloat()
+                        1 -> btnPeriod2w.left.toFloat()
+                        else -> btnPeriod1m.left.toFloat()
+                    }
+                }
+            }
+        })
+    }
+
+    private fun selectPeriod(index: Int) {
+        if (currentPeriodIndex == index) return
+        currentPeriodIndex = index
+
+        // 1. Sliding animation for selector background View
+        val targetX = when (index) {
+            0 -> btnPeriod1w.left.toFloat()
+            1 -> btnPeriod2w.left.toFloat()
+            else -> btnPeriod1m.left.toFloat()
+        }
+        vSegmentSelector.animate()
+            .translationX(targetX)
+            .setDuration(250)
+            .setInterpolator(android.view.animation.DecelerateInterpolator())
+            .start()
+
+        // 2. Active/Inactive text color switching
+        val activeColor = Color.parseColor("#3B82F6")
+        val inactiveColor = Color.parseColor("#64748B")
+
+        btnPeriod1w.setTextColor(if (index == 0) activeColor else inactiveColor)
+        btnPeriod2w.setTextColor(if (index == 1) activeColor else inactiveColor)
+        btnPeriod1m.setTextColor(if (index == 2) activeColor else inactiveColor)
+
+        // 3. Re-render daily bar chart with updated list size
+        updateDailyChartByPeriod()
+    }
+
+    private fun updateDailyChartByPeriod() {
+        if (fullDailyTrends.isEmpty()) return
+
+        val count = when (currentPeriodIndex) {
+            0 -> 6   // 1주
+            1 -> 14  // 2주
+            else -> 30 // 한달
+        }
+
+        // 1. Determine base anchor date (the latest date in fullDailyTrends, fallback to today)
+        val sortedTrends = fullDailyTrends.sortedBy { it.date }
+        val lastItem = sortedTrends.lastOrNull()
+        val anchorDate = if (lastItem != null) {
+            try {
+                LocalDate.parse(lastItem.date)
+            } catch (e: Exception) {
+                LocalDate.now()
+            }
+        } else {
+            LocalDate.now()
+        }
+
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault())
+
+        // 2. Generate target consecutive dates backward from anchorDate
+        val targetDates = (0 until count).map { offset ->
+            anchorDate.minusDays(offset.toLong())
+        }.reversed()
+
+        // 3. Convert to map for quick lookup
+        val trendMap = fullDailyTrends.associateBy { it.date }
+
+        // 4. Map dates to DailyTrend objects, padding missing dates with 0 count
+        val processedData = targetDates.map { date ->
+            val dateStr = date.format(formatter)
+            trendMap[dateStr] ?: DailyTrend(
+                date = dateStr,
+                count = 0
+            )
+        }
+
+        renderDailyChart(processedData)
+    }
+
     // ─────────────────────────────────────────────────────────
     // ⑤ 웹사이트 Top 5
     // ─────────────────────────────────────────────────────────
@@ -346,44 +514,7 @@ class CounselDashboardFragment : Fragment() {
     // ⑥ 시간대별 분포
     // ─────────────────────────────────────────────────────────
     private fun renderHourlyChart(list: List<HourlyDistribution>) {
-        // 0~23 전체 채우기
-        val countMap = list.associate { it.hour to it.count }
-        val entries  = (0..23).map { h -> BarEntry(h.toFloat(), (countMap[h] ?: 0).toFloat()) }
-
-        val dataSet = BarDataSet(entries, "시간대별").apply {
-            color = ContextCompat.getColor(requireContext(), R.color.green_accent)
-            valueTextColor = Color.TRANSPARENT
-            valueTextSize = 0f
-        }
-
-        with(barChartHourly) {
-            data = BarData(dataSet).apply { barWidth = 0.7f }
-            description.isEnabled = false
-            legend.isEnabled = false
-            setTouchEnabled(false)
-            setDrawGridBackground(false)
-
-            xAxis.apply {
-                position = XAxis.XAxisPosition.BOTTOM
-                setDrawGridLines(false)
-                granularity = 3f
-                textColor = ContextCompat.getColor(requireContext(), R.color.gray_text)
-                textSize = 9f
-                valueFormatter = object : ValueFormatter() {
-                    override fun getFormattedValue(value: Float): String = "${value.toInt()}시"
-                }
-            }
-            axisLeft.apply {
-                axisMinimum = 0f
-                textColor = ContextCompat.getColor(requireContext(), R.color.gray_text)
-                textSize = 9f
-                setDrawGridLines(true)
-                gridColor = 0xFFE5E7EB.toInt()
-            }
-            axisRight.isEnabled = false
-            animateY(600)
-            invalidate()
-        }
+        lineChartHourly.setData(list)
     }
 
     // ─────────────────────────────────────────────────────────
@@ -433,9 +564,13 @@ class CounselDashboardFragment : Fragment() {
     }
 
     private fun updateDateTextViews() {
-        val start = selectedStartDate.format(displayFormatter)
-        val end = selectedEndDate.format(displayFormatter)
-        tvDateRange.text = "$start ~ $end"
+        if (!isDateFilterApplied) {
+            tvDateRange.text = "전체 기간"
+        } else {
+            val start = selectedStartDate.format(displayFormatter)
+            val end = selectedEndDate.format(displayFormatter)
+            tvDateRange.text = "$start ~ $end"
+        }
     }
 
     private fun setupDatePickerListeners() {
@@ -448,6 +583,7 @@ class CounselDashboardFragment : Fragment() {
         customCalendar.setOnDateRangeSelectedListener { start, end ->
             selectedStartDate = start
             selectedEndDate = end
+            isDateFilterApplied = true
             updateDateTextViews()
             reloadDashboardData()
         }

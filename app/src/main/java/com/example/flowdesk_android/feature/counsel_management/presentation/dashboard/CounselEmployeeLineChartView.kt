@@ -34,7 +34,7 @@ class CounselEmployeeLineChartView @JvmOverloads constructor(
 
     private val dotNormalPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
-        color = Color.parseColor("#94A3B8") // Slate 400 (Grey dots)
+        color = Color.parseColor("#E2E8F0") // Light grey dots matching regular bars
     }
 
     private val dotActiveInnerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -63,16 +63,7 @@ class CounselEmployeeLineChartView @JvmOverloads constructor(
         textAlign = Paint.Align.CENTER
     }
 
-    private val tooltipBgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
-        color = Color.parseColor("#1E293B") // Slate 800 (Dark tooltip)
-    }
-
-    private val tooltipTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.WHITE
-        typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        textAlign = Paint.Align.CENTER
-    }
+    private val tooltipHelper = ChartTooltipHelper(context)
 
     init {
         val density = resources.displayMetrics.density
@@ -81,7 +72,6 @@ class CounselEmployeeLineChartView @JvmOverloads constructor(
         dotBorderPaint.strokeWidth = 1.5f * density
         labelPaint.textSize = 10f * density
         xLabelPaint.textSize = 11f * density
-        tooltipTextPaint.textSize = 11f * density
     }
 
     fun setData(list: List<EmployeeStat>) {
@@ -227,6 +217,8 @@ class CounselEmployeeLineChartView @JvmOverloads constructor(
             } else {
                 // Grey dot
                 canvas.drawCircle(px[i], py[i], dotRadiusNormal, dotNormalPaint)
+                // White border
+                canvas.drawCircle(px[i], py[i], dotRadiusNormal, dotBorderPaint)
             }
 
             // X-axis Label (Manager Name)
@@ -238,35 +230,8 @@ class CounselEmployeeLineChartView @JvmOverloads constructor(
         if (selectedIndex >= 0 && selectedIndex < n) {
             val mx = px[selectedIndex]
             val my = py[selectedIndex]
-            val tooltipText = "${dataList[selectedIndex].count}건"
-
-            // Measure text width
-            val textWidth = tooltipTextPaint.measureText(tooltipText)
-            val rectW = textWidth + 20f * density
-            val rectH = 26f * density
-
-            val rectLeft = mx - rectW / 2f
-            val rectTop = my - 10f * density - rectH
-            val rectRight = mx + rectW / 2f
-            val rectBottom = my - 10f * density
-
-            // Draw tooltip rounded rectangle
-            val rectF = RectF(rectLeft, rectTop, rectRight, rectBottom)
-            canvas.drawRoundRect(rectF, 4f * density, 4f * density, tooltipBgPaint)
-
-            // Draw small triangle pointing down
-            val trianglePath = Path().apply {
-                moveTo(mx - 4f * density, rectBottom)
-                lineTo(mx + 4f * density, rectBottom)
-                lineTo(mx, rectBottom + 4f * density)
-                close()
-            }
-            canvas.drawPath(trianglePath, tooltipBgPaint)
-
-            // Draw text
-            val tooltipFontMetrics = tooltipTextPaint.fontMetrics
-            val tooltipTextOffset = -(tooltipFontMetrics.ascent + tooltipFontMetrics.descent) / 2f
-            canvas.drawText(tooltipText, mx, rectTop + rectH / 2f + tooltipTextOffset, tooltipTextPaint)
+            val tooltipText = "${dataList[selectedIndex].empName} | ${dataList[selectedIndex].count}건"
+            tooltipHelper.drawTooltip(canvas, tooltipText, mx, my)
         }
     }
 }

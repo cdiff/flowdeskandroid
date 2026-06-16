@@ -26,8 +26,6 @@ class CounselDashboardViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<CounselDashboardUiState>(CounselDashboardUiState.Loading)
     val uiState: StateFlow<CounselDashboardUiState> = _uiState.asStateFlow()
 
-    init { loadDashboard() }
-
     fun loadDashboard(startDate: String? = null, endDate: String? = null) {
         viewModelScope.launch {
             _uiState.value = CounselDashboardUiState.Loading

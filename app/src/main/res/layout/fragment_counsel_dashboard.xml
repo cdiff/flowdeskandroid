@@ -97,22 +97,31 @@
                 android:elevation="0dp"
                 android:layout_marginBottom="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="상담 요약 현황"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    android:textColor="#111827"
-                    android:layout_marginBottom="4dp" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="24dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="신규 접수 및 완료 건수, 완료율을 요약하여 보여줍니다."
-                    android:textSize="12sp"
-                    android:textColor="@color/gray_text"
-                    android:layout_marginBottom="24dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="상담 요약 현황"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="#111827" />
+
+                    <ImageView
+                        android:id="@+id/btn_summary_info"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_info"
+                        android:padding="2dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:focusable="true" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -324,14 +333,6 @@
                     android:textSize="15sp"
                     android:textStyle="bold"
                     android:textColor="#111827"
-                    android:layout_marginBottom="4dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="현재 유입된 상담들의 상태별 분포 현황입니다."
-                    android:textSize="12sp"
-                    android:textColor="@color/gray_text"
                     android:layout_marginBottom="16dp" />
 
                 <!-- 누적 합계 수치 -->
@@ -382,6 +383,8 @@
                 android:background="@drawable/bg_card_rounded"
                 android:padding="20dp"
                 android:elevation="0dp"
+                android:clipToPadding="false"
+                android:clipChildren="false"
                 android:layout_marginBottom="16dp">
 
                 <TextView
@@ -391,21 +394,15 @@
                     android:textSize="15sp"
                     android:textStyle="bold"
                     android:textColor="#111827"
-                    android:layout_marginBottom="4dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="상담 배정 및 처리 건수에 대한 담당자별 현황입니다."
-                    android:textSize="12sp"
-                    android:textColor="@color/gray_text"
                     android:layout_marginBottom="16dp" />
 
                 <com.example.flowdesk_android.feature.counsel_management.presentation.dashboard.CounselEmployeeLineChartView
                     android:id="@+id/line_chart_employee"
                     android:layout_width="match_parent"
                     android:layout_height="220dp"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    android:clipToPadding="false"
+                    android:clipChildren="false" />
             </LinearLayout>
 
             <!-- ─── ④ 일별 상담 추이 Bar Chart ─── -->
@@ -418,27 +415,99 @@
                 android:elevation="0dp"
                 android:layout_marginBottom="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="일별 상담 추이"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    android:textColor="#111827"
-                    android:layout_marginBottom="4dp" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="최근 14일 동안 인입된 일별 상담 건수의 추이입니다."
-                    android:textSize="12sp"
-                    android:textColor="@color/gray_text"
-                    android:layout_marginBottom="16dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="일별 상담 추이"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="#111827" />
+
+                    <ImageView
+                        android:id="@+id/btn_daily_trend_info"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_info"
+                        android:padding="2dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:focusable="true" />
+                </LinearLayout>
 
                 <com.example.flowdesk_android.feature.counsel_management.presentation.dashboard.DailyBarChartView
                     android:id="@+id/bar_chart_daily"
                     android:layout_width="match_parent"
                     android:layout_height="180dp" />
+
+                <!-- 1주/2주/한달 기간 선택 슬라이딩 세그먼트 탭 -->
+                <FrameLayout
+                    android:id="@+id/fl_daily_period_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_segment_container"
+                    android:padding="3dp">
+
+                    <!-- 슬라이딩하는 흰색 둥근 배경 뷰 -->
+                    <View
+                        android:id="@+id/v_segment_selector"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_segment_item_selected" />
+
+                    <!-- 클릭 가능한 탭 텍스트들 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/btn_period_1w"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="1주"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:textColor="#3B82F6"
+                            android:clickable="true"
+                            android:focusable="true" />
+
+                        <TextView
+                            android:id="@+id/btn_period_2w"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="2주"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:textColor="#64748B"
+                            android:clickable="true"
+                            android:focusable="true" />
+
+                        <TextView
+                            android:id="@+id/btn_period_1m"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="한달"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:textColor="#64748B"
+                            android:clickable="true"
+                            android:focusable="true" />
+                    </LinearLayout>
+                </FrameLayout>
             </LinearLayout>
 
             <!-- ─── 웹사이트별 상담 및 시간대별 상담 분포 가로 스크롤 배치 ─── -->
@@ -447,6 +516,7 @@
                 android:layout_height="wrap_content"
                 android:scrollbars="none"
                 android:clipToPadding="false"
+                android:clipChildren="false"
                 android:fillViewport="true"
                 android:layout_marginBottom="16dp">
 
@@ -501,6 +571,8 @@
                         android:background="@drawable/bg_card_rounded"
                         android:padding="20dp"
                         android:elevation="0dp"
+                        android:clipToPadding="false"
+                        android:clipChildren="false"
                         android:layout_marginEnd="4dp">
 
                         <TextView
@@ -520,10 +592,12 @@
                             android:textColor="@color/gray_text"
                             android:layout_marginBottom="16dp" />
 
-                        <com.github.mikephil.charting.charts.BarChart
-                            android:id="@+id/bar_chart_hourly"
+                        <com.example.flowdesk_android.feature.counsel_management.presentation.dashboard.CounselHourlyLineChartView
+                            android:id="@+id/line_chart_hourly"
                             android:layout_width="match_parent"
-                            android:layout_height="150dp" />
+                            android:layout_height="150dp"
+                            android:clipToPadding="false"
+                            android:clipChildren="false" />
                     </LinearLayout>
                 </LinearLayout>
             </HorizontalScrollView>
