@@ -11,15 +11,15 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.databinding.DialogUserInviteBinding
+import com.example.flowdesk_android.databinding.DialogUserInviteBottomSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class InviteTeamBottomSheetFragment(private val onSuccess: () -> Unit) : BottomSheetDialogFragment() {
+class InviteTeamBottomSheet(private val onSuccess: () -> Unit) : BottomSheetDialogFragment() {
 
-    private var _binding: DialogUserInviteBinding? = null
+    private var _binding: DialogUserInviteBottomSheetBinding? = null
     private val binding get() = _binding!!
     private val viewModel: InviteTeamViewModel by viewModels()
 
@@ -29,7 +29,7 @@ class InviteTeamBottomSheetFragment(private val onSuccess: () -> Unit) : BottomS
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = DialogUserInviteBinding.inflate(inflater, container, false)
+        _binding = DialogUserInviteBottomSheetBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -67,7 +67,6 @@ class InviteTeamBottomSheetFragment(private val onSuccess: () -> Unit) : BottomS
 
     private fun setupListeners() {
         binding.btnClose.setOnClickListener { dismiss() }
-        binding.btnCancel.setOnClickListener { dismiss() }
 
         binding.btnInvite.setOnClickListener {
             val userId = binding.etUserId.text.toString()

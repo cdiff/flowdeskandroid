@@ -16,7 +16,7 @@
             <item
                 android:drawable="@drawable/ic_arrow_drop_down"
                 android:gravity="center_vertical|end"
-                android:right="12dp" />
+                android:right="8dp" />
         </layer-list>
     </item>
 </selector>

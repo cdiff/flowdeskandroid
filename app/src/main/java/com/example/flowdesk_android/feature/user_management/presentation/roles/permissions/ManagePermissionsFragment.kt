@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.feature.user_management.domain.model.RoleDetail
+import com.example.flowdesk_android.feature.user_management.domain.model.Role
 import com.example.flowdesk_android.databinding.FragmentRoleManagePermissionsBinding
 import com.example.flowdesk_android.databinding.ViewRoleManageInfoBinding
 import com.example.flowdesk_android.databinding.ViewRoleManagePermissionsBinding
@@ -185,7 +186,7 @@ class ManagePermissionsFragment : BaseFragment(R.layout.fragment_role_manage_per
         
         // availableRoles가 업데이트될 때까지 기다리기는 어렵고, 보통 UI 흐름상 이미 로드되어 있거나 금방 로드됨.
         // 더 안전하게는 Flow를 collect하여 보여주는게 정석이지만, 여기서는 단순화하여 열릴 때 넘김.
-        RoleCopyBottomSheetFragment(roles, roleId) { selectedRole ->
+        RoleCopyBottomSheetFragment(roles, roleId) { selectedRole: Role ->
             showCopyConfirmationDialog(selectedRole)
         }.show(childFragmentManager, "RoleCopyBottomSheet")
     }

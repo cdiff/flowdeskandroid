@@ -15,7 +15,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.databinding.FragmentUserListBinding
-import com.example.flowdesk_android.feature.user_management.presentation.users.invite.InviteTeamBottomSheetFragment
+import com.example.flowdesk_android.feature.user_management.presentation.users.invite.InviteTeamBottomSheet
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import androidx.navigation.fragment.findNavController
@@ -50,10 +50,10 @@ class UserListFragment : Fragment(R.layout.fragment_user_list) {
 
     private fun setupListeners() {
         binding.btnInviteTeam.setOnClickListener {
-            val bottomSheet = InviteTeamBottomSheetFragment {
+            val bottomSheet = InviteTeamBottomSheet {
                 viewModel.fetchUsers()
             }
-            bottomSheet.show(childFragmentManager, InviteTeamBottomSheetFragment.TAG)
+            bottomSheet.show(childFragmentManager, InviteTeamBottomSheet.TAG)
         }
 
         binding.etSearch.addTextChangedListener(object : TextWatcher {

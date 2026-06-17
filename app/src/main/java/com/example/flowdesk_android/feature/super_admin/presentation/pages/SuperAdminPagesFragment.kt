@@ -127,8 +127,8 @@ class SuperAdminPagesFragment : Fragment() {
     private fun setupListeners() {
         // 새 페이지 생성 버튼
         btnCreatePage.setOnClickListener {
-            CreatePageBottomSheetFragment { viewModel.fetchPages() }
-                .show(childFragmentManager, CreatePageBottomSheetFragment.TAG)
+            CreatePageBottomSheet { viewModel.fetchPages() }
+                .show(childFragmentManager, CreatePageBottomSheet.TAG)
         }
 
         // 검색

@@ -121,8 +121,10 @@ class RolesFragment : Fragment() {
         }
 
         btnCreateRole.setOnClickListener {
-            val bottomSheet = CreateRoleBottomSheetFragment {
-                viewModel.fetchRoles()
+            val bottomSheet = CreateRoleBottomSheetFragment().apply {
+                onSuccess = {
+                    viewModel.fetchRoles()
+                }
             }
             bottomSheet.show(childFragmentManager, CreateRoleBottomSheetFragment.TAG)
         }

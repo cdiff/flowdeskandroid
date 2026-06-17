@@ -122,8 +122,8 @@ class SuperAdminActionsFragment : Fragment() {
 
     private fun setupListeners() {
         btnCreateAction.setOnClickListener {
-            CreateActionBottomSheetFragment { viewModel.fetchActions() }
-                .show(childFragmentManager, CreateActionBottomSheetFragment.TAG)
+            CreateActionBottomSheet { viewModel.fetchActions() }
+                .show(childFragmentManager, CreateActionBottomSheet.TAG)
         }
 
         etSearch.addTextChangedListener(object : TextWatcher {

@@ -21,7 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class CreatePageBottomSheetFragment(
+class CreatePageBottomSheet(
     private val onSuccess: () -> Unit
 ) : BottomSheetDialogFragment() {
 
@@ -33,7 +33,6 @@ class CreatePageBottomSheetFragment(
     private lateinit var etDescription: EditText
     private lateinit var etSortOrder: EditText
     private lateinit var btnCreate: View
-    private lateinit var btnCancel: View
     private lateinit var btnClose: ImageView
     private lateinit var progressBar: ProgressBar
 
@@ -42,7 +41,7 @@ class CreatePageBottomSheetFragment(
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.dialog_super_admin_create_page, container, false)
+    ): View = inflater.inflate(R.layout.dialog_page_create_bottom_sheet, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -70,14 +69,12 @@ class CreatePageBottomSheetFragment(
         etDescription = view.findViewById(R.id.et_description)
         etSortOrder   = view.findViewById(R.id.et_sort_order)
         btnCreate     = view.findViewById(R.id.btn_create)
-        btnCancel     = view.findViewById(R.id.btn_cancel)
         btnClose      = view.findViewById(R.id.btn_close)
         progressBar   = view.findViewById(R.id.progress_bar)
     }
 
     private fun setupListeners() {
         btnClose.setOnClickListener { dismiss() }
-        btnCancel.setOnClickListener { dismiss() }
 
         btnCreate.setOnClickListener {
             val pageName    = etPageName.text.toString().trim()

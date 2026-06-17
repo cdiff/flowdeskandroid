@@ -13,6 +13,7 @@ import com.example.flowdesk_android.feature.super_admin.presentation.actions.Sup
 import com.example.flowdesk_android.feature.counsel_management.presentation.dashboard.CounselDashboardFragment
 import com.example.flowdesk_android.feature.counsel_management.presentation.list.CounselListFragment
 import com.example.flowdesk_android.feature.counsel_management.presentation.calendar.CounselCalendarFragment
+import com.example.flowdesk_android.feature.system_management.presentation.status.TenantStatusFragment
 
 class DynamicTabPagerAdapter(
     fragment: Fragment,
@@ -37,8 +38,9 @@ class DynamicTabPagerAdapter(
             "counsels"           -> CounselListFragment()
             "counsels.calendar", "counsels.reservations" -> CounselCalendarFragment()
 
-            // 추후 슈퍼 관리자나 시스템 관리 자식 페이지들도 여기에 추가하면 됩니다.
-            
+            // 상태 관리 (테넌트 상태)
+            "super.status", "super.statuses", "system.status", "system.statuses", "tenants.status" -> TenantStatusFragment()
+
             else -> Fragment() // 준비 중인 페이지 Placeholder
         }
     }

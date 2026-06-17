@@ -23,6 +23,7 @@ import com.example.flowdesk_android.feature.counsel_management.domain.model.Coun
 import com.example.flowdesk_android.feature.counsel_management.domain.model.EmployeeStat
 import com.google.android.material.tabs.TabLayout
 import com.example.flowdesk_android.core.base.BaseFragment
+import com.example.flowdesk_android.core.extension.showCustomDropdown
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -149,73 +150,26 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
 
     private fun showStatusPopup() {
         if (statusList.isEmpty()) return
-
-        val popup = ListPopupWindow(requireContext())
-        popup.anchorView = spinnerStatusAnchor
-
-        // ① 너비 1:1 동기화
-        popup.width = spinnerStatusAnchor.width
-        // ② 무조건 아래 방향으로만
-        popup.isModal = true
-        popup.setDropDownGravity(android.view.Gravity.START)
-        // ③ 스피너와 겹치지 않는 정렬 — yOffset=0 이면 앵커 바로 밑에 붙음
-        popup.verticalOffset = 0
-        popup.horizontalOffset = 0
-
-        popup.setBackgroundDrawable(
-            androidx.core.content.ContextCompat.getDrawable(requireContext(), R.drawable.bg_spinner_popup)
-        )
-        popup.height = ListPopupWindow.WRAP_CONTENT
-
         val adapter = StatusDropdownAdapter(requireContext(), statusList, selectedStatusIndex)
-        popup.setAdapter(adapter)
-
-        popup.setOnItemClickListener { _, _, position, _ ->
-            val selected = statusList.getOrNull(position) ?: return@setOnItemClickListener
-            val current = currentDetail ?: return@setOnItemClickListener
+        statusPopup = spinnerStatusAnchor.showCustomDropdown(adapter) { position ->
+            val selected = statusList.getOrNull(position) ?: return@showCustomDropdown
+            val current = currentDetail ?: return@showCustomDropdown
             if (selected.counselStat != current.counselStat) {
                 // 서버 스펙상 counselResvDtm 필수 → 기존 값 유지하여 전달
                 viewModel.updateCounselStatus(selected.counselStat, current.counselResvDtm)
             }
             selectedStatusIndex = position
             bindStatusButton(selected)
-            popup.dismiss()
         }
-
-        popup.show()
-        // 팝업 ListView 에 클립 해제 (둥근 모서리 잘림 방지) + elevation 적용
-        popup.listView?.clipToOutline = false
-        popup.listView?.elevation = resources.displayMetrics.density * 8
-        statusPopup = popup
     }
 
     private fun showManagerPopup() {
         val labels = mutableListOf("미배정") + employeeList.map { it.empName }
         if (labels.isEmpty()) return
-
-        val popup = ListPopupWindow(requireContext())
-        popup.anchorView = spinnerManagerAnchor
-
-        // ① 너비 1:1 동기화
-        popup.width = spinnerManagerAnchor.width
-        // ② 무조건 아래 방향으로만
-        popup.isModal = true
-        popup.setDropDownGravity(android.view.Gravity.START)
-        // ③ 스피너와 겹치지 않는 정렬
-        popup.verticalOffset = 0
-        popup.horizontalOffset = 0
-
-        popup.setBackgroundDrawable(
-            androidx.core.content.ContextCompat.getDrawable(requireContext(), R.drawable.bg_spinner_popup)
-        )
-        popup.height = ListPopupWindow.WRAP_CONTENT
-
         val adapter = ManagerDropdownAdapter(requireContext(), labels, selectedManagerIndex)
-        popup.setAdapter(adapter)
-
-        popup.setOnItemClickListener { _, _, position, _ ->
+        managerPopup = spinnerManagerAnchor.showCustomDropdown(adapter) { position ->
             val empSeq = if (position == 0) null else employeeList.getOrNull(position - 1)?.empSeq
-            val current = currentDetail ?: return@setOnItemClickListener
+            val current = currentDetail ?: return@showCustomDropdown
             if (empSeq != current.empSeq) {
                 viewModel.updateCounsel(
                     com.example.flowdesk_android.feature.counsel_management.data.dto.CounselUpdateRequest(
@@ -225,13 +179,7 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
             }
             selectedManagerIndex = position
             tvManagerSelected.text = labels[position]
-            popup.dismiss()
         }
-
-        popup.show()
-        popup.listView?.clipToOutline = false
-        popup.listView?.elevation = resources.displayMetrics.density * 8
-        managerPopup = popup
     }
 
     // ── ViewModel 관찰 ──────────────────────────────────────────────────────────

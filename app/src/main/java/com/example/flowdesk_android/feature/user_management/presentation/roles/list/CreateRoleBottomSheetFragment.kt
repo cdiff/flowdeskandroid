@@ -19,7 +19,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class CreateRoleBottomSheetFragment(private val onSuccess: () -> Unit) : BottomSheetDialogFragment() {
+class CreateRoleBottomSheetFragment : BottomSheetDialogFragment() {
+
+    var onSuccess: (() -> Unit)? = null
 
     private val viewModel: RolesViewModel by viewModels({ requireParentFragment() })
 
@@ -105,7 +107,7 @@ class CreateRoleBottomSheetFragment(private val onSuccess: () -> Unit) : BottomS
                         when (event) {
                             is RoleListEvent.RoleCreated -> {
                                 Toast.makeText(context, "새 역할이 생성되었습니다.", Toast.LENGTH_SHORT).show()
-                                onSuccess()
+                                onSuccess?.invoke()
                                 dismiss()
                             }
                             is RoleListEvent.Error -> {

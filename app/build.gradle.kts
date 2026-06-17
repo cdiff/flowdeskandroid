@@ -73,6 +73,7 @@ dependencies {
 
     implementation("com.google.android.flexbox:flexbox:3.0.0")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation("com.github.skydoves:colorpickerview:2.2.4")
 
 
     testImplementation(libs.junit)

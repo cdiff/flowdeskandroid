@@ -1,4 +1,4 @@
-package com.example.flowdesk_android.feature.super_admin.presentation.actions
+package com.example.flowdesk_android.feature.super_admin.presentation.tenants
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,24 +14,22 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.flowdesk_android.R
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class CreateActionBottomSheetFragment(
-    private val onSuccess: () -> Unit
-) : BottomSheetDialogFragment() {
+class CreateTenantBottomSheet(private val onSuccess: () -> Unit) : BottomSheetDialogFragment() {
 
-    private val viewModel: ActionsViewModel by viewModels({ requireParentFragment() })
+    private val viewModel: TenantsViewModel by viewModels({ requireParentFragment() })
 
-    private lateinit var etActionName: EditText
-    private lateinit var etDisplayName: EditText
-    private lateinit var btnCreate: View
-    private lateinit var btnCancel: View
     private lateinit var btnClose: ImageView
+    private lateinit var btnCreate: View
+    private lateinit var etTenantName: EditText
+    private lateinit var etDisplayName: EditText
+    private lateinit var etDomain: EditText
     private lateinit var progressBar: ProgressBar
 
     override fun getTheme(): Int = R.style.CustomBottomSheetDialogTheme
@@ -39,7 +37,7 @@ class CreateActionBottomSheetFragment(
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.dialog_super_admin_create_action, container, false)
+    ): View = inflater.inflate(R.layout.dialog_tenant_create_bottom_sheet, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -61,32 +59,36 @@ class CreateActionBottomSheetFragment(
     }
 
     private fun initViews(view: View) {
-        etActionName  = view.findViewById(R.id.et_action_name)
-        etDisplayName = view.findViewById(R.id.et_display_name)
-        btnCreate     = view.findViewById(R.id.btn_create)
-        btnCancel     = view.findViewById(R.id.btn_cancel)
-        btnClose      = view.findViewById(R.id.btn_close)
-        progressBar   = view.findViewById(R.id.progress_bar)
+        btnClose       = view.findViewById(R.id.btn_close)
+        btnCreate      = view.findViewById(R.id.btn_create)
+        etTenantName   = view.findViewById(R.id.et_tenant_name)
+        etDisplayName  = view.findViewById(R.id.et_display_name)
+        etDomain       = view.findViewById(R.id.et_domain)
+        progressBar    = view.findViewById(R.id.progress_bar)
     }
 
     private fun setupListeners() {
         btnClose.setOnClickListener { dismiss() }
-        btnCancel.setOnClickListener { dismiss() }
 
         btnCreate.setOnClickListener {
-            val actionName  = etActionName.text.toString().trim()
+            val tenantName  = etTenantName.text.toString().trim()
             val displayName = etDisplayName.text.toString().trim()
+            val domain      = etDomain.text.toString().trim()
 
-            if (actionName.isBlank()) {
-                etActionName.error = "액션 이름을 입력해주세요."
+            if (tenantName.isBlank()) {
+                etTenantName.error = "테넌트명을 입력해주세요."
                 return@setOnClickListener
             }
             if (displayName.isBlank()) {
                 etDisplayName.error = "표시 이름을 입력해주세요."
                 return@setOnClickListener
             }
+            if (domain.isBlank()) {
+                etDomain.error = "도메인을 입력해주세요."
+                return@setOnClickListener
+            }
 
-            viewModel.createAction(actionName, displayName)
+            viewModel.createTenant(tenantName, displayName, domain)
         }
     }
 
@@ -95,20 +97,20 @@ class CreateActionBottomSheetFragment(
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.uiState.collect { state ->
-                        progressBar.isVisible = state is ActionListUiState.Loading
-                        btnCreate.isEnabled   = state !is ActionListUiState.Loading
+                        progressBar.isVisible = state is TenantListUiState.Loading
+                        btnCreate.isEnabled   = state !is TenantListUiState.Loading
                     }
                 }
 
                 launch {
                     viewModel.event.collect { event ->
                         when (event) {
-                            is ActionListEvent.ActionCreated -> {
-                                Toast.makeText(context, "액션이 생성되었습니다.", Toast.LENGTH_SHORT).show()
+                            is TenantListEvent.TenantCreated -> {
+                                Toast.makeText(context, "테넌트가 생성되었습니다.", Toast.LENGTH_SHORT).show()
                                 onSuccess()
                                 dismiss()
                             }
-                            is ActionListEvent.Error -> {
+                            is TenantListEvent.Error -> {
                                 Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
                             }
                             else -> {}
@@ -120,6 +122,6 @@ class CreateActionBottomSheetFragment(
     }
 
     companion object {
-        const val TAG = "CreateActionBottomSheet"
+        const val TAG = "CreateTenantBottomSheet"
     }
 }

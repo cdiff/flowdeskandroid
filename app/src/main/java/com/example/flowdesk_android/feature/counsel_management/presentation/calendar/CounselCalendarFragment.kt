@@ -11,9 +11,10 @@ import android.widget.ArrayAdapter
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ProgressBar
-import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.ListPopupWindow
+import com.example.flowdesk_android.core.extension.showCustomDropdown
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -48,7 +49,8 @@ class CounselCalendarFragment : Fragment() {
     private lateinit var btnPrevMonth: ImageButton
     private lateinit var tvSelectedMonth: TextView
     private lateinit var btnNextMonth: ImageButton
-    private lateinit var spinnerManager: Spinner
+    private lateinit var spinnerManager: View
+    private lateinit var tvManagerSelected: TextView
     private lateinit var tvMonthlyCount: TextView
     private lateinit var vpCalendar: ViewPager2
     private lateinit var progressBar: ProgressBar
@@ -69,6 +71,8 @@ class CounselCalendarFragment : Fragment() {
     private var isFirstSpinnerSelection = true
     private var selectedDate: LocalDate? = null
     private var allReservations: Map<LocalDate, List<CounselItem>> = emptyMap()
+    private var selectedManagerIndex = 0
+    private var managerPopup: ListPopupWindow? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -91,6 +95,7 @@ class CounselCalendarFragment : Fragment() {
         tvSelectedMonth = view.findViewById(R.id.tv_selected_month)
         btnNextMonth = view.findViewById(R.id.btn_next_month)
         spinnerManager = view.findViewById(R.id.spinner_manager)
+        tvManagerSelected = view.findViewById(R.id.tv_manager_selected)
         tvMonthlyCount = view.findViewById(R.id.tv_monthly_count)
         vpCalendar = view.findViewById(R.id.vp_calendar)
         progressBar = view.findViewById(R.id.progress_bar)
@@ -200,19 +205,6 @@ class CounselCalendarFragment : Fragment() {
                 vpCalendar.currentItem = vpCalendar.currentItem + 1
             }
         }
-
-        spinnerManager.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if (isFirstSpinnerSelection) {
-                    isFirstSpinnerSelection = false
-                    return
-                }
-                val empSeq = if (position == 0) null else displayEmployeeList.getOrNull(position - 1)?.empSeq
-                viewModel.selectEmpSeq(empSeq)
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
     }
 
     private fun observeState() {
@@ -223,14 +215,12 @@ class CounselCalendarFragment : Fragment() {
                     viewModel.selectedMonth.collect { month ->
                         tvSelectedMonth.text = "${month.year}년 ${month.monthValue}월"
                         
-                        // 뷰페이저 현재 페이지와 selectedMonth 불일치 시 페이지 이동 동기화
                         val currentMonth = pagerAdapter.getYearMonth(vpCalendar.currentItem)
                         if (currentMonth != month) {
                             val targetPosition = pagerAdapter.getPosition(month)
                             vpCalendar.setCurrentItem(targetPosition, false)
                         }
 
-                        // 월 변경 시 선택 초기화
                         selectedDate = null
                         pagerAdapter.activeAdapters.values.forEach { it.setSelectedDate(null) }
                         llSelectedDateHeader.visibility = View.GONE
@@ -265,7 +255,6 @@ class CounselCalendarFragment : Fragment() {
                                 vpCalendar.alpha = 1.0f
                                 allReservations = state.reservations
                                 pagerAdapter.activeAdapters.values.forEach { it.updateReservations(state.reservations) }
-                                // 선택된 날짜 있으면 갱신
                                 selectedDate?.let { onDateSelected(it) }
                             }
                             is CalendarUiState.Error -> {
@@ -323,13 +312,24 @@ class CounselCalendarFragment : Fragment() {
         displayEmployeeList = list.distinctBy { it.empSeq }
 
         val labels = mutableListOf("모든 담당자") + displayEmployeeList.map { it.empName }
-        val adapter = object : ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, labels) {
+
+        val selectedEmpSeq = viewModel.selectedEmpSeq.value
+        val defaultIdx = if (selectedEmpSeq == null) 0 else {
+            val idx = displayEmployeeList.indexOfFirst { it.empSeq == selectedEmpSeq }
+            if (idx >= 0) idx + 1 else 0
+        }
+        selectedManagerIndex = defaultIdx
+        tvManagerSelected.text = labels.getOrNull(defaultIdx) ?: "모든 담당자"
+
+        spinnerManager.setOnClickListener {
+            showManagerDropdown(labels)
+        }
+    }
+
+    private fun showManagerDropdown(labels: List<String>) {
+        val adapter = object : ArrayAdapter<String>(requireContext(), R.layout.item_spinner_dropdown, labels) {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-                val view = convertView ?: LayoutInflater.from(context)
-                    .inflate(R.layout.item_spinner_selected, parent, false)
-                val tvText = view.findViewById<TextView>(android.R.id.text1)
-                tvText?.text = getItem(position)
-                return view
+                return getDropDownView(position, convertView, parent)
             }
             override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val view = convertView ?: LayoutInflater.from(context)
@@ -341,8 +341,7 @@ class CounselCalendarFragment : Fragment() {
                 tvText.text = getItem(position)
                 vDot.visibility = View.GONE
 
-                val selectedPos = spinnerManager.selectedItemPosition
-                val isSelected = position == selectedPos
+                val isSelected = position == selectedManagerIndex
                 layoutRoot.isSelected = isSelected
                 if (isSelected) {
                     tvText.setTextColor(Color.parseColor("#1D4ED8"))
@@ -354,19 +353,14 @@ class CounselCalendarFragment : Fragment() {
                 return view
             }
         }
-        adapter.setDropDownViewResource(R.layout.item_spinner_dropdown)
-        spinnerManager.adapter = adapter
 
-        val selectedEmpSeq = viewModel.selectedEmpSeq.value
-        if (selectedEmpSeq == null) {
-            spinnerManager.setSelection(0)
-        } else {
-            val idx = displayEmployeeList.indexOfFirst { it.empSeq == selectedEmpSeq }
-            if (idx >= 0) {
-                spinnerManager.setSelection(idx + 1)
-            } else {
-                spinnerManager.setSelection(0)
-            }
+        managerPopup?.dismiss()
+        managerPopup = spinnerManager.showCustomDropdown(adapter) { position ->
+            selectedManagerIndex = position
+            tvManagerSelected.text = labels[position]
+
+            val empSeq = if (position == 0) null else displayEmployeeList.getOrNull(position - 1)?.empSeq
+            viewModel.selectEmpSeq(empSeq)
         }
     }
 

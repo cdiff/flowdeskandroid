@@ -87,10 +87,10 @@ class TenantsFragment : Fragment() {
         }
 
         btnCreateTenant.setOnClickListener {
-            val bottomSheet = CreateTenantBottomSheetFragment {
+            val bottomSheet = CreateTenantBottomSheet {
                 viewModel.fetchTenants()
             }
-            bottomSheet.show(childFragmentManager, CreateTenantBottomSheetFragment.TAG)
+            bottomSheet.show(childFragmentManager, CreateTenantBottomSheet.TAG)
         }
 
         etSearch.addTextChangedListener(object : TextWatcher {

@@ -100,13 +100,29 @@
                 android:layout_weight="1" />
 
             <!-- 담당자 Spinner -->
-            <Spinner
+            <LinearLayout
                 android:id="@+id/spinner_manager"
-                android:layout_width="76dp"
-                android:layout_height="24dp"
+                android:layout_width="wrap_content"
+                android:layout_height="28dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
                 android:background="@drawable/bg_spinner"
-                android:overlapAnchor="false"
-                android:spinnerMode="dropdown" />
+                android:paddingStart="10dp"
+                android:paddingEnd="28dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/tv_manager_selected"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#374151"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:text="모든 담당자" />
+            </LinearLayout>
         </LinearLayout>
 
         <!-- ── 이번 달 요약 바 ── -->

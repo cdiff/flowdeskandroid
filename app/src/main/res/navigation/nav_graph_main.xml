@@ -98,4 +98,20 @@
             app:argType="integer" />
     </fragment>
 
+    <fragment
+        android:id="@+id/statusEditFragment"
+        android:name="com.example.flowdesk_android.feature.system_management.presentation.status.StatusEditFragment"
+        android:label="StatusEdit"
+        tools:layout="@layout/fragment_status_edit">
+        <argument
+            android:name="tenantStatusId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+        <argument
+            android:name="defaultGroup"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+
 </navigation>

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_bottom_sheet"
+    android:paddingTop="20dp"
+    android:paddingBottom="32dp"
+    android:paddingHorizontal="24dp">
+
+    <!-- 핸들 바 -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:background="#E2E8F0"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp" />
+
+    <!-- 타이틀 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="색상 선택"
+        android:textColor="#0F172A"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="20dp" />
+
+    <!-- 컬러피커 메인 영역 -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        android:layout_marginBottom="20dp">
+
+        <com.skydoves.colorpickerview.ColorPickerView
+            android:id="@+id/color_picker_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:selector="@drawable/bg_selector_ring" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- 슬라이더 + 미리보기 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="20dp">
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="1">
+
+            <!-- 실제 그려지는 무지개 바 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="12dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="12dp"
+                android:background="@drawable/bg_rainbow_gradient" />
+
+            <!-- 오직 투명한 트랙과 썸(동그라미)만 갖는 SeekBar -->
+            <SeekBar
+                android:id="@+id/hue_seek_bar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:max="360"
+                android:progress="200"
+                android:progressDrawable="@android:color/transparent"
+                android:background="@android:color/transparent"
+                android:splitTrack="false"
+                android:thumb="@drawable/bg_hue_thumb"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp" />
+        </FrameLayout>
+
+        <View
+            android:id="@+id/view_color_preview_picker"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="16dp" />
+    </LinearLayout>
+
+    <!-- HEX값 입력 영역 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="HEX"
+            android:textColor="#0F172A"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="16dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_card_rounded_border"
+            android:paddingHorizontal="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="#"
+                android:textColor="#CBD5E1"
+                android:textSize="16sp"
+                android:layout_marginEnd="6dp" />
+
+            <EditText
+                android:id="@+id/et_hex_value"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:text="3B82F6"
+                android:textColor="#0F172A"
+                android:textSize="16sp"
+                android:inputType="textCapCharacters"
+                android:maxLines="1"
+                android:maxLength="6"
+                android:fontFamily="monospace"
+                android:importantForAutofill="no" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- 선택하기 버튼 -->
+    <Button
+        android:id="@+id/btn_confirm_color"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:text="선택하기"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:backgroundTint="#3B82F6"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        app:cornerRadius="14dp" />
+
+</LinearLayout>
