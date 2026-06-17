@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import com.example.flowdesk_android.R
+import com.example.flowdesk_android.feature.counsel_management.domain.model.EmployeeStat
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -247,9 +248,27 @@ class CounselFilterBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun populateManagerOptions() {
+        val rawList = viewModel.employeeList.value
+        val hasUnassigned = rawList.any { it.empSeq == 0 }
+
+        val list = mutableListOf<EmployeeStat>()
+        if (!hasUnassigned) {
+            list.add(EmployeeStat(empSeq = 0, empName = "미배정", count = 0))
+        }
+
+        list.addAll(rawList.map {
+            if (it.empSeq == 0 || it.empName.isBlank()) {
+                it.copy(empName = "미배정")
+            } else {
+                it
+            }
+        })
+
+        val uniqueList = list.distinctBy { it.empSeq }
+
         populateGridOptions(
             container = containerManager,
-            items = viewModel.employeeList.value,
+            items = uniqueList,
             getItemText = { it.empName },
             getItemTag = { it.empSeq },
             currentSelectedTag = tempEmpSeq,

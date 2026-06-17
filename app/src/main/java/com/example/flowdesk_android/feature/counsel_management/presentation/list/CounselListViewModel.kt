@@ -83,12 +83,16 @@ class CounselListViewModel @Inject constructor(
 
         viewModelScope.launch {
             val filter = _filterState.value
+            val isUnassignedQuery = filter.q?.trim() == "미배정"
+            val queryParam = if (isUnassignedQuery) null else filter.q
+            val empSeqParam = if (isUnassignedQuery) 0 else filter.empSeq
+
             counselRepository.getCounsels(
                 page = currentPage,
                 limit = 20,
-                query = filter.q,
+                query = queryParam,
                 counselStat = filter.counselStat,
-                empSeq = filter.empSeq,
+                empSeq = empSeqParam,
                 webCode = filter.webCode,
                 startDate = filter.startDate,
                 endDate = filter.endDate,

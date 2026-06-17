@@ -65,6 +65,7 @@ class CounselCalendarFragment : Fragment() {
     private lateinit var pagerAdapter: MonthPagerAdapter
     private lateinit var dayReservationAdapter: DayReservationAdapter
     private var employeeList: List<EmployeeStat> = emptyList()
+    private var displayEmployeeList: List<EmployeeStat> = emptyList()
     private var isFirstSpinnerSelection = true
     private var selectedDate: LocalDate? = null
     private var allReservations: Map<LocalDate, List<CounselItem>> = emptyMap()
@@ -206,7 +207,7 @@ class CounselCalendarFragment : Fragment() {
                     isFirstSpinnerSelection = false
                     return
                 }
-                val empSeq = if (position == 0) null else employeeList.getOrNull(position - 1)?.empSeq
+                val empSeq = if (position == 0) null else displayEmployeeList.getOrNull(position - 1)?.empSeq
                 viewModel.selectEmpSeq(empSeq)
             }
 
@@ -307,7 +308,21 @@ class CounselCalendarFragment : Fragment() {
     }
 
     private fun setupManagerSpinner() {
-        val labels = mutableListOf("모든 담당자") + employeeList.map { it.empName }
+        val hasUnassigned = employeeList.any { it.empSeq == 0 }
+        val list = mutableListOf<EmployeeStat>()
+        if (!hasUnassigned) {
+            list.add(EmployeeStat(empSeq = 0, empName = "미배정", count = 0))
+        }
+        list.addAll(employeeList.map {
+            if (it.empSeq == 0 || it.empName.isBlank()) {
+                it.copy(empName = "미배정")
+            } else {
+                it
+            }
+        })
+        displayEmployeeList = list.distinctBy { it.empSeq }
+
+        val labels = mutableListOf("모든 담당자") + displayEmployeeList.map { it.empName }
         val adapter = object : ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, labels) {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val view = convertView ?: LayoutInflater.from(context)
@@ -346,7 +361,7 @@ class CounselCalendarFragment : Fragment() {
         if (selectedEmpSeq == null) {
             spinnerManager.setSelection(0)
         } else {
-            val idx = employeeList.indexOfFirst { it.empSeq == selectedEmpSeq }
+            val idx = displayEmployeeList.indexOfFirst { it.empSeq == selectedEmpSeq }
             if (idx >= 0) {
                 spinnerManager.setSelection(idx + 1)
             } else {
