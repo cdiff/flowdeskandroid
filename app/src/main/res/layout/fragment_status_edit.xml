@@ -24,16 +24,16 @@
     <TextView
         android:id="@+id/tv_header_title"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:text="상태 상세페이지"
         android:textColor="#0F172A"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:gravity="center"
         android:visibility="gone"
-        app:layout_constraintStart_toEndOf="@id/btn_back"
-        app:layout_constraintTop_toTopOf="@id/btn_back"
-        app:layout_constraintBottom_toBottomOf="@id/btn_back"
-        android:layout_marginStart="4dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- 스크롤 영역 -->
     <androidx.core.widget.NestedScrollView
@@ -49,6 +49,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingStart="24dp"
+            android:paddingTop="24dp"
             android:paddingEnd="24dp"
             android:paddingBottom="24dp">
 
@@ -62,7 +63,7 @@
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:lineSpacingMultiplier="1.2"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="4dp"
                 android:layout_marginBottom="28dp" />
 
             <!-- ===== 1. 상태 그룹 (필수 *) ===== -->
@@ -117,7 +118,7 @@
                         android:id="@+id/tv_status_group_selected"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="그룹 선택"
+                        android:text="업무 분류 선택"
                         android:textColor="#CBD5E1"
                         android:textColorHint="#CBD5E1"
                         android:textSize="18sp"
@@ -153,7 +154,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@null"
-                        android:hint="그룹명 직접 입력"
+                        android:hint="업무 분류명 직접 입력"
                         android:textColorHint="#CBD5E1"
                         android:textColor="#0F172A"
                         android:textSize="18sp"
