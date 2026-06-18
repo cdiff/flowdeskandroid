@@ -210,4 +210,25 @@ class TenantStatusViewModel @Inject constructor(
     fun clearSelectedStatusDetail() {
         _selectedStatusDetail.value = null
     }
+
+    // 정규식 및 중복 유효성 검증 비즈니스 로직
+    private val keyRegex = Regex("^[a-z0-9_]+$")
+    private val hexRegex = Regex("^#[0-9A-Fa-f]{6}$")
+
+    fun validateStatusKey(key: String): Boolean {
+        return key.isNotEmpty() && keyRegex.matches(key)
+    }
+
+    fun validateColorHex(color: String): Boolean {
+        return hexRegex.matches(color)
+    }
+
+    fun isDuplicateKey(group: String, key: String): Boolean {
+        val existingStatusesList = _filteredGroups.value.flatMap { it.items }
+        return existingStatusesList.any {
+            it.statusGroup.equals(group, ignoreCase = true) &&
+            it.statusKey.equals(key, ignoreCase = true)
+        }
+    }
 }
+
