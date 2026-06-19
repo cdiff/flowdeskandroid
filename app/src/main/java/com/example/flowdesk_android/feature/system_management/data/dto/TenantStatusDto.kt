@@ -1,4 +1,4 @@
-package com.example.flowdesk_android.feature.system_management.data.model
+package com.example.flowdesk_android.feature.system_management.data.dto
 
 import com.example.flowdesk_android.feature.system_management.domain.model.TenantStatus
 import com.example.flowdesk_android.feature.system_management.domain.model.TenantStatusGroup

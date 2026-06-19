@@ -1,7 +1,10 @@
 package com.example.flowdesk_android.feature.system_management.di
 
-import com.example.flowdesk_android.feature.system_management.data.repository.SystemManagementRepositoryImpl
+import com.example.flowdesk_android.feature.system_management.data.api.SecurityBlockApi
 import com.example.flowdesk_android.feature.system_management.data.api.SystemManagementApi
+import com.example.flowdesk_android.feature.system_management.data.repository.SecurityBlockRepositoryImpl
+import com.example.flowdesk_android.feature.system_management.data.repository.SystemManagementRepositoryImpl
+import com.example.flowdesk_android.feature.system_management.domain.repository.SecurityBlockRepository
 import com.example.flowdesk_android.feature.system_management.domain.repository.SystemManagementRepository
 import dagger.Binds
 import dagger.Module
@@ -19,6 +22,11 @@ object SystemManagementNetworkModule {
     @Singleton
     fun provideSystemManagementApi(retrofit: Retrofit): SystemManagementApi =
         retrofit.create(SystemManagementApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideSecurityBlockApi(retrofit: Retrofit): SecurityBlockApi =
+        retrofit.create(SecurityBlockApi::class.java)
 }
 
 @Module
@@ -30,4 +38,10 @@ abstract class SystemManagementRepositoryModule {
     abstract fun bindSystemManagementRepository(
         impl: SystemManagementRepositoryImpl
     ): SystemManagementRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSecurityBlockRepository(
+        impl: SecurityBlockRepositoryImpl
+    ): SecurityBlockRepository
 }

@@ -1,6 +1,6 @@
 package com.example.flowdesk_android.feature.system_management.data.api
 
-import com.example.flowdesk_android.feature.system_management.data.model.*
+import com.example.flowdesk_android.feature.system_management.data.dto.*
 import retrofit2.Response
 import retrofit2.http.*
 

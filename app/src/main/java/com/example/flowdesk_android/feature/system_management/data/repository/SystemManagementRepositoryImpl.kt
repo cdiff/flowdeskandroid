@@ -1,7 +1,7 @@
 package com.example.flowdesk_android.feature.system_management.data.repository
 
-import com.example.flowdesk_android.feature.system_management.data.model.*
 import com.example.flowdesk_android.feature.system_management.data.api.SystemManagementApi
+import com.example.flowdesk_android.feature.system_management.data.dto.*
 import com.example.flowdesk_android.feature.system_management.domain.model.TenantStatus
 import com.example.flowdesk_android.feature.system_management.domain.model.TenantStatusListResponse
 import com.example.flowdesk_android.feature.system_management.domain.repository.SystemManagementRepository
