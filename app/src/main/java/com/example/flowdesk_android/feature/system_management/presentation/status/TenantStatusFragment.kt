@@ -6,7 +6,6 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -21,6 +20,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.databinding.FragmentSystemTenantStatusBinding
+import com.example.flowdesk_android.databinding.ItemStatusGroupAccordionBinding
 import com.example.flowdesk_android.feature.system_management.domain.model.TenantStatus
 import com.example.flowdesk_android.feature.system_management.domain.model.TenantStatusGroup
 import com.example.flowdesk_android.feature.auth.presentation.dashboard.DashboardViewModel
@@ -41,6 +41,8 @@ class TenantStatusFragment : Fragment() {
 
     // ② Adapter 재사용 — 그룹 key → Adapter 캐시
     private val adapterCache = mutableMapOf<String, TenantStatusAdapter>()
+    // 아코디언 뷰 캐시 — LayoutManager 재설정 방지
+    private val accordionBindingCache = mutableMapOf<String, ItemStatusGroupAccordionBinding>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,6 +61,8 @@ class TenantStatusFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        adapterCache.clear()          // 메모리 누수 방지
+        accordionBindingCache.clear() // 메모리 누수 방지
     }
 
     // ─── Chip 렌더링 ────────────────────────────────────────────────────────
@@ -112,20 +116,20 @@ class TenantStatusFragment : Fragment() {
         val inflater = LayoutInflater.from(requireContext())
 
         groups.forEach { groupData ->
-            val accordionView = inflater.inflate(
-                R.layout.item_status_group_accordion,
-                binding.layoutAccordionContainer,
-                false
-            )
+            // ① 아코디언 ViewBinding 적용 — 캐시된 뷰가 있으면 재사용, 없으면 새로 inflate
+            val accordionBinding = accordionBindingCache.getOrPut(groupData.statusGroup) {
+                ItemStatusGroupAccordionBinding.inflate(inflater, binding.layoutAccordionContainer, false).also { b ->
+                    // ③ LayoutManager는 최초 1회만 설정 (재사용 시 재설정 불필요)
+                    b.rvTenantStatuses.apply {
+                        layoutManager = LinearLayoutManager(requireContext())
+                        isNestedScrollingEnabled = false
+                        setHasFixedSize(false)
+                    }
+                }
+            }
 
-            val headerLayout = accordionView.findViewById<View>(R.id.layout_accordion_header)
-            val ivArrow = accordionView.findViewById<ImageView>(R.id.iv_arrow_indicator)
-            val tvTitle = accordionView.findViewById<TextView>(R.id.tv_accordion_title)
-            val tvBadge = accordionView.findViewById<TextView>(R.id.tv_accordion_badge)
-            val rvStatuses = accordionView.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rv_tenant_statuses)
-
-            tvTitle.text = groupData.statusGroup
-            tvBadge.text = "${groupData.items.size}개 상태"
+            accordionBinding.tvAccordionTitle.text = groupData.statusGroup
+            accordionBinding.tvAccordionBadge.text = "${groupData.items.size}개 상태"
 
             // ② Adapter 재사용 — 같은 그룹이면 기존 adapter 재활용
             val adapter = adapterCache.getOrPut(groupData.statusGroup) {
@@ -139,25 +143,22 @@ class TenantStatusFragment : Fragment() {
                     }
                 )
             }
-
-            // ③ NestedScroll 구조 개선 — RecyclerView 중첩 스크롤 비활성화
-            rvStatuses.apply {
-                layoutManager = LinearLayoutManager(requireContext())
-                this.adapter = adapter
-                isNestedScrollingEnabled = false   // NestedScrollView와 충돌 방지
-                setHasFixedSize(false)
-            }
+            accordionBinding.rvTenantStatuses.adapter = adapter
             adapter.submitList(groupData.items)
 
-            // 아코디언 토글
-            var isExpanded = true
-            headerLayout.setOnClickListener {
-                isExpanded = !isExpanded
-                rvStatuses.visibility = if (isExpanded) View.VISIBLE else View.GONE
-                ivArrow.animate().rotation(if (isExpanded) 90f else 0f).setDuration(200).start()
+            // 아코디언 토글 (isExpanded 상태는 뷰 재사용 시 현재 visibility로 판단)
+            accordionBinding.layoutAccordionHeader.setOnClickListener {
+                val isExpanded = accordionBinding.rvTenantStatuses.visibility == View.VISIBLE
+                accordionBinding.rvTenantStatuses.visibility = if (isExpanded) View.GONE else View.VISIBLE
+                accordionBinding.ivArrowIndicator.animate()
+                    .rotation(if (isExpanded) 0f else 90f)
+                    .setDuration(200).start()
             }
 
-            binding.layoutAccordionContainer.addView(accordionView)
+            // 뷰 재사용 시 기존 부모에서 먼저 분리 후 추가 (중복 attach 방지)
+            val parent = accordionBinding.root.parent as? ViewGroup
+            parent?.removeView(accordionBinding.root)
+            binding.layoutAccordionContainer.addView(accordionBinding.root)
         }
     }
 
