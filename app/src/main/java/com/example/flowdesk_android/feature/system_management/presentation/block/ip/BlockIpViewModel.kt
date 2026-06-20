@@ -17,6 +17,12 @@ sealed class BlockIpUiState {
     data class Error(val message: String) : BlockIpUiState()
 }
 
+sealed class BlockIpDetailUiState {
+    object Loading : BlockIpDetailUiState()
+    data class Success(val item: BlockIpItem) : BlockIpDetailUiState()
+    data class Error(val message: String) : BlockIpDetailUiState()
+}
+
 @OptIn(FlowPreview::class)
 @HiltViewModel
 class BlockIpViewModel @Inject constructor(
@@ -25,6 +31,9 @@ class BlockIpViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<BlockIpUiState>(BlockIpUiState.Loading)
     val uiState: StateFlow<BlockIpUiState> = _uiState.asStateFlow()
+
+    private val _detailState = MutableStateFlow<BlockIpDetailUiState>(BlockIpDetailUiState.Loading)
+    val detailState: StateFlow<BlockIpDetailUiState> = _detailState.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
@@ -132,6 +141,19 @@ class BlockIpViewModel @Inject constructor(
                 .onFailure { err ->
                     _errorMessage.emit(err.message ?: "IP 차단 수정 실패")
                     onResult(Result.failure(err))
+                }
+        }
+    }
+
+    fun loadDetail(id: Long) {
+        _detailState.value = BlockIpDetailUiState.Loading
+        viewModelScope.launch {
+            repository.getBlockIpDetail(id)
+                .onSuccess { item ->
+                    _detailState.value = BlockIpDetailUiState.Success(item)
+                }
+                .onFailure { err ->
+                    _detailState.value = BlockIpDetailUiState.Error(err.message ?: "상세 정보를 가져오는 데 실패했습니다.")
                 }
         }
     }

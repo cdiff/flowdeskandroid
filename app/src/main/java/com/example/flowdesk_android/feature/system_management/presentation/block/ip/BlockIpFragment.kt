@@ -22,6 +22,7 @@ import com.example.flowdesk_android.feature.system_management.domain.model.Block
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import androidx.navigation.fragment.findNavController
 
 @AndroidEntryPoint
 class BlockIpFragment : Fragment() {
@@ -52,7 +53,10 @@ class BlockIpFragment : Fragment() {
 
     private fun setupRecyclerView() {
         adapter = BlockIpAdapter { item ->
-            showOptionsDialog(item)
+            val bundle = Bundle().apply {
+                putLong("blockIpId", item.dbiIdx)
+            }
+            findNavController().navigate(R.id.blockIpDetailFragment, bundle)
         }
         binding.rvIpList.layoutManager = LinearLayoutManager(requireContext())
         binding.rvIpList.adapter = adapter
@@ -124,63 +128,9 @@ class BlockIpFragment : Fragment() {
         }
     }
 
-    private fun showOptionsDialog(item: BlockIpItem) {
-        val options = arrayOf("차단 사유 수정", "차단 해제 (삭제)")
-        AlertDialog.Builder(requireContext())
-            .setTitle(item.blockIp)
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> showEditBottomSheet(item)
-                    1 -> showDeleteConfirmDialog(item)
-                }
-            }
-            .show()
-    }
-
     private fun showAddBottomSheet() {
         val bottomSheet = IpBlockCreateBottomSheet.newInstance()
         bottomSheet.show(childFragmentManager, "IpBlockCreateBottomSheet")
-    }
-
-    private fun showEditBottomSheet(item: BlockIpItem) {
-        val bottomSheet = IpBlockCreateBottomSheet.newInstance(item)
-        bottomSheet.show(childFragmentManager, "IpBlockEditBottomSheet")
-    }
-
-    private fun showDeleteConfirmDialog(item: BlockIpItem) {
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_common_confirm, null)
-        val dialog = AlertDialog.Builder(requireContext())
-            .setView(dialogView)
-            .create()
-
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
-        val tvTitle = dialogView.findViewById<TextView>(R.id.tv_title)
-        val tvMessage = dialogView.findViewById<TextView>(R.id.tv_message)
-        val cbConfirm = dialogView.findViewById<View>(R.id.cb_confirm)
-        val btnCancel = dialogView.findViewById<View>(R.id.btn_cancel)
-        val btnConfirm = dialogView.findViewById<View>(R.id.btn_confirm)
-
-        tvTitle.text = "IP 차단 해제"
-        tvMessage.text = "${item.blockIp} 주소의 차단을 해제하시겠습니까?\n해제하면 즉시 접속이 허용됩니다."
-        cbConfirm.visibility = View.GONE
-
-        btnCancel.setOnClickListener {
-            dialog.dismiss()
-        }
-
-        btnConfirm.setOnClickListener {
-            dialog.dismiss()
-            viewModel.deleteBlockIp(item.dbiIdx) { result ->
-                result.onSuccess {
-                    Toast.makeText(requireContext(), "IP 차단이 해제되었습니다.", Toast.LENGTH_SHORT).show()
-                }.onFailure { err ->
-                    Toast.makeText(requireContext(), err.message ?: "차단 해제 실패", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-
-        dialog.show()
     }
 
     override fun onDestroyView() {
