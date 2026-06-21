@@ -95,4 +95,90 @@ class SecurityBlockRepositoryImpl @Inject constructor(
             throw Exception("API error: ${response.code()}")
         }
     }
+
+    override suspend fun getBlockPhones(
+        page: Int,
+        limit: Int,
+        q: String?
+    ): Result<BlockPhoneListResponse> = runCatching {
+        val response = apiService.getBlockPhones(page, limit, q)
+        if (response.isSuccessful) {
+            response.body()?.toDomain() ?: throw Exception("Response body is null")
+        } else {
+            throw Exception("API error: ${response.code()}")
+        }
+    }
+
+    override suspend fun createBlockPhone(
+        blockHp: String,
+        reason: String,
+        isActive: Int
+    ): Result<BlockPhoneItem> = runCatching {
+        val request = CreateBlockPhoneRequest(blockHp = blockHp, reason = reason, isActive = isActive)
+        val response = apiService.createBlockPhone(request)
+        if (response.isSuccessful) {
+            response.body()?.toDomain() ?: throw Exception("Response body is null")
+        } else {
+            throw Exception("API error: ${response.code()}")
+        }
+    }
+
+    override suspend fun checkBlockPhone(
+        phone: String
+    ): Result<PhoneCheckResult> = runCatching {
+        val response = apiService.checkBlockPhone(phone)
+        if (response.isSuccessful) {
+            response.body()?.toDomain() ?: throw Exception("Response body is null")
+        } else {
+            throw Exception("API error: ${response.code()}")
+        }
+    }
+
+    override suspend fun getBlockPhoneDetail(
+        id: Long
+    ): Result<BlockPhoneItem> = runCatching {
+        val response = apiService.getBlockPhoneDetail(id)
+        if (response.isSuccessful) {
+            response.body()?.toDomain() ?: throw Exception("Response body is null")
+        } else {
+            throw Exception("API error: ${response.code()}")
+        }
+    }
+
+    override suspend fun updateBlockPhone(
+        id: Long,
+        reason: String,
+        isActive: Int
+    ): Result<BlockPhoneItem> = runCatching {
+        val request = UpdateBlockPhoneRequest(reason = reason, isActive = isActive)
+        val response = apiService.updateBlockPhone(id, request)
+        if (response.isSuccessful) {
+            response.body()?.toDomain() ?: throw Exception("Response body is null")
+        } else {
+            throw Exception("API error: ${response.code()}")
+        }
+    }
+
+    override suspend fun deleteBlockPhone(
+        id: Long
+    ): Result<Unit> = runCatching {
+        val response = apiService.deleteBlockPhone(id)
+        if (!response.isSuccessful) {
+            throw Exception("API error: ${response.code()}")
+        }
+    }
+
+    override suspend fun createBulkBlockPhone(
+        phones: String,
+        reason: String,
+        isActive: Int
+    ): Result<BulkBlockPhoneResult> = runCatching {
+        val request = BulkBlockPhoneRequest(phones = phones, reason = reason, isActive = isActive)
+        val response = apiService.createBulkBlockPhone(request)
+        if (response.isSuccessful) {
+            response.body()?.toDomain() ?: throw Exception("Response body is null")
+        } else {
+            throw Exception("API error: ${response.code()}")
+        }
+    }
 }

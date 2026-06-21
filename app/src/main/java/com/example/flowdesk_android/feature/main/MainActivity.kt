@@ -231,6 +231,8 @@ class MainActivity : AppCompatActivity() {
                 destination.id == R.id.roleDetailFragment ||
                 destination.id == R.id.tenantDetailFragment ||
                 destination.id == R.id.statusEditFragment ||
+                destination.id == R.id.blockIpDetailFragment ||
+                destination.id == R.id.blockPhoneDetailFragment ||
                 destination.id == R.id.managePermissionsFragment
             ) {
                  binding.bottomNavigation.visibility = android.view.View.GONE

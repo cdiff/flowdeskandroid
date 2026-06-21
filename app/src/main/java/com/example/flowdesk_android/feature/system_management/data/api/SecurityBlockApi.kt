@@ -43,4 +43,42 @@ interface SecurityBlockApi {
     suspend fun createBulkBlockIp(
         @Body request: BulkBlockIpRequest
     ): Response<BulkBlockResultDto>
+
+    @GET("security/block-hp")
+    suspend fun getBlockPhones(
+        @Query("page") page: Int,
+        @Query("limit") limit: Int,
+        @Query("q") q: String?
+    ): Response<BlockPhoneListResponseDto>
+
+    @POST("security/block-hp")
+    suspend fun createBlockPhone(
+        @Body request: CreateBlockPhoneRequest
+    ): Response<BlockPhoneItemDto>
+
+    @GET("security/block-hp/check")
+    suspend fun checkBlockPhone(
+        @Query("phone") phone: String?
+    ): Response<PhoneCheckResultDto>
+
+    @GET("security/block-hp/{id}")
+    suspend fun getBlockPhoneDetail(
+        @Path("id") id: Long
+    ): Response<BlockPhoneItemDto>
+
+    @PATCH("security/block-hp/{id}")
+    suspend fun updateBlockPhone(
+        @Path("id") id: Long,
+        @Body request: UpdateBlockPhoneRequest
+    ): Response<BlockPhoneItemDto>
+
+    @DELETE("security/block-hp/{id}")
+    suspend fun deleteBlockPhone(
+        @Path("id") id: Long
+    ): Response<Unit>
+
+    @POST("security/block-hp/bulk")
+    suspend fun createBulkBlockPhone(
+        @Body request: BulkBlockPhoneRequest
+    ): Response<BulkBlockPhoneResultDto>
 }

@@ -8,6 +8,7 @@
     android:background="@color/bg_page">
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nsv_block"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
@@ -21,25 +22,29 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- ─── 안내 배너 ─── -->
+            <!-- ─── 안내 배너 (금칙어 등에서 사용, 기본값 gone) ─── -->
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_banner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_banner_light_blue"
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="14dp"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="16dp"
+                android:visibility="gone"
+                tools:visibility="visible">
 
                 <TextView
+                    android:id="@+id/tv_banner_text"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="금칙어는 채팅·상담 등 고객 입력 필드에서 자동으로 필터링됩니다."
                     android:textColor="@color/blue_800"
                     android:textSize="12sp"
                     android:lineSpacingMultiplier="1.4"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="금칙어는 채팅·상담 등 고객 입력 필드에서 자동으로 필터링됩니다." />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -61,18 +66,18 @@
                     android:layout_marginEnd="8dp" />
 
                 <EditText
-                    android:id="@+id/et_keyword_search"
+                    android:id="@+id/et_search"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@null"
-                    android:hint="금칙어 검색..."
                     android:textColorHint="@color/text_hint"
                     android:textSize="15sp"
                     android:textColor="@color/text_primary"
                     android:maxLines="1"
                     android:inputType="text"
                     android:gravity="center_vertical"
-                    android:imeOptions="actionSearch" />
+                    android:imeOptions="actionSearch"
+                    tools:hint="IP 주소 검색..." />
             </LinearLayout>
 
             <!-- ─── 리스트 헤더 ─── -->
@@ -82,6 +87,7 @@
                 android:layout_marginHorizontal="4dp"
                 android:layout_marginBottom="8dp">
 
+                <!-- 좌: 소계 텍스트 -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -92,25 +98,27 @@
                     app:layout_constraintBottom_toBottomOf="parent">
 
                     <TextView
+                        android:id="@+id/tv_list_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="금칙어 목록"
                         android:textColor="@color/text_strong"
                         android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:text="IP 차단 목록" />
 
                     <TextView
-                        android:id="@+id/tv_keyword_list_count"
+                        android:id="@+id/tv_list_count"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        tools:text="  23건"
+                        tools:text="  12건"
                         android:textColor="@color/text_hint"
                         android:textSize="13sp"
                         android:layout_marginStart="4dp" />
                 </LinearLayout>
 
+                <!-- 우: 추가 버튼 -->
                 <ImageView
-                    android:id="@+id/btn_add_keyword"
+                    android:id="@+id/btn_add"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
@@ -122,26 +130,28 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- ─── 금칙어 리스트 ─── -->
+            <!-- ─── 리스트 및 상태 영역 ─── -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_keyword_list"
+                    android:id="@+id/rv_list"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:itemCount="5"
-                    tools:listitem="@layout/item_block_keyword"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/item_block_list"
                     android:nestedScrollingEnabled="false"
                     android:overScrollMode="never" />
 
+                <!-- 로딩 -->
                 <ProgressBar
-                    android:id="@+id/progress_bar_keyword"
+                    android:id="@+id/progress_bar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
@@ -151,7 +161,7 @@
                     app:layout_constraintEnd_toEndOf="parent" />
 
                 <LinearLayout
-                    android:id="@+id/ll_keyword_empty"
+                    android:id="@+id/ll_empty"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -160,28 +170,23 @@
                     android:visibility="gone"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <ImageView
-                        android:layout_width="52dp"
-                        android:layout_height="52dp"
-                        android:src="@drawable/ic_lock"
-                        app:tint="@color/text_disabled"
-                        android:layout_marginBottom="14dp" />
-
                     <TextView
+                        android:id="@+id/tv_empty_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="등록된 금칙어가 없습니다"
                         android:textColor="@color/text_tertiary"
                         android:textSize="15sp"
                         android:textStyle="bold"
-                        android:layout_marginBottom="4dp" />
+                        android:layout_marginBottom="4dp"
+                        tools:text="차단된 IP가 없습니다" />
 
                     <TextView
+                        android:id="@+id/tv_empty_subtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="금칙어 추가 버튼으로 필터 단어를 등록하세요"
                         android:textColor="@color/text_disabled"
-                        android:textSize="12sp" />
+                        android:textSize="12sp"
+                        tools:text="위의 IP 추가 버튼으로 차단 IP를 등록하세요" />
                 </LinearLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>

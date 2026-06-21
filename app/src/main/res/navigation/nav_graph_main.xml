@@ -112,6 +112,8 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="@null" />
+    </fragment>
+
     <fragment
         android:id="@+id/blockIpDetailFragment"
         android:name="com.example.flowdesk_android.feature.system_management.presentation.block.ip.BlockIpDetailFragment"
@@ -119,6 +121,16 @@
         tools:layout="@layout/fragment_block_ip_detail">
         <argument
             android:name="blockIpId"
+            app:argType="long" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/blockPhoneDetailFragment"
+        android:name="com.example.flowdesk_android.feature.system_management.presentation.block.phone.BlockPhoneDetailFragment"
+        android:label="BlockPhoneDetail"
+        tools:layout="@layout/fragment_block_phone_detail">
+        <argument
+            android:name="blockHpId"
             app:argType="long" />
     </fragment>
 

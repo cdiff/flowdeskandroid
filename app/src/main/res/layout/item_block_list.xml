@@ -15,11 +15,12 @@
     android:clickable="true"
     android:focusable="true">
 
-    <!-- ─── 좌측 주황 액센트 바 (카드 전체 높이) ─── -->
+    <!-- ─── 좌측 액센트 바 (카드 전체 높이, 프로그래밍 방식으로 색상 조절) ─── -->
     <View
+        android:id="@+id/v_accent_bar"
         android:layout_width="4dp"
         android:layout_height="match_parent"
-        android:background="@color/color_warning" />
+        android:background="@color/color_error" />
 
     <!-- ─── 콘텐츠 영역 ─── -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -30,21 +31,33 @@
         android:paddingTop="14dp"
         android:paddingBottom="14dp">
 
-        <!-- 금칙어 -->
+        <!-- 차단 대상 값 (IP, 번호, 금칙어) -->
         <TextView
-            android:id="@+id/tv_keyword"
+            android:id="@+id/tv_target_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:text="욕설"
+            tools:text="192.168.100.100"
             android:textColor="@color/text_primary"
             android:textSize="15sp"
             android:textStyle="bold"
+            android:letterSpacing="0.02"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/tv_matching_type"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBaseline_toBaselineOf="@id/tv_matching_type" />
+            app:layout_constraintEnd_toStartOf="@id/tv_blocked_at"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- 매칭 타입 뱃지 (우측) -->
+        <!-- 날짜 (우측, baseline 맞춤) -->
+        <TextView
+            android:id="@+id/tv_blocked_at"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="03.23"
+            android:textColor="@color/text_disabled"
+            android:textSize="11sp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBaseline_toBaselineOf="@id/tv_target_value" />
+
+        <!-- 매칭 타입 뱃지 (금칙어용 우측 뱃지, 기본값 gone) -->
         <TextView
             android:id="@+id/tv_matching_type"
             android:layout_width="wrap_content"
@@ -56,22 +69,23 @@
             android:paddingHorizontal="8dp"
             android:paddingVertical="3dp"
             android:background="@drawable/bg_badge_rounded_blue_border"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <!-- 차단 사유 -->
         <TextView
-            android:id="@+id/tv_keyword_reason"
+            android:id="@+id/tv_block_reason"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            tools:text="비속어 및 혐오 표현"
+            tools:text="무단 접근 시도 탐지"
             android:textColor="@color/text_hint"
             android:textSize="12sp"
             android:lineSpacingMultiplier="1.3"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_keyword" />
+            app:layout_constraintTop_toBottomOf="@id/tv_target_value" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

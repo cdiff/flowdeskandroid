@@ -38,4 +38,40 @@ interface SecurityBlockRepository {
         reason: String,
         isActive: Int
     ): Result<BulkBlockResult>
+
+    suspend fun getBlockPhones(
+        page: Int,
+        limit: Int,
+        q: String?
+    ): Result<BlockPhoneListResponse>
+
+    suspend fun createBlockPhone(
+        blockHp: String,
+        reason: String,
+        isActive: Int
+    ): Result<BlockPhoneItem>
+
+    suspend fun checkBlockPhone(
+        phone: String
+    ): Result<PhoneCheckResult>
+
+    suspend fun getBlockPhoneDetail(
+        id: Long
+    ): Result<BlockPhoneItem>
+
+    suspend fun updateBlockPhone(
+        id: Long,
+        reason: String,
+        isActive: Int
+    ): Result<BlockPhoneItem>
+
+    suspend fun deleteBlockPhone(
+        id: Long
+    ): Result<Unit>
+
+    suspend fun createBulkBlockPhone(
+        phones: String,
+        reason: String,
+        isActive: Int
+    ): Result<BulkBlockPhoneResult>
 }

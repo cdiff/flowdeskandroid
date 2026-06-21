@@ -93,3 +93,80 @@ data class BulkBlockIpRequest(
     @SerializedName("reason") val reason: String,
     @SerializedName("isActive") val isActive: Int
 )
+
+data class BlockPhoneItemDto(
+    @SerializedName("dbhIdx") val dbhIdx: Long,
+    @SerializedName("tenantId") val tenantId: Long,
+    @SerializedName("blockHp") val blockHp: String,
+    @SerializedName("reason") val reason: String?,
+    @SerializedName("isActive") val isActive: Int,
+    @SerializedName("createdBy") val createdBy: Long,
+    @SerializedName("createdAt") val createdAt: String?,
+    @SerializedName("updatedAt") val updatedAt: String?
+) {
+    fun toDomain(): BlockPhoneItem = BlockPhoneItem(
+        dbhIdx = dbhIdx,
+        tenantId = tenantId,
+        blockHp = blockHp,
+        reason = reason,
+        isActive = isActive == 1,
+        createdBy = createdBy,
+        createdAt = createdAt,
+        updatedAt = updatedAt
+    )
+}
+
+data class BlockPhoneListResponseDto(
+    @SerializedName("items") val items: List<BlockPhoneItemDto>,
+    @SerializedName("pageInfo") val pageInfo: PageInfoDto
+) {
+    fun toDomain(): BlockPhoneListResponse = BlockPhoneListResponse(
+        items = items.map { it.toDomain() },
+        pageInfo = pageInfo.toDomain()
+    )
+}
+
+data class PhoneCheckResultDto(
+    @SerializedName("isBlocked") val isBlocked: Boolean,
+    @SerializedName("reason") val reason: String?,
+    @SerializedName("blockId") val blockId: Long?,
+    @SerializedName("matchedWord") val matchedWord: String?
+) {
+    fun toDomain(): PhoneCheckResult = PhoneCheckResult(
+        isBlocked = isBlocked,
+        reason = reason,
+        blockId = blockId,
+        matchedWord = matchedWord
+    )
+}
+
+data class BulkBlockPhoneResultDto(
+    @SerializedName("successCount") val successCount: Int,
+    @SerializedName("skippedCount") val skippedCount: Int,
+    @SerializedName("totalCount") val totalCount: Int,
+    @SerializedName("skippedPhones") val skippedPhones: List<String>?
+) {
+    fun toDomain(): BulkBlockPhoneResult = BulkBlockPhoneResult(
+        successCount = successCount,
+        skippedCount = skippedCount,
+        totalCount = totalCount,
+        skippedPhones = skippedPhones ?: emptyList()
+    )
+}
+
+data class CreateBlockPhoneRequest(
+    @SerializedName("blockHp") val blockHp: String,
+    @SerializedName("reason") val reason: String,
+    @SerializedName("isActive") val isActive: Int
+)
+
+data class UpdateBlockPhoneRequest(
+    @SerializedName("reason") val reason: String,
+    @SerializedName("isActive") val isActive: Int
+)
+
+data class BulkBlockPhoneRequest(
+    @SerializedName("phones") val phones: String,
+    @SerializedName("reason") val reason: String,
+    @SerializedName("isActive") val isActive: Int
+)
