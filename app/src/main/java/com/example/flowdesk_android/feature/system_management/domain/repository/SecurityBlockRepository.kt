@@ -74,4 +74,43 @@ interface SecurityBlockRepository {
         reason: String,
         isActive: Int
     ): Result<BulkBlockPhoneResult>
+
+    suspend fun getBlockWords(
+        page: Int,
+        limit: Int,
+        q: String?
+    ): Result<BlockWordListResponse>
+
+    suspend fun createBlockWord(
+        blockWord: String,
+        matchType: String,
+        reason: String,
+        isActive: Int
+    ): Result<BlockWordItem>
+
+    suspend fun checkBlockWord(
+        word: String
+    ): Result<WordCheckResult>
+
+    suspend fun getBlockWordDetail(
+        id: Long
+    ): Result<BlockWordItem>
+
+    suspend fun updateBlockWord(
+        id: Long,
+        matchType: String,
+        reason: String,
+        isActive: Int
+    ): Result<BlockWordItem>
+
+    suspend fun deleteBlockWord(
+        id: Long
+    ): Result<Unit>
+
+    suspend fun createBulkBlockWord(
+        words: String,
+        matchType: String,
+        reason: String,
+        isActive: Int
+    ): Result<BulkBlockWordResult>
 }

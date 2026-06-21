@@ -170,3 +170,85 @@ data class BulkBlockPhoneRequest(
     @SerializedName("reason") val reason: String,
     @SerializedName("isActive") val isActive: Int
 )
+
+data class BlockWordItemDto(
+    @SerializedName("dbwIdx") val dbwIdx: Long,
+    @SerializedName("tenantId") val tenantId: Long,
+    @SerializedName("blockWord") val blockWord: String,
+    @SerializedName("matchType") val matchType: String,
+    @SerializedName("reason") val reason: String?,
+    @SerializedName("isActive") val isActive: Int,
+    @SerializedName("createdBy") val createdBy: Long,
+    @SerializedName("createdAt") val createdAt: String?,
+    @SerializedName("updatedAt") val updatedAt: String?
+) {
+    fun toDomain(): BlockWordItem = BlockWordItem(
+        dbwIdx = dbwIdx,
+        tenantId = tenantId,
+        blockWord = blockWord,
+        matchType = matchType,
+        reason = reason,
+        isActive = isActive == 1,
+        createdBy = createdBy,
+        createdAt = createdAt,
+        updatedAt = updatedAt
+    )
+}
+
+data class BlockWordListResponseDto(
+    @SerializedName("items") val items: List<BlockWordItemDto>,
+    @SerializedName("pageInfo") val pageInfo: PageInfoDto
+) {
+    fun toDomain(): BlockWordListResponse = BlockWordListResponse(
+        items = items.map { it.toDomain() },
+        pageInfo = pageInfo.toDomain()
+    )
+}
+
+data class WordCheckResultDto(
+    @SerializedName("isBlocked") val isBlocked: Boolean,
+    @SerializedName("reason") val reason: String?,
+    @SerializedName("blockId") val blockId: Long?,
+    @SerializedName("matchedWord") val matchedWord: String?
+) {
+    fun toDomain(): WordCheckResult = WordCheckResult(
+        isBlocked = isBlocked,
+        reason = reason,
+        blockId = blockId,
+        matchedWord = matchedWord
+    )
+}
+
+data class BulkBlockWordResultDto(
+    @SerializedName("successCount") val successCount: Int,
+    @SerializedName("skippedCount") val skippedCount: Int,
+    @SerializedName("totalCount") val totalCount: Int,
+    @SerializedName("skippedWords") val skippedWords: List<String>?
+) {
+    fun toDomain(): BulkBlockWordResult = BulkBlockWordResult(
+        successCount = successCount,
+        skippedCount = skippedCount,
+        totalCount = totalCount,
+        skippedWords = skippedWords ?: emptyList()
+    )
+}
+
+data class CreateBlockWordRequest(
+    @SerializedName("blockWord") val blockWord: String,
+    @SerializedName("matchType") val matchType: String,
+    @SerializedName("reason") val reason: String,
+    @SerializedName("isActive") val isActive: Int
+)
+
+data class UpdateBlockWordRequest(
+    @SerializedName("matchType") val matchType: String,
+    @SerializedName("reason") val reason: String,
+    @SerializedName("isActive") val isActive: Int
+)
+
+data class BulkBlockWordRequest(
+    @SerializedName("words") val words: String,
+    @SerializedName("matchType") val matchType: String,
+    @SerializedName("reason") val reason: String,
+    @SerializedName("isActive") val isActive: Int
+)

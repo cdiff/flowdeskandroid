@@ -136,7 +136,7 @@
                                 android:layout_weight="1"
                                 android:textSize="13sp"
                                 android:textColor="#334155"
-                                tools:text="테넌트 ID: 1" />
+                                tools:text="차단 ID: 1" />
 
                             <TextView
                                 android:id="@+id/tv_detail_created_by"

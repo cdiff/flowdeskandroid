@@ -1,10 +1,9 @@
-package com.example.flowdesk_android.feature.system_management.presentation.block.phone
+package com.example.flowdesk_android.feature.system_management.presentation.block.keyword
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -14,13 +13,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import com.example.flowdesk_android.R
-import com.example.flowdesk_android.databinding.DialogCommonConfirmBinding
-import com.example.flowdesk_android.databinding.FragmentBlockPhoneDetailBinding
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import com.example.flowdesk_android.feature.system_management.domain.model.BlockPhoneItem
+import com.example.flowdesk_android.R
+import com.example.flowdesk_android.databinding.DialogCommonConfirmBinding
+import com.example.flowdesk_android.databinding.FragmentBlockKeywordDetailBinding
+import com.example.flowdesk_android.feature.system_management.domain.model.BlockWordItem
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -28,33 +27,33 @@ import kotlinx.coroutines.launch
 import com.example.flowdesk_android.core.base.BaseFragment
 
 @AndroidEntryPoint
-class BlockPhoneDetailFragment : BaseFragment(R.layout.fragment_block_phone_detail) {
+class BlockKeywordDetailFragment : BaseFragment(R.layout.fragment_block_keyword_detail) {
 
-    private val viewModel: BlockPhoneViewModel by activityViewModels()
+    private val viewModel: BlockKeywordViewModel by activityViewModels()
 
-    private var _binding: FragmentBlockPhoneDetailBinding? = null
+    private var _binding: FragmentBlockKeywordDetailBinding? = null
     private val binding get() = _binding!!
 
-    private var blockHpId: Long = -1L
+    private var blockWordId: Long = -1L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            blockHpId = it.getLong("blockHpId", -1L)
+            blockWordId = it.getLong("blockWordId", -1L)
         }
     }
 
     override fun getToolbarView(view: View): View? = view.findViewById(R.id.layout_toolbar)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        _binding = FragmentBlockPhoneDetailBinding.bind(view)
+        _binding = FragmentBlockKeywordDetailBinding.bind(view)
         super.onViewCreated(view, savedInstanceState)
     }
 
     override fun initView() {
         setupListeners()
-        if (blockHpId != -1L) {
-            viewModel.loadDetail(blockHpId)
+        if (blockWordId != -1L) {
+            viewModel.loadDetail(blockWordId)
         }
     }
 
@@ -69,11 +68,20 @@ class BlockPhoneDetailFragment : BaseFragment(R.layout.fragment_block_phone_deta
                 Toast.makeText(requireContext(), "차단 사유를 입력해주세요.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            updateReason(newReason)
+            val matchType = getSelectedMatchType()
+            updateBlockWord(matchType, newReason)
         }
 
         binding.btnDelete.setOnClickListener {
             showDeleteConfirmDialog()
+        }
+    }
+
+    private fun getSelectedMatchType(): String {
+        return when (binding.rgMatchType.checkedRadioButtonId) {
+            R.id.rb_match_exact -> "EXACT"
+            R.id.rb_match_regex -> "REGEX"
+            else -> "CONTAINS"
         }
     }
 
@@ -83,16 +91,16 @@ class BlockPhoneDetailFragment : BaseFragment(R.layout.fragment_block_phone_deta
                 launch {
                     viewModel.detailState.collect { state ->
                         when (state) {
-                            is BlockPhoneDetailUiState.Loading -> {
+                            is BlockWordDetailUiState.Loading -> {
                                 binding.progressBar.visibility = View.VISIBLE
                                 setInputsEnabled(false)
                             }
-                            is BlockPhoneDetailUiState.Success -> {
+                            is BlockWordDetailUiState.Success -> {
                                 binding.progressBar.visibility = View.GONE
                                 setInputsEnabled(true)
                                 displayDetail(state.item)
                             }
-                            is BlockPhoneDetailUiState.Error -> {
+                            is BlockWordDetailUiState.Error -> {
                                 binding.progressBar.visibility = View.GONE
                                 setInputsEnabled(false)
                                 Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
@@ -111,13 +119,19 @@ class BlockPhoneDetailFragment : BaseFragment(R.layout.fragment_block_phone_deta
         }
     }
 
-    private fun displayDetail(item: BlockPhoneItem) {
-        binding.tvDetailPhoneNumber.text = formatPhoneNumber(item.blockHp)
-        binding.tvDetailTenantId.text = "차단 ID: ${item.dbhIdx}"
+    private fun displayDetail(item: BlockWordItem) {
+        binding.tvDetailKeyword.text = item.blockWord
+        binding.tvDetailTenantId.text = "차단 ID: ${item.dbwIdx}"
         binding.tvDetailCreatedBy.text = "등록자 ID: ${item.createdBy}"
         binding.tvDetailCreatedAt.text = "등록: ${item.createdAt ?: "-"}"
         binding.tvDetailUpdatedAt.text = "수정: ${item.updatedAt ?: "-"}"
         binding.etReason.setText(item.reason ?: "")
+
+        when (item.matchType) {
+            "EXACT" -> binding.rbMatchExact.isChecked = true
+            "REGEX" -> binding.rbMatchRegex.isChecked = true
+            else -> binding.rbMatchContains.isChecked = true
+        }
 
         if (item.isActive) {
             binding.tvDetailStatusTag.text = "차단 중"
@@ -130,19 +144,23 @@ class BlockPhoneDetailFragment : BaseFragment(R.layout.fragment_block_phone_deta
 
     private fun setInputsEnabled(enabled: Boolean) {
         binding.etReason.isEnabled = enabled
+        binding.rgMatchType.isEnabled = enabled
+        binding.rbMatchContains.isEnabled = enabled
+        binding.rbMatchExact.isEnabled = enabled
+        binding.rbMatchRegex.isEnabled = enabled
         binding.btnSaveInfo.isEnabled = enabled
         binding.btnDelete.isEnabled = enabled
     }
 
-    private fun updateReason(newReason: String) {
+    private fun updateBlockWord(matchType: String, newReason: String) {
         binding.progressBar.visibility = View.VISIBLE
         setInputsEnabled(false)
-        viewModel.updateBlockPhone(blockHpId, newReason, 1) { result ->
+        viewModel.updateBlockWord(blockWordId, matchType, newReason, 1) { result ->
             binding.progressBar.visibility = View.GONE
             setInputsEnabled(true)
             result.onSuccess {
-                Toast.makeText(requireContext(), "차단 사유가 수정되었습니다.", Toast.LENGTH_SHORT).show()
-                viewModel.loadDetail(blockHpId)
+                Toast.makeText(requireContext(), "금칙어 정보가 수정되었습니다.", Toast.LENGTH_SHORT).show()
+                viewModel.loadDetail(blockWordId)
             }.onFailure {
                 Toast.makeText(requireContext(), "수정에 실패했습니다.", Toast.LENGTH_SHORT).show()
             }
@@ -157,8 +175,8 @@ class BlockPhoneDetailFragment : BaseFragment(R.layout.fragment_block_phone_deta
 
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        dialogBinding.tvTitle.text = "휴대폰 차단 해제"
-        dialogBinding.tvMessage.text = "${binding.tvDetailPhoneNumber.text} 번호의 차단을 해제하시겠습니까?\n해제하면 즉시 수신거부가 해제됩니다."
+        dialogBinding.tvTitle.text = "금칙어 차단 해제"
+        dialogBinding.tvMessage.text = "'${binding.tvDetailKeyword.text}' 단어의 차단을 해제하시겠습니까?\n해제하면 즉시 해당 단어 사용이 허용됩니다."
         dialogBinding.cbConfirm.visibility = View.GONE
 
         dialogBinding.btnCancel.setOnClickListener {
@@ -169,11 +187,11 @@ class BlockPhoneDetailFragment : BaseFragment(R.layout.fragment_block_phone_deta
             dialog.dismiss()
             binding.progressBar.visibility = View.VISIBLE
             setInputsEnabled(false)
-            viewModel.deleteBlockPhone(blockHpId) { result ->
+            viewModel.deleteBlockWord(blockWordId) { result ->
                 binding.progressBar.visibility = View.GONE
                 setInputsEnabled(true)
                 result.onSuccess {
-                    Toast.makeText(requireContext(), "휴대폰 차단이 해제되었습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "금칙어 차단이 해제되었습니다.", Toast.LENGTH_SHORT).show()
                     findNavController().popBackStack()
                 }.onFailure { err ->
                     Toast.makeText(requireContext(), err.message ?: "차단 해제 실패", Toast.LENGTH_SHORT).show()
@@ -182,26 +200,6 @@ class BlockPhoneDetailFragment : BaseFragment(R.layout.fragment_block_phone_deta
         }
 
         dialog.show()
-    }
-
-    private fun formatPhoneNumber(number: String): String {
-        val cleanNumber = number.replace(Regex("[^0-9]"), "")
-        return when {
-            cleanNumber.length == 11 -> {
-                "${cleanNumber.substring(0, 3)}-${cleanNumber.substring(3, 7)}-${cleanNumber.substring(7)}"
-            }
-            cleanNumber.length == 10 -> {
-                if (cleanNumber.startsWith("02")) {
-                    "${cleanNumber.substring(0, 2)}-${cleanNumber.substring(2, 6)}-${cleanNumber.substring(6)}"
-                } else {
-                    "${cleanNumber.substring(0, 3)}-${cleanNumber.substring(3, 6)}-${cleanNumber.substring(6)}"
-                }
-            }
-            cleanNumber.length == 9 && cleanNumber.startsWith("02") -> {
-                "${cleanNumber.substring(0, 2)}-${cleanNumber.substring(2, 5)}-${cleanNumber.substring(5)}"
-            }
-            else -> number
-        }
     }
 
     override fun onDestroyView() {

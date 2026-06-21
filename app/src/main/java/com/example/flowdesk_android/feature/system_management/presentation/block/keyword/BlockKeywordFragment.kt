@@ -1,26 +1,28 @@
 package com.example.flowdesk_android.feature.system_management.presentation.block.keyword
 
-import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
+import android.os.Bundle
+import android.widget.Toast
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.example.flowdesk_android.R
+import com.example.flowdesk_android.feature.system_management.domain.model.BlockWordItem
 import com.example.flowdesk_android.feature.system_management.presentation.block.BaseBlockListFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class BlockKeywordFragment : BaseBlockListFragment<Any>() {
+class BlockKeywordFragment : BaseBlockListFragment<BlockWordItem>() {
 
-    // 금칙어 기능이 아직 구현되지 않았으므로 임시로 빈 리스트 어댑터와 Callback 설정
-    private val dummyAdapter = object : ListAdapter<Any, RecyclerView.ViewHolder>(AnyDiffCallback) {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return object : RecyclerView.ViewHolder(parent) {}
-        }
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {}
-    }
+    private val viewModel: BlockKeywordViewModel by activityViewModels()
 
-    override val adapter: ListAdapter<Any, *> get() = dummyAdapter
+    private lateinit var _adapter: BlockKeywordAdapter
+    override val adapter: ListAdapter<BlockWordItem, *> get() = _adapter
 
     // UI Configuration
     override val titleText: String = "금칙어 목록"
@@ -30,31 +32,63 @@ class BlockKeywordFragment : BaseBlockListFragment<Any>() {
     override val bannerText: String = "금칙어는 채팅·상담 등 고객 입력 필드에서 자동으로 필터링됩니다."
 
     override fun setupRecyclerView() {
+        _adapter = BlockKeywordAdapter { item ->
+            val bundle = Bundle().apply {
+                putLong("blockWordId", item.dbwIdx)
+            }
+            findNavController().navigate(R.id.blockKeywordDetailFragment, bundle)
+        }
         binding.rvList.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvList.adapter = dummyAdapter
+        binding.rvList.adapter = _adapter
     }
 
     override fun onSearchQueryChanged(query: String) {
-        // TODO: 검색어 변경 시 처리
+        viewModel.updateSearchQuery(query)
     }
 
     override fun onLoadMore() {
-        // TODO: 무한 스크롤 처리
+        viewModel.loadMore()
     }
 
     override fun onAddClicked() {
-        // TODO: 금칙어 추가 다이얼로그 호출
+        showAddBottomSheet()
     }
 
     override fun observeViewModel() {
-        // TODO: 뷰모델 연동 및 showSuccess, showLoading, showError 호출
-        showSuccess(emptyList(), 0) // 임시로 빈 화면 노출
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.uiState.collectLatest { state ->
+                        when (state) {
+                            is BlockWordUiState.Loading -> {
+                                showLoading()
+                            }
+                            is BlockWordUiState.Success -> {
+                                showSuccess(state.items, state.totalCount)
+                            }
+                            is BlockWordUiState.Error -> {
+                                showError(state.message)
+                            }
+                        }
+                    }
+                }
+
+                launch {
+                    viewModel.errorMessage.collectLatest { message ->
+                        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
     }
 
-    companion object {
-        private val AnyDiffCallback = object : DiffUtil.ItemCallback<Any>() {
-            override fun areItemsTheSame(oldItem: Any, newItem: Any): Boolean = oldItem == newItem
-            override fun areContentsTheSame(oldItem: Any, newItem: Any): Boolean = oldItem == newItem
-        }
+    private fun showAddBottomSheet() {
+        val bottomSheet = KeywordBlockCreateBottomSheet.newInstance()
+        bottomSheet.show(childFragmentManager, "KeywordBlockCreateBottomSheet")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadBlockWords(isRefresh = true)
     }
 }

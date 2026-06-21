@@ -5,12 +5,11 @@ import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flowdesk_android.R
+import com.example.flowdesk_android.databinding.ItemSystemTenantStatusBinding
 import com.example.flowdesk_android.feature.system_management.domain.model.TenantStatus
 
 class TenantStatusAdapter(
@@ -19,35 +18,33 @@ class TenantStatusAdapter(
 ) : ListAdapter<TenantStatus, TenantStatusAdapter.ViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_system_tenant_status, parent, false)
-        return ViewHolder(view)
+        val binding = ItemSystemTenantStatusBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val viewStatusDot: View = itemView.findViewById(R.id.view_status_dot)
-        private val tvStatusName: TextView = itemView.findViewById(R.id.tv_status_name)
-        private val tvStatusKey: TextView = itemView.findViewById(R.id.tv_status_key)
-        private val tvActiveStatus: TextView = itemView.findViewById(R.id.tv_active_status)
-        private val ivMore: ImageView = itemView.findViewById(R.id.iv_more)
-        private val tvStatusDesc: TextView = itemView.findViewById(R.id.tv_status_desc)
+    inner class ViewHolder(private val binding: ItemSystemTenantStatusBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: TenantStatus) {
-            tvStatusName.text = item.statusName
-            tvStatusKey.text = item.statusKey
-            tvStatusDesc.text = item.description
+            binding.tvStatusName.text = item.statusName
+            binding.tvStatusKey.text = item.statusKey
+            binding.tvStatusDesc.text = item.description
 
             // Active/Inactive Label & Color setup
             if (item.isActive) {
-                tvActiveStatus.text = "• 활성"
-                tvActiveStatus.setTextColor(Color.parseColor("#22C55E")) // Green
+                binding.tvActiveStatus.text = "• 활성"
+                binding.tvActiveStatus.setTextColor(Color.parseColor("#22C55E")) // Green
             } else {
-                tvActiveStatus.text = "• 비활성"
-                tvActiveStatus.setTextColor(Color.parseColor("#94A3B8")) // Slate Gray
+                binding.tvActiveStatus.text = "• 비활성"
+                binding.tvActiveStatus.setTextColor(Color.parseColor("#94A3B8")) // Slate Gray
             }
 
             // Dot Color parsing dynamically
@@ -57,17 +54,17 @@ class TenantStatusAdapter(
                     shape = GradientDrawable.OVAL
                     setColor(parsedColor)
                 }
-                viewStatusDot.background = drawable
+                binding.viewStatusDot.background = drawable
             } catch (e: Exception) {
                 // Fallback to default indicator if invalid hex string
-                viewStatusDot.setBackgroundResource(R.drawable.bg_circle_blue)
+                binding.viewStatusDot.setBackgroundResource(R.drawable.bg_circle_blue)
             }
 
-            itemView.setOnClickListener {
+            binding.root.setOnClickListener {
                 onItemClicked(item)
             }
 
-            ivMore.setOnClickListener { view ->
+            binding.ivMore.setOnClickListener { view ->
                 onMoreClicked(item, view)
             }
         }

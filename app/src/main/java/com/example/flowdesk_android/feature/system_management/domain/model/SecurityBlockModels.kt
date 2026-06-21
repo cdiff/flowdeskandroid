@@ -66,3 +66,34 @@ data class BulkBlockPhoneResult(
     val totalCount: Int,
     val skippedPhones: List<String>
 )
+
+data class BlockWordItem(
+    val dbwIdx: Long,
+    val tenantId: Long,
+    val blockWord: String,
+    val matchType: String,
+    val reason: String?,
+    val isActive: Boolean,
+    val createdBy: Long,
+    val createdAt: String?,
+    val updatedAt: String?
+)
+
+data class BlockWordListResponse(
+    val items: List<BlockWordItem>,
+    val pageInfo: PageInfo
+)
+
+data class WordCheckResult(
+    val isBlocked: Boolean,
+    val reason: String?,
+    val blockId: Long?,
+    val matchedWord: String?
+)
+
+data class BulkBlockWordResult(
+    val successCount: Int,
+    val skippedCount: Int,
+    val totalCount: Int,
+    val skippedWords: List<String>
+)

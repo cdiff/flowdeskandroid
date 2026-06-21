@@ -60,20 +60,22 @@ class BlockIpViewModel @Inject constructor(
         _searchQuery.value = query
     }
 
-    fun loadBlockIps(isRefresh: Boolean = false) {
-        if (isPagingLoading) return
+    private var fetchJob: kotlinx.coroutines.Job? = null
 
+    fun loadBlockIps(isRefresh: Boolean = false) {
         if (isRefresh) {
+            fetchJob?.cancel()
+            isPagingLoading = false
             currentPage = 1
             totalPages = 1
             allLoadedItems.clear()
             _uiState.value = BlockIpUiState.Loading
         } else {
-            if (currentPage >= totalPages) return
+            if (isPagingLoading || currentPage >= totalPages) return
             isPagingLoading = true
         }
 
-        viewModelScope.launch {
+        fetchJob = viewModelScope.launch {
             val queryParam = _searchQuery.value.ifBlank { null }
             repository.getBlockIps(
                 page = currentPage,
@@ -89,6 +91,7 @@ class BlockIpViewModel @Inject constructor(
                 )
                 isPagingLoading = false
             }.onFailure { err ->
+                if (err is kotlinx.coroutines.CancellationException) return@onFailure
                 _uiState.value = BlockIpUiState.Error(err.message ?: "IP 차단 목록을 가져오는데 실패했습니다.")
                 isPagingLoading = false
                 _errorMessage.emit(err.message ?: "IP 차단 목록 로드 실패")

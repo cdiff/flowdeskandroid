@@ -17,13 +17,18 @@ import androidx.navigation.fragment.findNavController
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.databinding.DialogCommonConfirmBinding
 import com.example.flowdesk_android.databinding.FragmentBlockIpDetailBinding
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import com.example.flowdesk_android.feature.system_management.domain.model.BlockIpItem
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+import com.example.flowdesk_android.core.base.BaseFragment
+
 @AndroidEntryPoint
-class BlockIpDetailFragment : Fragment() {
+class BlockIpDetailFragment : BaseFragment(R.layout.fragment_block_ip_detail) {
 
     private val viewModel: BlockIpViewModel by activityViewModels()
 
@@ -39,19 +44,15 @@ class BlockIpDetailFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentBlockIpDetailBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    override fun getToolbarView(view: View): View? = view.findViewById(R.id.layout_toolbar)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        _binding = FragmentBlockIpDetailBinding.bind(view)
         super.onViewCreated(view, savedInstanceState)
-        setupListeners()
-        observeViewModel()
+    }
 
+    override fun initView() {
+        setupListeners()
         if (blockIpId != -1L) {
             viewModel.loadDetail(blockIpId)
         }
@@ -76,7 +77,7 @@ class BlockIpDetailFragment : Fragment() {
         }
     }
 
-    private fun observeViewModel() {
+    override fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
@@ -112,7 +113,7 @@ class BlockIpDetailFragment : Fragment() {
 
     private fun displayDetail(item: BlockIpItem) {
         binding.tvDetailIpAddress.text = item.blockIp
-        binding.tvDetailTenantId.text = "테넌트 ID: ${item.tenantId}"
+        binding.tvDetailTenantId.text = "차단 ID: ${item.dbiIdx}"
         binding.tvDetailCreatedBy.text = "등록자 ID: ${item.createdBy}"
         binding.tvDetailCreatedAt.text = "등록: ${item.createdAt ?: "-"}"
         binding.tvDetailUpdatedAt.text = "수정: ${item.updatedAt ?: "-"}"

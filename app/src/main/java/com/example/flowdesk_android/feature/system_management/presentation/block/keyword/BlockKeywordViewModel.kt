@@ -1,9 +1,9 @@
-package com.example.flowdesk_android.feature.system_management.presentation.block.phone
+package com.example.flowdesk_android.feature.system_management.presentation.block.keyword
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.flowdesk_android.feature.system_management.domain.model.BlockPhoneItem
-import com.example.flowdesk_android.feature.system_management.domain.model.BulkBlockPhoneResult
+import com.example.flowdesk_android.feature.system_management.domain.model.BlockWordItem
+import com.example.flowdesk_android.feature.system_management.domain.model.BulkBlockWordResult
 import com.example.flowdesk_android.feature.system_management.domain.repository.SecurityBlockRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
@@ -11,34 +11,34 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-sealed class BlockPhoneUiState {
-    object Loading : BlockPhoneUiState()
-    data class Success(val items: List<BlockPhoneItem>, val totalCount: Int) : BlockPhoneUiState()
-    data class Error(val message: String) : BlockPhoneUiState()
+sealed class BlockWordUiState {
+    object Loading : BlockWordUiState()
+    data class Success(val items: List<BlockWordItem>, val totalCount: Int) : BlockWordUiState()
+    data class Error(val message: String) : BlockWordUiState()
 }
 
-sealed class BlockPhoneDetailUiState {
-    object Loading : BlockPhoneDetailUiState()
-    data class Success(val item: BlockPhoneItem) : BlockPhoneDetailUiState()
-    data class Error(val message: String) : BlockPhoneDetailUiState()
+sealed class BlockWordDetailUiState {
+    object Loading : BlockWordDetailUiState()
+    data class Success(val item: BlockWordItem) : BlockWordDetailUiState()
+    data class Error(val message: String) : BlockWordDetailUiState()
 }
 
 @OptIn(FlowPreview::class)
 @HiltViewModel
-class BlockPhoneViewModel @Inject constructor(
+class BlockKeywordViewModel @Inject constructor(
     private val repository: SecurityBlockRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<BlockPhoneUiState>(BlockPhoneUiState.Loading)
-    val uiState: StateFlow<BlockPhoneUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<BlockWordUiState>(BlockWordUiState.Loading)
+    val uiState: StateFlow<BlockWordUiState> = _uiState.asStateFlow()
 
-    private val _detailState = MutableStateFlow<BlockPhoneDetailUiState>(BlockPhoneDetailUiState.Loading)
-    val detailState: StateFlow<BlockPhoneDetailUiState> = _detailState.asStateFlow()
+    private val _detailState = MutableStateFlow<BlockWordDetailUiState>(BlockWordDetailUiState.Loading)
+    val detailState: StateFlow<BlockWordDetailUiState> = _detailState.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    private val allLoadedItems = mutableListOf<BlockPhoneItem>()
+    private val allLoadedItems = mutableListOf<BlockWordItem>()
     private var currentPage = 1
     private var totalPages = 1
     private var isPagingLoading = false
@@ -51,7 +51,7 @@ class BlockPhoneViewModel @Inject constructor(
             searchQuery
                 .debounce(300)
                 .collect { _ ->
-                    loadBlockPhones(isRefresh = true)
+                    loadBlockWords(isRefresh = true)
                 }
         }
     }
@@ -62,14 +62,14 @@ class BlockPhoneViewModel @Inject constructor(
 
     private var fetchJob: kotlinx.coroutines.Job? = null
 
-    fun loadBlockPhones(isRefresh: Boolean = false) {
+    fun loadBlockWords(isRefresh: Boolean = false) {
         if (isRefresh) {
             fetchJob?.cancel()
             isPagingLoading = false
             currentPage = 1
             totalPages = 1
             allLoadedItems.clear()
-            _uiState.value = BlockPhoneUiState.Loading
+            _uiState.value = BlockWordUiState.Loading
         } else {
             if (isPagingLoading || currentPage >= totalPages) return
             isPagingLoading = true
@@ -77,7 +77,7 @@ class BlockPhoneViewModel @Inject constructor(
 
         fetchJob = viewModelScope.launch {
             val queryParam = _searchQuery.value.ifBlank { null }
-            repository.getBlockPhones(
+            repository.getBlockWords(
                 page = currentPage,
                 limit = 20,
                 q = queryParam
@@ -85,16 +85,16 @@ class BlockPhoneViewModel @Inject constructor(
                 totalPages = response.pageInfo.totalPages
                 allLoadedItems.addAll(response.items)
 
-                _uiState.value = BlockPhoneUiState.Success(
+                _uiState.value = BlockWordUiState.Success(
                     items = allLoadedItems.toList(),
                     totalCount = response.pageInfo.totalItems
                 )
                 isPagingLoading = false
             }.onFailure { err ->
                 if (err is kotlinx.coroutines.CancellationException) return@onFailure
-                _uiState.value = BlockPhoneUiState.Error(err.message ?: "휴대폰 차단 목록을 가져오는데 실패했습니다.")
+                _uiState.value = BlockWordUiState.Error(err.message ?: "금칙어 목록을 가져오는데 실패했습니다.")
                 isPagingLoading = false
-                _errorMessage.emit(err.message ?: "휴대폰 차단 목록 로드 실패")
+                _errorMessage.emit(err.message ?: "금칙어 목록 로드 실패")
             }
         }
     }
@@ -102,74 +102,92 @@ class BlockPhoneViewModel @Inject constructor(
     fun loadMore() {
         if (currentPage < totalPages && !isPagingLoading) {
             currentPage++
-            loadBlockPhones(isRefresh = false)
+            loadBlockWords(isRefresh = false)
         }
     }
 
-    fun addBlockPhone(blockHp: String, reason: String, isActive: Int, onResult: (Result<BlockPhoneItem>) -> Unit) {
+    fun addBlockWord(
+        blockWord: String,
+        matchType: String,
+        reason: String,
+        isActive: Int,
+        onResult: (Result<BlockWordItem>) -> Unit
+    ) {
         viewModelScope.launch {
-            repository.createBlockPhone(blockHp, reason, isActive)
+            repository.createBlockWord(blockWord, matchType, reason, isActive)
                 .onSuccess { item ->
-                    loadBlockPhones(isRefresh = true)
+                    loadBlockWords(isRefresh = true)
                     onResult(Result.success(item))
                 }
                 .onFailure { err ->
-                    _errorMessage.emit(err.message ?: "휴대폰 차단 등록 실패")
+                    _errorMessage.emit(err.message ?: "금칙어 등록 실패")
                     onResult(Result.failure(err))
                 }
         }
     }
 
-    fun addBulkBlockPhone(phones: String, reason: String, isActive: Int, onResult: (Result<BulkBlockPhoneResult>) -> Unit) {
+    fun addBulkBlockWord(
+        words: String,
+        matchType: String,
+        reason: String,
+        isActive: Int,
+        onResult: (Result<BulkBlockWordResult>) -> Unit
+    ) {
         viewModelScope.launch {
-            repository.createBulkBlockPhone(phones, reason, isActive)
+            repository.createBulkBlockWord(words, matchType, reason, isActive)
                 .onSuccess { result ->
-                    loadBlockPhones(isRefresh = true)
+                    loadBlockWords(isRefresh = true)
                     onResult(Result.success(result))
                 }
                 .onFailure { err ->
-                    _errorMessage.emit(err.message ?: "대량 휴대폰 차단 등록 실패")
+                    _errorMessage.emit(err.message ?: "대량 금칙어 등록 실패")
                     onResult(Result.failure(err))
                 }
         }
     }
 
-    fun updateBlockPhone(id: Long, reason: String, isActive: Int, onResult: (Result<BlockPhoneItem>) -> Unit) {
+    fun updateBlockWord(
+        id: Long,
+        matchType: String,
+        reason: String,
+        isActive: Int,
+        onResult: (Result<BlockWordItem>) -> Unit
+    ) {
         viewModelScope.launch {
-            repository.updateBlockPhone(id, reason, isActive)
+            repository.updateBlockWord(id, matchType, reason, isActive)
                 .onSuccess { item ->
-                    loadBlockPhones(isRefresh = true)
+                    loadBlockWords(isRefresh = true)
                     onResult(Result.success(item))
                 }
                 .onFailure { err ->
-                    _errorMessage.emit(err.message ?: "휴대폰 차단 수정 실패")
+                    _errorMessage.emit(err.message ?: "금칙어 수정 실패")
                     onResult(Result.failure(err))
                 }
         }
     }
 
     fun loadDetail(id: Long) {
-        _detailState.value = BlockPhoneDetailUiState.Loading
+        _detailState.value = BlockWordDetailUiState.Loading
         viewModelScope.launch {
-            repository.getBlockPhoneDetail(id)
+            repository.getBlockWordDetail(id)
                 .onSuccess { item ->
-                    _detailState.value = BlockPhoneDetailUiState.Success(item)
+                    _detailState.value = BlockWordDetailUiState.Success(item)
                 }
                 .onFailure { err ->
-                    _detailState.value = BlockPhoneDetailUiState.Error(err.message ?: "상세 정보를 가져오는 데 실패했습니다.")
+                    _detailState.value = BlockWordDetailUiState.Error(err.message ?: "상세 정보를 가져오는 데 실패했습니다.")
                 }
         }
     }
 
-    fun deleteBlockPhone(id: Long, onResult: (Result<Unit>) -> Unit) {
+    fun deleteBlockWord(id: Long, onResult: (Result<Unit>) -> Unit) {
         viewModelScope.launch {
-            repository.deleteBlockPhone(id)
+            repository.deleteBlockWord(id)
                 .onSuccess {
-                    loadBlockPhones(isRefresh = true)
+                    loadBlockWords(isRefresh = true)
                     onResult(Result.success(Unit))
                 }
                 .onFailure { err ->
-                    _errorMessage.emit(err.message ?: "휴대폰 차단 해제 실패")
+                    _errorMessage.emit(err.message ?: "금칙어 해제 실패")
                     onResult(Result.failure(err))
                 }
         }

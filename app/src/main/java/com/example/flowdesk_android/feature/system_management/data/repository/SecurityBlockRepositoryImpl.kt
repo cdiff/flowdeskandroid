@@ -181,4 +181,93 @@ class SecurityBlockRepositoryImpl @Inject constructor(
             throw Exception("API error: ${response.code()}")
         }
     }
+
+    override suspend fun getBlockWords(
+        page: Int,
+        limit: Int,
+        q: String?
+    ): Result<BlockWordListResponse> = runCatching {
+        val response = apiService.getBlockWords(page, limit, q)
+        if (response.isSuccessful) {
+            response.body()?.toDomain() ?: throw Exception("Response body is null")
+        } else {
+            throw Exception("API error: ${response.code()}")
+        }
+    }
+
+    override suspend fun createBlockWord(
+        blockWord: String,
+        matchType: String,
+        reason: String,
+        isActive: Int
+    ): Result<BlockWordItem> = runCatching {
+        val request = CreateBlockWordRequest(blockWord = blockWord, matchType = matchType, reason = reason, isActive = isActive)
+        val response = apiService.createBlockWord(request)
+        if (response.isSuccessful) {
+            response.body()?.toDomain() ?: throw Exception("Response body is null")
+        } else {
+            throw Exception("API error: ${response.code()}")
+        }
+    }
+
+    override suspend fun checkBlockWord(
+        word: String
+    ): Result<WordCheckResult> = runCatching {
+        val response = apiService.checkBlockWord(word)
+        if (response.isSuccessful) {
+            response.body()?.toDomain() ?: throw Exception("Response body is null")
+        } else {
+            throw Exception("API error: ${response.code()}")
+        }
+    }
+
+    override suspend fun getBlockWordDetail(
+        id: Long
+    ): Result<BlockWordItem> = runCatching {
+        val response = apiService.getBlockWordDetail(id)
+        if (response.isSuccessful) {
+            response.body()?.toDomain() ?: throw Exception("Response body is null")
+        } else {
+            throw Exception("API error: ${response.code()}")
+        }
+    }
+
+    override suspend fun updateBlockWord(
+        id: Long,
+        matchType: String,
+        reason: String,
+        isActive: Int
+    ): Result<BlockWordItem> = runCatching {
+        val request = UpdateBlockWordRequest(matchType = matchType, reason = reason, isActive = isActive)
+        val response = apiService.updateBlockWord(id, request)
+        if (response.isSuccessful) {
+            response.body()?.toDomain() ?: throw Exception("Response body is null")
+        } else {
+            throw Exception("API error: ${response.code()}")
+        }
+    }
+
+    override suspend fun deleteBlockWord(
+        id: Long
+    ): Result<Unit> = runCatching {
+        val response = apiService.deleteBlockWord(id)
+        if (!response.isSuccessful) {
+            throw Exception("API error: ${response.code()}")
+        }
+    }
+
+    override suspend fun createBulkBlockWord(
+        words: String,
+        matchType: String,
+        reason: String,
+        isActive: Int
+    ): Result<BulkBlockWordResult> = runCatching {
+        val request = BulkBlockWordRequest(words = words, matchType = matchType, reason = reason, isActive = isActive)
+        val response = apiService.createBulkBlockWord(request)
+        if (response.isSuccessful) {
+            response.body()?.toDomain() ?: throw Exception("Response body is null")
+        } else {
+            throw Exception("API error: ${response.code()}")
+        }
+    }
 }

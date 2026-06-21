@@ -28,6 +28,7 @@
         android:name="com.example.flowdesk_android.feature.mypage.presentation.change_password.ChangePasswordFragment"
         android:label="ChangePassword"
         tools:layout="@layout/fragment_mypage_change_password" />
+
     <fragment
         android:id="@+id/usersFragment"
         android:name="com.example.flowdesk_android.feature.main.common.DynamicTabHostFragment"
@@ -131,6 +132,16 @@
         tools:layout="@layout/fragment_block_phone_detail">
         <argument
             android:name="blockHpId"
+            app:argType="long" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/blockKeywordDetailFragment"
+        android:name="com.example.flowdesk_android.feature.system_management.presentation.block.keyword.BlockKeywordDetailFragment"
+        android:label="BlockKeywordDetail"
+        tools:layout="@layout/fragment_block_keyword_detail">
+        <argument
+            android:name="blockWordId"
             app:argType="long" />
     </fragment>
 

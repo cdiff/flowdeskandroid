@@ -34,7 +34,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="휴대폰 차단 상세 정보"
+            android:text="금칙어 상세 정보"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="#1E293B"
@@ -78,7 +78,7 @@
                     android:padding="16dp"
                     android:background="@android:color/white">
 
-                    <!-- 휴대폰 번호 + 상태 배지 -->
+                    <!-- 금칙어 + 상태 배지 -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -86,14 +86,13 @@
                         android:gravity="center_vertical">
 
                         <TextView
-                            android:id="@+id/tv_detail_phone_number"
+                            android:id="@+id/tv_detail_keyword"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="22sp"
                             android:textStyle="bold"
                             android:textColor="#0F172A"
-                            android:fontFamily="monospace"
-                            tools:text="010-1234-5678" />
+                            tools:text="욕설" />
 
                         <TextView
                             android:id="@+id/tv_detail_status_tag"
@@ -121,7 +120,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <!-- 테넌트 ID & 등록자 ID (그리드 형태, 아이콘 없음) -->
+                        <!-- 테넌트 ID & 등록자 ID -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -162,7 +161,7 @@
                                 android:layout_height="wrap_content"
                                 android:textSize="12sp"
                                 android:textColor="#64748B"
-                                tools:text="등록: 2026-01-26 12:00:00" />
+                                tools:text="등록: 2026-03-08 14:00:00" />
                         </LinearLayout>
 
                         <!-- 수정일 -->
@@ -178,7 +177,7 @@
                                 android:layout_height="wrap_content"
                                 android:textSize="12sp"
                                 android:textColor="#64748B"
-                                tools:text="수정: 2026-01-26 12:00:00" />
+                                tools:text="수정: 2026-06-07 14:48:53" />
                         </LinearLayout>
 
                     </LinearLayout>
@@ -187,7 +186,90 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- 2-2. 차단 사유 입력 카드 (상시 활성화 형태) -->
+            <!-- 2-2. 매칭 타입 선택 카드 (상시 활성화 형태) -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="1dp"
+                app:cardUseCompatPadding="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:background="@android:color/white">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="매칭 타입"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="#0F172A"
+                        android:layout_marginBottom="16dp" />
+
+                    <RadioGroup
+                        android:id="@+id/rg_match_type"
+                        android:layout_width="match_parent"
+                        android:layout_height="46dp"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/rb_match_contains"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="6dp"
+                            android:background="@drawable/selector_custom_radio_bg"
+                            android:button="@null"
+                            android:drawableEnd="@drawable/selector_custom_radio_indicator"
+                            android:gravity="center_vertical|start"
+                            android:paddingHorizontal="12dp"
+                            android:text="포함 차단"
+                            android:textColor="@color/selector_custom_radio_text"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+
+                        <RadioButton
+                            android:id="@+id/rb_match_exact"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="6dp"
+                            android:background="@drawable/selector_custom_radio_bg"
+                            android:button="@null"
+                            android:drawableEnd="@drawable/selector_custom_radio_indicator"
+                            android:gravity="center_vertical|start"
+                            android:paddingHorizontal="12dp"
+                            android:text="완전 일치"
+                            android:textColor="@color/selector_custom_radio_text"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+
+                        <RadioButton
+                            android:id="@+id/rb_match_regex"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/selector_custom_radio_bg"
+                            android:button="@null"
+                            android:drawableEnd="@drawable/selector_custom_radio_indicator"
+                            android:gravity="center_vertical|start"
+                            android:paddingHorizontal="12dp"
+                            android:text="패턴 차단"
+                            android:textColor="@color/selector_custom_radio_text"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+                    </RadioGroup>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- 2-3. 차단 사유 입력 카드 (상시 활성화 형태) -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -224,7 +306,7 @@
                         android:inputType="textMultiLine"
                         android:gravity="top|start"
                         android:minLines="3"
-                        tools:text="스팸 대량 전송으로 영구 접속 차단" />
+                        tools:text="비속어 필터링" />
 
                 </LinearLayout>
 
