@@ -72,7 +72,7 @@
         </FrameLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- 4. 하단 뾰족한 삼각형 지시자 (아래 본문 배경색 #F3F4F6 과 일치시켜 자연스럽게 위로 솟아오른 뾰족한 홈처럼 보이게 만듭니다) -->
+    <!-- 4. 하단 뾰족한 삼각형 지시자 (아래 본문 배경색 #FAFCFD 와 일치시켜 자연스럽게 위로 솟아오른 뾰족한 홈처럼 보이게 만듭니다) -->
     <ImageView
         android:id="@+id/iv_status_indicator"
         android:layout_width="18dp"
@@ -81,7 +81,7 @@
         android:src="@drawable/ic_triangle_up"
         android:scaleType="fitXY"
         android:visibility="invisible"
-        app:tint="#F8FAFC"
+        app:tint="#FAFCFD"
         app:layout_constraintTop_toBottomOf="@id/card_circle_container"
         app:layout_constraintStart_toStartOf="@id/card_circle_container"
         app:layout_constraintEnd_toEndOf="@id/card_circle_container"

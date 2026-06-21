@@ -56,12 +56,18 @@ class KeywordBlockCreateBottomSheet : BottomSheetDialogFragment() {
 
         setupUI()
         setupListeners()
+
+        val defaultKeyword = arguments?.getString("keyword")
+        if (!defaultKeyword.isNullOrEmpty()) {
+            binding.etBlockWord.setText(defaultKeyword)
+        }
     }
 
     private fun setupUI() {
         binding.tvHeaderTitle.text = "금칙어 등록"
         binding.tvHeaderSubtitle.text = "채팅 및 상담 입력창에서 사용할 수 없는 금칙어를 설정합니다."
-        binding.flModeContainer.visibility = View.VISIBLE
+        val hideMode = arguments?.getBoolean("hideModeSelector", false) ?: false
+        binding.flModeContainer.visibility = if (hideMode) View.GONE else View.VISIBLE
         binding.btnCreate.text = "등록하기"
         selectMode(0, animate = false)
     }
@@ -204,8 +210,14 @@ class KeywordBlockCreateBottomSheet : BottomSheetDialogFragment() {
     }
 
     companion object {
-        fun newInstance(): KeywordBlockCreateBottomSheet {
-            return KeywordBlockCreateBottomSheet()
+        fun newInstance(keyword: String? = null, hideModeSelector: Boolean = false): KeywordBlockCreateBottomSheet {
+            val fragment = KeywordBlockCreateBottomSheet()
+            val args = Bundle().apply {
+                putString("keyword", keyword)
+                putBoolean("hideModeSelector", hideModeSelector)
+            }
+            fragment.arguments = args
+            return fragment
         }
     }
 }

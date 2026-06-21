@@ -19,6 +19,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.feature.counsel_management.data.dto.CounselUpdateRequest
 import com.example.flowdesk_android.feature.counsel_management.data.dto.FieldValueRequest
+import com.example.flowdesk_android.core.extension.setReadOnly
 import com.example.flowdesk_android.feature.counsel_management.domain.model.CounselFieldValue
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -121,42 +122,13 @@ class CounselDetailInfoFragment : Fragment() {
         }
 
         btnSave.setOnClickListener {
-            // 동적 필드 정보 수집
-            val dynamicFieldValues = mutableListOf<FieldValueRequest>()
-            for (i in 0 until llDynamicFieldsContainer.childCount) {
-                val container = llDynamicFieldsContainer.getChildAt(i) as? LinearLayout ?: continue
-                val editText = container.getChildAt(1) as? EditText ?: continue
-                val tag = editText.tag as? FieldTag ?: continue
-                val rawVal = editText.text?.toString()?.trim()
-
-                val req = when (tag.fieldType) {
-                    "number" -> FieldValueRequest(
-                        fieldId = tag.fieldId,
-                        valueNumber = rawVal?.toDoubleOrNull()
-                    )
-                    "date" -> FieldValueRequest(
-                        fieldId = tag.fieldId,
-                        valueDate = rawVal?.ifBlank { null }
-                    )
-                    "datetime" -> FieldValueRequest(
-                        fieldId = tag.fieldId,
-                        valueDatetime = rawVal?.ifBlank { null }
-                    )
-                    else -> FieldValueRequest(
-                        fieldId = tag.fieldId,
-                        valueText = rawVal?.ifBlank { null }
-                    )
-                }
-                dynamicFieldValues.add(req)
-            }
-
             val request = CounselUpdateRequest(
                 counselSource = etUtmSource.text?.toString()?.ifBlank { null },
                 counselMedium = etUtmMedium.text?.toString()?.ifBlank { null },
                 counselCampaign = etUtmCampaign.text?.toString()?.ifBlank { null },
                 counselResvDtm = selectedResvDtm,
                 counselMemo = etCounselMemo.text?.toString()?.ifBlank { null },
-                fieldValues = dynamicFieldValues.ifEmpty { null }
+                fieldValues = null
             )
             viewModel.updateCounsel(request)
         }
@@ -217,48 +189,31 @@ class CounselDetailInfoFragment : Fragment() {
                     }
                     "date" -> {
                         inputType = android.text.InputType.TYPE_NULL
-                        isFocusable = false
-                        isClickable = true
                         val calendarDrawable = androidx.core.content.ContextCompat.getDrawable(context, R.drawable.ic_calendar)?.mutate()
                         if (calendarDrawable != null) {
                             val sizePx = (18 * density).toInt()
                             calendarDrawable.setBounds(0, 0, sizePx, sizePx)
                             androidx.core.graphics.drawable.DrawableCompat.setTint(calendarDrawable, Color.parseColor("#94A3B8"))
                             setCompoundDrawables(null, null, calendarDrawable, null)
-                        }
-                        setOnClickListener {
-                            val cal = Calendar.getInstance()
-                            DatePickerDialog(context, { _, year, month, day ->
-                                val dateStr = "%04d-%02d-%02d".format(year, month + 1, day)
-                                setText(dateStr)
-                            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
                         }
                     }
                     "datetime" -> {
                         inputType = android.text.InputType.TYPE_NULL
-                        isFocusable = false
-                        isClickable = true
                         val calendarDrawable = androidx.core.content.ContextCompat.getDrawable(context, R.drawable.ic_calendar)?.mutate()
                         if (calendarDrawable != null) {
                             val sizePx = (18 * density).toInt()
                             calendarDrawable.setBounds(0, 0, sizePx, sizePx)
                             androidx.core.graphics.drawable.DrawableCompat.setTint(calendarDrawable, Color.parseColor("#94A3B8"))
                             setCompoundDrawables(null, null, calendarDrawable, null)
-                        }
-                        setOnClickListener {
-                            val cal = Calendar.getInstance()
-                            DatePickerDialog(context, { _, year, month, day ->
-                                TimePickerDialog(context, { _, hour, minute ->
-                                    val datetimeStr = "%04d-%02d-%02dT%02d:%02d:00".format(year, month + 1, day, hour, minute)
-                                    setText(datetimeStr)
-                                }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), true).show()
-                            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
                         }
                     }
                     else -> {
                         inputType = android.text.InputType.TYPE_CLASS_TEXT
                     }
                 }
+                
+                // 추가 정보 (동적 필드)는 수정 불가하므로 ReadOnly 처리
+                setReadOnly(true)
             }
 
             fieldContainer.addView(labelView)

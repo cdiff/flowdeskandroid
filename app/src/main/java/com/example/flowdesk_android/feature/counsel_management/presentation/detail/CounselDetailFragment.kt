@@ -34,6 +34,10 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
 
     // Views
     private lateinit var btnBack: View
+    private lateinit var btnDelete: View
+    private lateinit var btnBlockPhone: View
+    private lateinit var btnBlockIp: View
+    private lateinit var btnBlockKeyword: View
 
     private lateinit var tvName: TextView
     private lateinit var tvStatusTag: TextView
@@ -104,6 +108,10 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
 
         tabLayout = view.findViewById(R.id.tab_layout)
         tabContentContainer = view.findViewById(R.id.tab_content_container)
+        btnDelete = view.findViewById(R.id.btn_delete)
+        btnBlockPhone = view.findViewById(R.id.btn_block_phone)
+        btnBlockIp = view.findViewById(R.id.btn_block_ip)
+        btnBlockKeyword = view.findViewById(R.id.btn_block_keyword)
     }
 
     private fun setupTabLayout() {
@@ -144,6 +152,67 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
             managerPopup?.let { if (it.isShowing) { it.dismiss(); return@setOnClickListener } }
             showManagerPopup()
         }
+
+        btnDelete.setOnClickListener {
+            showDeleteConfirmDialog()
+        }
+
+        btnBlockPhone.setOnClickListener {
+            val phone = currentDetail?.counselHp
+            val sheet = com.example.flowdesk_android.feature.system_management.presentation.block.phone.PhoneBlockCreateBottomSheet.newInstance(
+                phone = phone,
+                hideModeSelector = true
+            )
+            sheet.show(childFragmentManager, "PhoneBlockCreateBottomSheet")
+        }
+
+        btnBlockIp.setOnClickListener {
+            val ip = currentDetail?.counselIp
+            val sheet = com.example.flowdesk_android.feature.system_management.presentation.block.ip.IpBlockCreateBottomSheet.newInstance(
+                ip = ip,
+                hideModeSelector = true
+            )
+            sheet.show(childFragmentManager, "IpBlockCreateBottomSheet")
+        }
+
+        btnBlockKeyword.setOnClickListener {
+            val sheet = com.example.flowdesk_android.feature.system_management.presentation.block.keyword.KeywordBlockCreateBottomSheet.newInstance(
+                keyword = null,
+                hideModeSelector = true
+            )
+            sheet.show(childFragmentManager, "KeywordBlockCreateBottomSheet")
+        }
+    }
+
+    private fun showDeleteConfirmDialog() {
+        val current = currentDetail ?: return
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_common_confirm, null)
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        val tvTitle = dialogView.findViewById<TextView>(R.id.tv_title)
+        val tvMessage = dialogView.findViewById<TextView>(R.id.tv_message)
+        val cbConfirm = dialogView.findViewById<View>(R.id.cb_confirm)
+        val btnCancel = dialogView.findViewById<View>(R.id.btn_cancel)
+        val btnConfirm = dialogView.findViewById<View>(R.id.btn_confirm)
+
+        tvTitle.text = "상담 삭제"
+        tvMessage.text = "'${current.name}' 고객의 상담 정보를 정말 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다."
+        cbConfirm.visibility = View.GONE
+
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        btnConfirm.setOnClickListener {
+            viewModel.deleteCounsel()
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     // ── 상태 변경 팝업 ──────────────────────────────────────────────────────────
@@ -229,6 +298,23 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
                             is CounselUpdateState.Error -> {
                                 Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
                                 viewModel.resetStatusUpdateState()
+                            }
+                            else -> {}
+                        }
+                    }
+                }
+
+                launch {
+                    viewModel.deleteState.collect { state ->
+                        when (state) {
+                            is CounselUpdateState.Success -> {
+                                Toast.makeText(requireContext(), "상담 정보가 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                                viewModel.resetDeleteState()
+                                findNavController().navigateUp()
+                            }
+                            is CounselUpdateState.Error -> {
+                                Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                                viewModel.resetDeleteState()
                             }
                             else -> {}
                         }

@@ -56,12 +56,18 @@ class PhoneBlockCreateBottomSheet : BottomSheetDialogFragment() {
         
         setupUI()
         setupListeners()
+
+        val defaultPhone = arguments?.getString("phone")
+        if (!defaultPhone.isNullOrEmpty()) {
+            binding.etBlockPhone.setText(defaultPhone)
+        }
     }
 
     private fun setupUI() {
         binding.tvHeaderTitle.text = "휴대폰 번호 차단 등록"
         binding.tvHeaderSubtitle.text = "악성 스팸 전송 휴대폰 번호를 차단합니다."
-        binding.flModeContainer.visibility = View.VISIBLE
+        val hideMode = arguments?.getBoolean("hideModeSelector", false) ?: false
+        binding.flModeContainer.visibility = if (hideMode) View.GONE else View.VISIBLE
         binding.btnCreate.text = "등록하기"
         selectMode(0, animate = false)
     }
@@ -220,8 +226,14 @@ class PhoneBlockCreateBottomSheet : BottomSheetDialogFragment() {
     }
 
     companion object {
-        fun newInstance(): PhoneBlockCreateBottomSheet {
-            return PhoneBlockCreateBottomSheet()
+        fun newInstance(phone: String? = null, hideModeSelector: Boolean = false): PhoneBlockCreateBottomSheet {
+            val fragment = PhoneBlockCreateBottomSheet()
+            val args = Bundle().apply {
+                putString("phone", phone)
+                putBoolean("hideModeSelector", hideModeSelector)
+            }
+            fragment.arguments = args
+            return fragment
         }
     }
 }

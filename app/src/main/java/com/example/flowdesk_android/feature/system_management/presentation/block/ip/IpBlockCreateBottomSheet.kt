@@ -57,12 +57,18 @@ class IpBlockCreateBottomSheet : BottomSheetDialogFragment() {
         
         setupUI()
         setupListeners()
+
+        val defaultIp = arguments?.getString("ip")
+        if (!defaultIp.isNullOrEmpty()) {
+            binding.etBlockIp.setText(defaultIp)
+        }
     }
 
     private fun setupUI() {
         binding.tvHeaderTitle.text = "IP 차단 등록"
         binding.tvHeaderSubtitle.text = "허가되지 않은 악성 트래픽 IP를 차단합니다."
-        binding.flModeContainer.visibility = View.VISIBLE
+        val hideMode = arguments?.getBoolean("hideModeSelector", false) ?: false
+        binding.flModeContainer.visibility = if (hideMode) View.GONE else View.VISIBLE
         binding.btnCreate.text = "등록하기"
         selectMode(0, animate = false)
     }
@@ -196,8 +202,14 @@ class IpBlockCreateBottomSheet : BottomSheetDialogFragment() {
     }
 
     companion object {
-        fun newInstance(): IpBlockCreateBottomSheet {
-            return IpBlockCreateBottomSheet()
+        fun newInstance(ip: String? = null, hideModeSelector: Boolean = false): IpBlockCreateBottomSheet {
+            val fragment = IpBlockCreateBottomSheet()
+            val args = Bundle().apply {
+                putString("ip", ip)
+                putBoolean("hideModeSelector", hideModeSelector)
+            }
+            fragment.arguments = args
+            return fragment
         }
     }
 }

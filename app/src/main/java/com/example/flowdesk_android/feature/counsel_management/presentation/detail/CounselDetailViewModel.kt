@@ -48,6 +48,9 @@ class CounselDetailViewModel @Inject constructor(
     private val _statusUpdateState = MutableStateFlow<CounselUpdateState>(CounselUpdateState.Idle)
     val statusUpdateState: StateFlow<CounselUpdateState> = _statusUpdateState.asStateFlow()
 
+    private val _deleteState = MutableStateFlow<CounselUpdateState>(CounselUpdateState.Idle)
+    val deleteState: StateFlow<CounselUpdateState> = _deleteState.asStateFlow()
+
     // 담당자 목록 (대시보드 API에서 재활용)
     private val _employeeList = MutableStateFlow<List<EmployeeStat>>(emptyList())
     val employeeList: StateFlow<List<EmployeeStat>> = _employeeList.asStateFlow()
@@ -154,6 +157,26 @@ class CounselDetailViewModel @Inject constructor(
 
     fun resetStatusUpdateState() {
         _statusUpdateState.value = CounselUpdateState.Idle
+    }
+
+    fun deleteCounsel() {
+        if (counselId == -1) return
+        _deleteState.value = CounselUpdateState.Loading
+        viewModelScope.launch {
+            counselRepository.deleteCounsel(counselId)
+                .onSuccess {
+                    _deleteState.value = CounselUpdateState.Success
+                }
+                .onFailure { err ->
+                    val msg = err.message ?: "상담 삭제에 실패했습니다."
+                    _deleteState.value = CounselUpdateState.Error(msg)
+                    sendError(msg)
+                }
+        }
+    }
+
+    fun resetDeleteState() {
+        _deleteState.value = CounselUpdateState.Idle
     }
 
     fun loadMemos() {
