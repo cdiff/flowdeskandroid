@@ -32,16 +32,14 @@ class UserAdapter(private val onItemClick: (User) -> Unit) :
 
             binding.tvUserName.text = user.userName
             binding.tvUserEmail.text = user.userEmail
-            
-            binding.tvAvatar.text = user.userName.firstOrNull()?.toString() ?: "?"
 
             // isActive is boolean
             if (user.isActive) {
-                binding.ivStatus.setImageResource(R.drawable.ic_check_circle)
-                binding.ivStatus.imageTintList = ContextCompat.getColorStateList(binding.root.context, R.color.green_accent)
+                binding.tvActiveStatus.text = "• 활성"
+                binding.tvActiveStatus.setTextColor(ContextCompat.getColor(binding.root.context, R.color.color_success_active))
             } else {
-                binding.ivStatus.setImageResource(R.drawable.ic_close)
-                binding.ivStatus.imageTintList = ContextCompat.getColorStateList(binding.root.context, R.color.red)
+                binding.tvActiveStatus.text = "• 비활성"
+                binding.tvActiveStatus.setTextColor(ContextCompat.getColor(binding.root.context, R.color.slate_400))
             }
         }
     }

@@ -1,6 +1,5 @@
 package com.example.flowdesk_android.feature.user_management.presentation.roles.detail
 
-import android.graphics.Color
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -9,18 +8,18 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.feature.user_management.domain.model.PermissionPage
 import com.example.flowdesk_android.feature.user_management.domain.model.RoleDetail
 import com.example.flowdesk_android.feature.user_management.domain.model.PermissionAction
 import com.example.flowdesk_android.databinding.FragmentRoleDetailBinding
+import com.example.flowdesk_android.databinding.ItemRoleDetailPageBinding
+import com.example.flowdesk_android.databinding.ItemRoleAssignedUserBinding
 import com.example.flowdesk_android.core.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -33,7 +32,7 @@ class RoleDetailFragment : BaseFragment(R.layout.fragment_role_detail) {
 
     private val viewModel: RoleDetailViewModel by viewModels()
 
-    override fun getToolbarView(view: View): View? = view.findViewById(R.id.toolbar)
+    override fun getToolbarView(view: View): View? = binding.toolbar
  
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentRoleDetailBinding.bind(view)
@@ -81,27 +80,26 @@ class RoleDetailFragment : BaseFragment(R.layout.fragment_role_detail) {
         binding.tvPermTitle.text = "세부 권한 (${role.permissionsByPage.sumOf { it.permissions.size }}개)"
 
         role.permissionsByPage.forEach { page ->
-            val pageView = layoutInflater.inflate(R.layout.item_role_detail_page, binding.llPermissionsContainer, false)
-            pageView.findViewById<TextView>(R.id.tv_page_name).text = page.pageDisplayName
-            pageView.findViewById<TextView>(R.id.tv_page_code).text = page.pageName
+            val pageBinding = ItemRoleDetailPageBinding.inflate(layoutInflater, binding.llPermissionsContainer, false)
+            pageBinding.tvPageName.text = page.pageDisplayName
+            pageBinding.tvPageCode.text = page.pageName
 
-            val llActions = pageView.findViewById<LinearLayout>(R.id.ll_actions)
             page.permissions.forEach { action ->
                 val badge = createActionBadge(action)
-                llActions.addView(badge)
+                pageBinding.llActions.addView(badge)
             }
-            binding.llPermissionsContainer.addView(pageView)
+            binding.llPermissionsContainer.addView(pageBinding.root)
         }
 
         binding.llUsersContainer.removeAllViews()
         binding.tvUsersTitle.text = "할당된 팀원 (${role.assignedUsers.size}명)"
 
         role.assignedUsers.forEach { user ->
-            val userView = layoutInflater.inflate(R.layout.item_role_assigned_user, binding.llUsersContainer, false)
-            userView.findViewById<TextView>(R.id.tv_avatar).text = user.userName.firstOrNull()?.toString() ?: "?"
-            userView.findViewById<TextView>(R.id.tv_user_name).text = user.userName
-            userView.findViewById<TextView>(R.id.tv_user_email).text = user.userId
-            binding.llUsersContainer.addView(userView)
+            val userBinding = ItemRoleAssignedUserBinding.inflate(layoutInflater, binding.llUsersContainer, false)
+            userBinding.tvAvatar.text = user.userName.firstOrNull()?.toString() ?: "?"
+            userBinding.tvUserName.text = user.userName
+            userBinding.tvUserEmail.text = user.userId
+            binding.llUsersContainer.addView(userBinding.root)
         }
     }
 
@@ -117,27 +115,27 @@ class RoleDetailFragment : BaseFragment(R.layout.fragment_role_detail) {
             textSize = 11f
             setPadding(dp8, dp4, dp8, dp4)
             
-            // Set colors based on actionName (read, create, update, delete)
+            // Set colors based on actionName using centralized colors.xml resources
             when (action.actionName.lowercase()) {
                 "read" -> {
-                    bg.setColor(Color.parseColor("#E1F0FF"))
-                    setTextColor(Color.parseColor("#0052CC"))
+                    bg.setColor(ContextCompat.getColor(context, R.color.badge_read_bg))
+                    setTextColor(ContextCompat.getColor(context, R.color.badge_read_text))
                 }
                 "create" -> {
-                    bg.setColor(Color.parseColor("#E3FCEF"))
-                    setTextColor(Color.parseColor("#006644"))
+                    bg.setColor(ContextCompat.getColor(context, R.color.badge_create_bg))
+                    setTextColor(ContextCompat.getColor(context, R.color.badge_create_text))
                 }
                 "update" -> {
-                    bg.setColor(Color.parseColor("#FFF0B3"))
-                    setTextColor(Color.parseColor("#FF8B00"))
+                    bg.setColor(ContextCompat.getColor(context, R.color.badge_update_bg))
+                    setTextColor(ContextCompat.getColor(context, R.color.badge_update_text))
                 }
                 "delete" -> {
-                    bg.setColor(Color.parseColor("#FFEBE6"))
-                    setTextColor(Color.parseColor("#DE350B"))
+                    bg.setColor(ContextCompat.getColor(context, R.color.badge_delete_bg))
+                    setTextColor(ContextCompat.getColor(context, R.color.badge_delete_text))
                 }
                 else -> {
-                    bg.setColor(Color.parseColor("#F4F5F7"))
-                    setTextColor(Color.parseColor("#42526E"))
+                    bg.setColor(ContextCompat.getColor(context, R.color.badge_default_bg))
+                    setTextColor(ContextCompat.getColor(context, R.color.badge_default_text))
                 }
             }
             background = bg
@@ -156,3 +154,4 @@ class RoleDetailFragment : BaseFragment(R.layout.fragment_role_detail) {
         _binding = null
     }
 }
+

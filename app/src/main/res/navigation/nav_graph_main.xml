@@ -145,4 +145,10 @@
             app:argType="long" />
     </fragment>
 
+    <fragment
+        android:id="@+id/inviteTeamFragment"
+        android:name="com.example.flowdesk_android.feature.user_management.presentation.users.invite.InviteTeamFragment"
+        android:label="InviteTeam"
+        tools:layout="@layout/fragment_user_invite" />
+
 </navigation>

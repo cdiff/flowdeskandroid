@@ -6,20 +6,17 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.PopupMenu
-import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView
 import com.example.flowdesk_android.R
+import com.example.flowdesk_android.databinding.DialogRoleDeleteBinding
+import com.example.flowdesk_android.databinding.FragmentRoleListBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -29,42 +26,24 @@ class RolesFragment : Fragment() {
     private val viewModel: RolesViewModel by viewModels()
     private lateinit var roleAdapter: RoleAdapter
 
-    private lateinit var rvRoles: RecyclerView
-    private lateinit var progressBar: ProgressBar
-    private lateinit var etSearch: EditText
-    private lateinit var tvTotalCount: TextView
-    private lateinit var tvActiveCount: TextView
-    private lateinit var tvInactiveCount: TextView
-    private lateinit var btnCreateRole: View
-    private lateinit var bannerInfo: View
-    private lateinit var btnCloseBanner: View
+    private var _binding: FragmentRoleListBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_role_list, container, false)
+    ): View {
+        _binding = FragmentRoleListBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        initViews(view)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         setupListeners()
         observeViewModel()
 
         viewModel.fetchRoles()
-
-        return view
-    }
-
-    private fun initViews(view: View) {
-        rvRoles = view.findViewById(R.id.rv_roles)
-        progressBar = view.findViewById(R.id.progress_bar)
-        etSearch = view.findViewById(R.id.et_search)
-        tvTotalCount = view.findViewById(R.id.tv_total_count)
-        tvActiveCount = view.findViewById(R.id.tv_active_count)
-        tvInactiveCount = view.findViewById(R.id.tv_inactive_count)
-        btnCreateRole = view.findViewById(R.id.btn_create_role)
-        bannerInfo = view.findViewById(R.id.banner_info)
-        btnCloseBanner = view.findViewById(R.id.btn_close_banner)
     }
 
     private fun setupRecyclerView() {
@@ -81,46 +60,41 @@ class RolesFragment : Fragment() {
             },
             onToggleStatusClick = { role ->
                 viewModel.toggleStatus(role.roleId, role.isActive)
-                showTopToast("상태 변경을 요청했습니다.")
+                showTopToast(getString(R.string.toast_status_change_requested))
             },
             onDeleteRoleClick = { role ->
-                val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_role_delete, null)
+                val dialogBinding = DialogRoleDeleteBinding.inflate(LayoutInflater.from(requireContext()))
                 val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                    .setView(dialogView)
+                    .setView(dialogBinding.root)
                     .create()
 
                 dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-                val tvTitle = dialogView.findViewById<TextView>(R.id.tv_title)
-                val tvMessage = dialogView.findViewById<TextView>(R.id.tv_message)
-                val btnCancel = dialogView.findViewById<View>(R.id.btn_cancel)
-                val btnConfirm = dialogView.findViewById<View>(R.id.btn_confirm)
+                dialogBinding.tvTitle.text = getString(R.string.dialog_role_delete_title)
+                dialogBinding.tvMessage.text = getString(R.string.dialog_role_delete_message, role.displayName)
 
-                tvTitle.text = "역할 삭제"
-                tvMessage.text = "'${role.displayName}' 역할을 정말 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다."
-
-                btnCancel.setOnClickListener {
+                dialogBinding.btnCancel.setOnClickListener {
                     dialog.dismiss()
                 }
 
-                btnConfirm.setOnClickListener {
+                dialogBinding.btnConfirm.setOnClickListener {
                     viewModel.deleteRole(role.roleId)
-                    showTopToast("삭제 요청을 보냈습니다.")
+                    showTopToast(getString(R.string.toast_delete_requested))
                     dialog.dismiss()
                 }
 
                 dialog.show()
             }
         )
-        rvRoles.adapter = roleAdapter
+        binding.rvRoles.adapter = roleAdapter
     }
 
     private fun setupListeners() {
-        btnCloseBanner.setOnClickListener {
-            bannerInfo.visibility = View.GONE
+        binding.btnCloseBanner.setOnClickListener {
+            binding.bannerInfo.visibility = View.GONE
         }
 
-        btnCreateRole.setOnClickListener {
+        binding.btnCreateRole.setOnClickListener {
             val bottomSheet = CreateRoleBottomSheetFragment().apply {
                 onSuccess = {
                     viewModel.fetchRoles()
@@ -129,7 +103,7 @@ class RolesFragment : Fragment() {
             bottomSheet.show(childFragmentManager, CreateRoleBottomSheetFragment.TAG)
         }
 
-        etSearch.addTextChangedListener(object : TextWatcher {
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 viewModel.search(s?.toString() ?: "")
@@ -145,24 +119,34 @@ class RolesFragment : Fragment() {
                     viewModel.uiState.collect { state ->
                         when(state) {
                             is RoleListUiState.Loading -> {
-                                progressBar.visibility = View.VISIBLE
-                                rvRoles.visibility = View.GONE
+                                binding.progressBar.visibility = View.VISIBLE
+                                binding.rvRoles.visibility = View.GONE
+                                binding.llEmpty.visibility = View.GONE
                             }
                             is RoleListUiState.Success -> {
-                                progressBar.visibility = View.GONE
-                                rvRoles.visibility = View.VISIBLE
+                                binding.progressBar.visibility = View.GONE
+                                binding.rvRoles.visibility = View.VISIBLE
 
                                 val total = state.roles.size
                                 val active = state.roles.count { it.isActive }
                                 val inactive = total - active
 
-                                tvTotalCount.text = "총 ${total}개"
-                                tvActiveCount.text = "활성 ${active}개"
-                                tvInactiveCount.text = "비활성 ${inactive}개"
+                                binding.tvTotalCount.text = "총 ${total}개"
+                                binding.tvActiveCount.text = "활성 ${active}개"
+                                binding.tvInactiveCount.text = "비활성 ${inactive}개"
+
+                                if (state.roles.isEmpty()) {
+                                    binding.llEmpty.visibility = View.VISIBLE
+                                    binding.rvRoles.visibility = View.GONE
+                                } else {
+                                    binding.llEmpty.visibility = View.GONE
+                                    binding.rvRoles.visibility = View.VISIBLE
+                                }
                             }
                             is RoleListUiState.Error -> {
-                                progressBar.visibility = View.GONE
-                                rvRoles.visibility = View.VISIBLE
+                                binding.progressBar.visibility = View.GONE
+                                binding.rvRoles.visibility = View.VISIBLE
+                                binding.llEmpty.visibility = View.GONE
                                 showTopToast(state.message)
                             }
                             else -> {}
@@ -191,4 +175,10 @@ class RolesFragment : Fragment() {
         toast.view = layout
         toast.show()
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }
+

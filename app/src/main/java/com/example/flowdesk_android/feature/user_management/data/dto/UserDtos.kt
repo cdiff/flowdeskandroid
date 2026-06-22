@@ -25,7 +25,8 @@ data class UpdateUserInfoRequest(
     @SerializedName("userName") val userName: String? = null,
     @SerializedName("userEmail") val userEmail: String? = null,
     @SerializedName("userTel") val userTel: String? = null,
-    @SerializedName("userHp") val userHp: String? = null
+    @SerializedName("userHp") val userHp: String? = null,
+    @SerializedName("roleIds") val roleIds: List<Int>? = null
 )
 
 data class UpdateUserStatusRequest(

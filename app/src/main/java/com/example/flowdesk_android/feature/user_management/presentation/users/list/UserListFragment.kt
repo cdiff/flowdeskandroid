@@ -15,7 +15,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.databinding.FragmentUserListBinding
-import com.example.flowdesk_android.feature.user_management.presentation.users.invite.InviteTeamBottomSheet
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import androidx.navigation.fragment.findNavController
@@ -29,6 +28,10 @@ class UserListFragment : Fragment(R.layout.fragment_user_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentUserListBinding.bind(view)
+
+        parentFragmentManager.setFragmentResultListener("invite_success", viewLifecycleOwner) { _, _ ->
+            viewModel.fetchUsers()
+        }
 
         setupRecyclerView()
         setupListeners()
@@ -49,11 +52,12 @@ class UserListFragment : Fragment(R.layout.fragment_user_list) {
     }
 
     private fun setupListeners() {
+        binding.btnCloseBanner.setOnClickListener {
+            binding.bannerInfo.visibility = View.GONE
+        }
+
         binding.btnInviteTeam.setOnClickListener {
-            val bottomSheet = InviteTeamBottomSheet {
-                viewModel.fetchUsers()
-            }
-            bottomSheet.show(childFragmentManager, InviteTeamBottomSheet.TAG)
+            findNavController().navigate(R.id.inviteTeamFragment)
         }
 
         binding.etSearch.addTextChangedListener(object : TextWatcher {

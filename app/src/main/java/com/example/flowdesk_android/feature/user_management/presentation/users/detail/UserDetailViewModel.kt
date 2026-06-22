@@ -85,10 +85,11 @@ class UserDetailViewModel @Inject constructor(
 
     fun updateInfo(
         id: Int, corpName: String?, userName: String?,
-        userEmail: String?, userTel: String?, userHp: String?
+        userEmail: String?, userTel: String?, userHp: String?,
+        roleIds: List<Int>? = null
     ) {
         viewModelScope.launch {
-            userRepository.updateUser(id, corpName, userName, userEmail, userTel, userHp)
+            userRepository.updateUser(id, corpName, userName, userEmail, userTel, userHp, roleIds)
                 .onSuccess { _event.send(UserDetailEvent.InfoUpdated) }
                 .onFailure { _event.send(UserDetailEvent.Error(it.message ?: "정보 수정 실패")) }
         }

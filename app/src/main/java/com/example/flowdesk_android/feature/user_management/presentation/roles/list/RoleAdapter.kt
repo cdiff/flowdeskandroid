@@ -3,14 +3,13 @@ package com.example.flowdesk_android.feature.user_management.presentation.roles.
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import android.transition.AutoTransition
 import android.transition.TransitionManager
 import com.example.flowdesk_android.R
+import com.example.flowdesk_android.databinding.ItemRoleListBinding
 import com.example.flowdesk_android.feature.user_management.domain.model.Role
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -25,43 +24,29 @@ class RoleAdapter(
     private val expandedRoles = mutableSetOf<Int>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RoleViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_role_list, parent, false)
-        return RoleViewHolder(view)
+        val binding = ItemRoleListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return RoleViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: RoleViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    inner class RoleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tvDisplayName: TextView = itemView.findViewById(R.id.tv_role_display_name)
-        private val tvRoleName: TextView = itemView.findViewById(R.id.tv_role_name)
-        private val tvDescription: TextView = itemView.findViewById(R.id.tv_role_description)
-        private val tvStatus: TextView = itemView.findViewById(R.id.tv_role_status)
-        private val tvCreatedAt: TextView = itemView.findViewById(R.id.tv_created_at)
-        private val tvUserCount: TextView = itemView.findViewById(R.id.tv_user_count)
-        private val tvPermissionCount: TextView = itemView.findViewById(R.id.tv_permission_count)
-        
-        private val btnManagePermissions: TextView = itemView.findViewById(R.id.btn_manage_permissions)
-        private val ivMore: ImageView = itemView.findViewById(R.id.iv_more)
-        
-        private val llHiddenMenu: View = itemView.findViewById(R.id.ll_hidden_menu)
-        private val btnToggleStatus: TextView = itemView.findViewById(R.id.btn_toggle_status)
-        private val btnDeleteRole: TextView = itemView.findViewById(R.id.btn_delete_role)
+    inner class RoleViewHolder(private val binding: ItemRoleListBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(role: Role) {
-            tvDisplayName.text = role.displayName
-            tvRoleName.text = role.roleName
-            tvDescription.text = role.description ?: ""
+            binding.tvRoleDisplayName.text = role.displayName
+            binding.tvRoleName.text = role.roleName
+            binding.tvRoleDescription.text = role.description ?: ""
             
             if (role.isActive) {
-                tvStatus.text = "활성"
-                tvStatus.setTextColor(itemView.context.getColor(R.color.green_accent))
-                tvStatus.setBackgroundResource(R.drawable.bg_tag_light_green)
+                binding.tvRoleStatus.text = "활성"
+                binding.tvRoleStatus.setTextColor(itemView.context.getColor(R.color.green_accent))
+                binding.tvRoleStatus.setBackgroundResource(R.drawable.bg_tag_light_green)
             } else {
-                tvStatus.text = "비활성"
-                tvStatus.setTextColor(itemView.context.getColor(R.color.red))
-                tvStatus.setBackgroundResource(R.drawable.bg_card_danger)
+                binding.tvRoleStatus.text = "비활성"
+                binding.tvRoleStatus.setTextColor(itemView.context.getColor(R.color.red))
+                binding.tvRoleStatus.setBackgroundResource(R.drawable.bg_card_danger)
             }
 
             // formatting createdAt
@@ -73,18 +58,18 @@ class RoleAdapter(
             } catch (e: Exception) {
                 role.createdAt ?: ""
             }
-            tvCreatedAt.text = formattedDate
+            binding.tvCreatedAt.text = formattedDate
 
-            tvUserCount.text = "${role.userCount}명"
-            tvPermissionCount.text = "${role.permissionCount}개"
+            binding.tvUserCount.text = "${role.userCount}명"
+            binding.tvPermissionCount.text = "${role.permissionCount}개"
 
             // Hidden Menu Logic
             val isExpanded = expandedRoles.contains(role.roleId)
-            llHiddenMenu.visibility = if (isExpanded) View.VISIBLE else View.GONE
+            binding.llHiddenMenu.visibility = if (isExpanded) View.VISIBLE else View.GONE
             
-            btnToggleStatus.text = if (role.isActive) "비활성화" else "활성화"
+            binding.btnToggleStatus.text = if (role.isActive) "비활성화" else "활성화"
 
-            ivMore.setOnClickListener { 
+            binding.ivMore.setOnClickListener { 
                 val isCurrentlyExpanded = expandedRoles.contains(role.roleId)
                 if (isCurrentlyExpanded) {
                     expandedRoles.remove(role.roleId)
@@ -97,10 +82,10 @@ class RoleAdapter(
                     TransitionManager.beginDelayedTransition(parent, AutoTransition().apply { duration = 200 })
                 }
                 
-                llHiddenMenu.visibility = if (expandedRoles.contains(role.roleId)) View.VISIBLE else View.GONE
+                binding.llHiddenMenu.visibility = if (expandedRoles.contains(role.roleId)) View.VISIBLE else View.GONE
             }
             
-            btnToggleStatus.setOnClickListener {
+            binding.btnToggleStatus.setOnClickListener {
                 onToggleStatusClick(role)
                 expandedRoles.remove(role.roleId)
                 
@@ -108,10 +93,10 @@ class RoleAdapter(
                 if (parent != null) {
                     TransitionManager.beginDelayedTransition(parent, AutoTransition().apply { duration = 200 })
                 }
-                llHiddenMenu.visibility = View.GONE
+                binding.llHiddenMenu.visibility = View.GONE
             }
             
-            btnDeleteRole.setOnClickListener {
+            binding.btnDeleteRole.setOnClickListener {
                 onDeleteRoleClick(role)
                 expandedRoles.remove(role.roleId)
                 
@@ -119,10 +104,10 @@ class RoleAdapter(
                 if (parent != null) {
                     TransitionManager.beginDelayedTransition(parent, AutoTransition().apply { duration = 200 })
                 }
-                llHiddenMenu.visibility = View.GONE
+                binding.llHiddenMenu.visibility = View.GONE
             }
 
-            btnManagePermissions.setOnClickListener { onManagePermissionsClick(role) }
+            binding.btnManagePermissions.setOnClickListener { onManagePermissionsClick(role) }
             itemView.setOnClickListener { onEditRoleClick(role) }
         }
     }
@@ -137,3 +122,4 @@ class RoleDiffCallback : DiffUtil.ItemCallback<Role>() {
         return oldItem == newItem
     }
 }
+

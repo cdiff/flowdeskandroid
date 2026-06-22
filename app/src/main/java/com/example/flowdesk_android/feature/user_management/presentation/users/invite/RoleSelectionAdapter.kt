@@ -1,15 +1,11 @@
 package com.example.flowdesk_android.feature.user_management.presentation.users.invite
 
-import android.graphics.Color
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.flowdesk_android.R
+import com.example.flowdesk_android.databinding.ItemRoleSelectionGridBinding
 import com.example.flowdesk_android.feature.user_management.domain.model.Role
 
 class RoleSelectionAdapter(
@@ -27,28 +23,23 @@ class RoleSelectionAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RoleViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_role_selection_grid, parent, false)
-        return RoleViewHolder(view)
+        val binding = ItemRoleSelectionGridBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return RoleViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: RoleViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    inner class RoleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val clMain: View = itemView.findViewById(R.id.cl_main)
-        private val ivRadio: ImageView = itemView.findViewById(R.id.iv_radio)
-        private val tvTitle: TextView = itemView.findViewById(R.id.tv_title)
-        private val tvDesc: TextView = itemView.findViewById(R.id.tv_desc)
+    inner class RoleViewHolder(private val binding: ItemRoleSelectionGridBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(role: Role) {
-            tvTitle.text = role.displayName
-            tvDesc.text = role.description
+            binding.tvTitle.text = role.displayName
+            binding.tvDesc.text = role.description
 
             updateStyle(selectedRoleIds.contains(role.roleId))
 
-            clMain.setOnClickListener {
+            binding.clMain.setOnClickListener {
                 if (selectedRoleIds.contains(role.roleId)) {
                     selectedRoleIds.remove(role.roleId)
                 } else {
@@ -60,15 +51,10 @@ class RoleSelectionAdapter(
         }
 
         private fun updateStyle(isSelected: Boolean) {
-            if (isSelected) {
-                clMain.setBackgroundResource(R.drawable.bg_card_rounded_border_selected)
-                ivRadio.setImageResource(R.drawable.ic_radio_selected)
-                tvTitle.setTextColor(itemView.context.getColor(R.color.login_blue))
-            } else {
-                clMain.setBackgroundResource(R.drawable.bg_card_rounded_border)
-                ivRadio.setImageResource(R.drawable.ic_radio_unselected)
-                tvTitle.setTextColor(Color.parseColor("#3A485A"))
-            }
+            binding.clMain.isSelected = isSelected
+            binding.ivRadio.isSelected = isSelected
+            binding.tvTitle.isSelected = isSelected
+            binding.tvDesc.isSelected = isSelected
         }
     }
 

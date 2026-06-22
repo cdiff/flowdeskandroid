@@ -234,7 +234,8 @@ class MainActivity : AppCompatActivity() {
                 destination.id == R.id.blockIpDetailFragment ||
                 destination.id == R.id.blockPhoneDetailFragment ||
                 destination.id == R.id.blockKeywordDetailFragment ||
-                destination.id == R.id.managePermissionsFragment
+                destination.id == R.id.managePermissionsFragment ||
+                destination.id == R.id.inviteTeamFragment
             ) {
                  binding.bottomNavigation.visibility = android.view.View.GONE
                  binding.bottomNavigationDivider.visibility = android.view.View.GONE

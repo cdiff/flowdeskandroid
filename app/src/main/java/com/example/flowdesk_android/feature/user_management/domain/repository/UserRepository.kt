@@ -16,7 +16,15 @@ interface UserRepository {
         userHp: String,
         roleIds: List<Int>?
     ): Result<User>
-    suspend fun updateUser(id: Int, corpName: String?, userName: String?, userEmail: String?, userTel: String?, userHp: String?): Result<Unit>
+    suspend fun updateUser(
+        id: Int,
+        corpName: String?,
+        userName: String?,
+        userEmail: String?,
+        userTel: String?,
+        userHp: String?,
+        roleIds: List<Int>? = null
+    ): Result<Unit>
     suspend fun updateUserStatus(id: Int, isActive: Boolean): Result<Unit>
     suspend fun updateUserRoles(id: Int, add: List<Int>?, remove: List<Int>?): Result<Unit>
     suspend fun adminChangePassword(id: Int, newPassword: String): Result<Unit>

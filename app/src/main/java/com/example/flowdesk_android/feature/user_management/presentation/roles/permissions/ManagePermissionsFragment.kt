@@ -47,7 +47,7 @@ class ManagePermissionsFragment : BaseFragment(R.layout.fragment_role_manage_per
         roleId = arguments?.getInt("role_id", -1) ?: -1
     }
 
-    override fun getToolbarView(view: View): View? = view.findViewById(R.id.toolbar)
+    override fun getToolbarView(view: View): View? = binding.toolbar
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentRoleManagePermissionsBinding.bind(view)
@@ -127,13 +127,13 @@ class ManagePermissionsFragment : BaseFragment(R.layout.fragment_role_manage_per
                     viewModel.event.collect { event ->
                         when (event) {
                             is ManagePermissionsEvent.InfoUpdated -> {
-                                showTopToast("역할 정보가 수정되었습니다.")
+                                showTopToast(getString(R.string.success_role_info_updated))
                             }
                             is ManagePermissionsEvent.PermissionsSaved -> {
-                                showTopToast("권한이 저장되었습니다.")
+                                showTopToast(getString(R.string.success_permissions_saved))
                             }
                             is ManagePermissionsEvent.PermissionsCopied -> {
-                                showTopToast("다른 역할의 권한을 성공적으로 가져왔습니다.")
+                                showTopToast(getString(R.string.success_permissions_copied))
                             }
                             is ManagePermissionsEvent.Error -> {
                                 showTopToast(event.message)
@@ -192,21 +192,21 @@ class ManagePermissionsFragment : BaseFragment(R.layout.fragment_role_manage_per
     }
 
     private fun showCopyConfirmationDialog(sourceRole: com.example.flowdesk_android.feature.user_management.domain.model.Role) {
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_role_confirm_copy, null)
+        val dialogBinding = com.example.flowdesk_android.databinding.DialogRoleConfirmCopyBinding.inflate(layoutInflater)
         val dialog = android.app.AlertDialog.Builder(requireContext())
-            .setView(dialogView)
+            .setView(dialogBinding.root)
             .create()
 
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        dialogView.findViewById<TextView>(R.id.tv_message).text = 
-            "'${sourceRole.displayName}' 역할의 권한 설정을\n이 역할에 복사할까요?\n\n(기존 권한은 모두 제거됩니다)"
+        dialogBinding.tvMessage.text = 
+            getString(R.string.dialog_role_copy_message, sourceRole.displayName)
 
-        dialogView.findViewById<View>(R.id.btn_cancel).setOnClickListener {
+        dialogBinding.btnCancel.setOnClickListener {
             dialog.dismiss()
         }
 
-        dialogView.findViewById<View>(R.id.btn_confirm).setOnClickListener {
+        dialogBinding.btnConfirm.setOnClickListener {
             viewModel.copyFromRole(sourceRole.roleId)
             dialog.dismiss()
         }

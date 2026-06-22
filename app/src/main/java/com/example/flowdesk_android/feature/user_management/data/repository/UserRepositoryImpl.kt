@@ -59,10 +59,11 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun updateUser(
         id: Int, corpName: String?, userName: String?,
-        userEmail: String?, userTel: String?, userHp: String?
+        userEmail: String?, userTel: String?, userHp: String?,
+        roleIds: List<Int>?
     ): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
-            val response = api.updateUser(id, UpdateUserInfoRequest(corpName, userName, userEmail, userTel, userHp))
+            val response = api.updateUser(id, UpdateUserInfoRequest(corpName, userName, userEmail, userTel, userHp, roleIds))
             if (!response.isSuccessful) throw Exception("유저 정보 수정 실패 (${response.code()})")
         }
     }

@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flowdesk_android.R
+import com.example.flowdesk_android.databinding.DialogRoleCopyPermissionsBinding
+import com.example.flowdesk_android.databinding.ItemRoleCopyBinding
 import com.example.flowdesk_android.feature.user_management.domain.model.Role
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import android.widget.TextView
-import android.widget.ImageView
 
 class RoleCopyBottomSheetFragment(
     private val roles: List<Role>,
@@ -19,26 +19,31 @@ class RoleCopyBottomSheetFragment(
     private val onRoleSelected: (Role) -> Unit
 ) : BottomSheetDialogFragment() {
 
+    private var _binding: DialogRoleCopyPermissionsBinding? = null
+    private val binding get() = _binding!!
+
     override fun getTheme(): Int = R.style.CustomBottomSheetDialogTheme
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.dialog_role_copy_permissions, container, false)
-        val rvRoles = view.findViewById<RecyclerView>(R.id.rv_roles)
-        
+    ): View {
+        _binding = DialogRoleCopyPermissionsBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         // 정렬: 현재 선택된 id는 제외
         val filteredRoles = roles.filter { it.roleId != currentRoleId }
 
-        rvRoles.adapter = RoleCopyAdapter(filteredRoles) {
+        binding.rvRoles.adapter = RoleCopyAdapter(filteredRoles) {
             onRoleSelected(it)
             dismiss()
         }
-        rvRoles.layoutManager = LinearLayoutManager(requireContext())
-        
-        return view
+        binding.rvRoles.layoutManager = LinearLayoutManager(requireContext())
     }
 
     override fun onStart() {
@@ -46,28 +51,28 @@ class RoleCopyBottomSheetFragment(
         (dialog as? BottomSheetDialog)?.behavior?.isShouldRemoveExpandedCorners = false
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private class RoleCopyAdapter(
         private val items: List<Role>,
         private val onClick: (Role) -> Unit
     ) : RecyclerView.Adapter<RoleCopyAdapter.ViewHolder>() {
 
-        class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val tvTitle: TextView = view.findViewById(R.id.tv_title)
-            val tvDesc: TextView = view.findViewById(R.id.tv_desc)
-            val clMain: View = view.findViewById(R.id.cl_main)
-        }
+        class ViewHolder(val binding: ItemRoleCopyBinding) : RecyclerView.ViewHolder(binding.root)
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_role_copy, parent, false)
-            return ViewHolder(view)
+            val binding = ItemRoleCopyBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            return ViewHolder(binding)
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val role = items[position]
-            holder.tvTitle.text = role.displayName
-            holder.tvDesc.text = role.description
-            holder.clMain.setOnClickListener { onClick(role) }
+            holder.binding.tvTitle.text = role.displayName
+            holder.binding.tvDesc.text = role.description
+            holder.binding.clMain.setOnClickListener { onClick(role) }
         }
 
         override fun getItemCount(): Int = items.size

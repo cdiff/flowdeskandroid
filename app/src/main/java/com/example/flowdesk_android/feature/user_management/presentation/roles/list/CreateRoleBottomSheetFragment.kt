@@ -4,9 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -14,6 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.flowdesk_android.R
+import com.example.flowdesk_android.databinding.DialogRoleCreateBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -25,19 +23,15 @@ class CreateRoleBottomSheetFragment : BottomSheetDialogFragment() {
 
     private val viewModel: RolesViewModel by viewModels({ requireParentFragment() })
 
-    private lateinit var btnClose: ImageView
-    private lateinit var btnCancel: View
-    private lateinit var btnCreate: View
-    private lateinit var etDisplayName: EditText
-    private lateinit var etRoleName: EditText
-    private lateinit var etDescription: EditText
-    private lateinit var progressBar: ProgressBar
+    private var _binding: DialogRoleCreateBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.dialog_role_create, container, false)
+        _binding = DialogRoleCreateBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun getTheme(): Int {
@@ -58,32 +52,21 @@ class CreateRoleBottomSheetFragment : BottomSheetDialogFragment() {
             }
         }
 
-        initViews(view)
         setupListeners()
         observeViewModel()
     }
 
-    private fun initViews(view: View) {
-        btnClose = view.findViewById(R.id.btn_close)
-        btnCancel = view.findViewById(R.id.btn_cancel)
-        btnCreate = view.findViewById(R.id.btn_create)
-        etDisplayName = view.findViewById(R.id.et_display_name)
-        etRoleName = view.findViewById(R.id.et_role_name)
-        etDescription = view.findViewById(R.id.et_description)
-        progressBar = view.findViewById(R.id.progress_bar)
-    }
-
     private fun setupListeners() {
-        btnClose.setOnClickListener { dismiss() }
-        btnCancel.setOnClickListener { dismiss() }
+        binding.btnClose.setOnClickListener { dismiss() }
+        binding.btnCancel.setOnClickListener { dismiss() }
 
-        btnCreate.setOnClickListener {
-            val displayName = etDisplayName.text.toString()
-            val roleName = etRoleName.text.toString()
-            val description = etDescription.text.toString()
+        binding.btnCreate.setOnClickListener {
+            val displayName = binding.etDisplayName.text.toString()
+            val roleName = binding.etRoleName.text.toString()
+            val description = binding.etDescription.text.toString()
 
             if (displayName.isBlank() || roleName.isBlank() || description.isBlank()) {
-                Toast.makeText(context, "모든 항목을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, getString(R.string.error_fill_all_fields), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -97,8 +80,8 @@ class CreateRoleBottomSheetFragment : BottomSheetDialogFragment() {
                 
                 launch {
                     viewModel.uiState.collect { state ->
-                        progressBar.isVisible = state is RoleListUiState.Loading
-                        btnCreate.isEnabled = state !is RoleListUiState.Loading
+                        binding.progressBar.isVisible = state is RoleListUiState.Loading
+                        binding.btnCreate.isEnabled = state !is RoleListUiState.Loading
                     }
                 }
                 
@@ -106,7 +89,7 @@ class CreateRoleBottomSheetFragment : BottomSheetDialogFragment() {
                     viewModel.event.collect { event ->
                         when (event) {
                             is RoleListEvent.RoleCreated -> {
-                                Toast.makeText(context, "새 역할이 생성되었습니다.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, getString(R.string.success_role_created), Toast.LENGTH_SHORT).show()
                                 onSuccess?.invoke()
                                 dismiss()
                             }
@@ -121,7 +104,13 @@ class CreateRoleBottomSheetFragment : BottomSheetDialogFragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     companion object {
         const val TAG = "CreateRoleBottomSheet"
     }
 }
+
