@@ -106,37 +106,37 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- ─── 검색바 (독립형 둥근 카드) ─── -->
+            <!-- ─── 검색창 (차단 관리 스타일 적용) ─── -->
             <LinearLayout
                 android:id="@+id/ll_search"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_white_rounded_12dp"
-                android:elevation="1dp"
-                android:paddingHorizontal="14dp"
-                android:paddingVertical="12dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_card_rounded"
+                android:paddingHorizontal="12dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="24dp">
+                android:layout_marginBottom="12dp">
 
                 <ImageView
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:src="@android:drawable/ic_menu_search"
-                    app:tint="@color/gray_text"
+                    app:tint="@color/text_hint"
                     android:layout_marginEnd="8dp" />
 
                 <EditText
                     android:id="@+id/et_search"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:background="@null"
-                    android:hint="이름, 이메일, ID 검색..."
-                    android:textColorHint="@color/gray_text"
-                    android:textSize="13sp"
-                    android:textColor="@color/black"
+                    android:textColorHint="@color/text_hint"
+                    android:textSize="15sp"
+                    android:textColor="@color/text_primary"
                     android:maxLines="1"
-                    android:inputType="text" />
+                    android:inputType="text"
+                    android:gravity="center_vertical"
+                    android:imeOptions="actionSearch"
+                    android:hint="이름, 이메일, ID 검색하세요." />
             </LinearLayout>
 
             <!-- ─── 리스트 헤더 (제목 + 추가 버튼) ─── -->
@@ -212,7 +212,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="활성 "
-                    android:textColor="@color/green_accent"
+                    android:textColor="@color/color_success_active"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
@@ -221,7 +221,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="0"
-                    android:textColor="@color/green_accent"
+                    android:textColor="@color/color_success_active"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 

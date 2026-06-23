@@ -41,10 +41,18 @@ class UserListFragment : Fragment(R.layout.fragment_user_list) {
     }
 
     private fun setupRecyclerView() {
-        userAdapter = UserAdapter { user ->
-            val bundle = Bundle().apply { putInt("user_id", user.userSeq) }
-            findNavController().navigate(R.id.userDetailFragment, bundle)
-        }
+        userAdapter = UserAdapter(
+            onItemClick = { user ->
+                val bundle = Bundle().apply { putInt("user_id", user.userSeq) }
+                findNavController().navigate(R.id.userDetailFragment, bundle)
+            },
+            onToggleStatusClick = { user ->
+                viewModel.toggleUserStatus(user.userSeq, user.isActive)
+            },
+            onDeleteUserClick = { user ->
+                viewModel.invalidateTokens(user.userSeq)
+            }
+        )
         binding.rvUsers.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = userAdapter
@@ -100,6 +108,22 @@ class UserListFragment : Fragment(R.layout.fragment_user_list) {
 
                         binding.tvActiveCount.text = activeCount.toString()
                         binding.tvInactiveCount.text = inactiveCount.toString()
+                    }
+                }
+
+                launch {
+                    viewModel.errorFlow.collect { message ->
+                        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+                    }
+                }
+
+                launch {
+                    viewModel.event.collect { event ->
+                        when (event) {
+                            is UserListEvent.TokensInvalidated -> {
+                                Toast.makeText(requireContext(), getString(R.string.success_tokens_invalidated), Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     }
                 }
             }

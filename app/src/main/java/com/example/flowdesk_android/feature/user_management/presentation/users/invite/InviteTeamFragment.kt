@@ -41,7 +41,11 @@ class InviteTeamFragment : BaseFragment(R.layout.fragment_user_invite) {
             // Selection changes handled internally in adapter
         }
         binding.rvRoles.apply {
-            layoutManager = androidx.recyclerview.widget.GridLayoutManager(requireContext(), 2)
+            layoutManager = com.google.android.flexbox.FlexboxLayoutManager(requireContext()).apply {
+                flexDirection = com.google.android.flexbox.FlexDirection.ROW
+                flexWrap = com.google.android.flexbox.FlexWrap.WRAP
+                justifyContent = com.google.android.flexbox.JustifyContent.FLEX_START
+            }
             adapter = roleAdapter
         }
     }

@@ -35,7 +35,6 @@ class RoleSelectionAdapter(
 
         fun bind(role: Role) {
             binding.tvTitle.text = role.displayName
-            binding.tvDesc.text = role.description
 
             updateStyle(selectedRoleIds.contains(role.roleId))
 
@@ -54,7 +53,6 @@ class RoleSelectionAdapter(
             binding.clMain.isSelected = isSelected
             binding.ivRadio.isSelected = isSelected
             binding.tvTitle.isSelected = isSelected
-            binding.tvDesc.isSelected = isSelected
         }
     }
 

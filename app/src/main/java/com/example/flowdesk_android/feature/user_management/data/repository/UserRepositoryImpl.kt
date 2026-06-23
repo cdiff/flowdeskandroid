@@ -63,7 +63,17 @@ class UserRepositoryImpl @Inject constructor(
         roleIds: List<Int>?
     ): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
-            val response = api.updateUser(id, UpdateUserInfoRequest(corpName, userName, userEmail, userTel, userHp, roleIds))
+            val response = api.updateUser(
+                id,
+                UpdateUserInfoRequest(
+                    corpName = corpName,
+                    userName = userName,
+                    userEmail = userEmail,
+                    userTel = userTel,
+                    userHp = userHp,
+                    roleIds = roleIds
+                )
+            )
             if (!response.isSuccessful) throw Exception("유저 정보 수정 실패 (${response.code()})")
         }
     }

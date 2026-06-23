@@ -75,7 +75,11 @@ class UserDetailFragment : BaseFragment(R.layout.fragment_user_detail) {
             // Selection changes handled internally in adapter
         }
         binding.rvRoles.apply {
-            layoutManager = GridLayoutManager(requireContext(), 2)
+            layoutManager = com.google.android.flexbox.FlexboxLayoutManager(requireContext()).apply {
+                flexDirection = com.google.android.flexbox.FlexDirection.ROW
+                flexWrap = com.google.android.flexbox.FlexWrap.WRAP
+                justifyContent = com.google.android.flexbox.JustifyContent.FLEX_START
+            }
             adapter = roleAdapter
         }
     }
@@ -87,12 +91,6 @@ class UserDetailFragment : BaseFragment(R.layout.fragment_user_detail) {
             }
         }
 
-        binding.btnToggleStatus.setOnClickListener {
-            currentUserData?.let { user ->
-                viewModel.updateStatus(userId, !user.isActive)
-            }
-        }
-
         binding.btnSaveRoles.setOnClickListener {
             val name = binding.etInfoName.text.toString().trim()
             if (name.isEmpty()) {
@@ -100,7 +98,6 @@ class UserDetailFragment : BaseFragment(R.layout.fragment_user_detail) {
                 return@setOnClickListener
             }
 
-            val corpName = binding.etInfoCompany.text.toString().trim().takeIf { it.isNotEmpty() }
             val email = binding.etInfoEmail.text.toString().trim()
             val tel = binding.etInfoTel.text.toString().trim().takeIf { it.isNotEmpty() }
             val hp = binding.etInfoHp.text.toString().trim().takeIf { it.isNotEmpty() }
@@ -109,7 +106,7 @@ class UserDetailFragment : BaseFragment(R.layout.fragment_user_detail) {
 
             viewModel.updateInfo(
                 id = userId,
-                corpName = corpName,
+                corpName = currentUserData?.corpName,
                 userName = name,
                 userEmail = email,
                 userTel = tel,
@@ -118,16 +115,38 @@ class UserDetailFragment : BaseFragment(R.layout.fragment_user_detail) {
             )
         }
 
-        binding.btnChangePassword.setOnClickListener {
-            val newPwd = binding.etNewPassword.text.toString()
-            if (newPwd.length < 6) {
-                Toast.makeText(requireContext(), getString(R.string.error_password_min_length), Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+        binding.btnMore.setOnClickListener { view ->
+            val popup = androidx.appcompat.widget.PopupMenu(requireContext(), view)
+            val isActive = currentUserData?.isActive == true
+            val activeText = if (isActive) "비활성화" else "활성화"
+            
+            popup.menu.add(0, 1, 0, "비밀번호 변경")
+            popup.menu.add(0, 2, 1, activeText)
+            popup.menu.add(0, 3, 2, "강제 로그아웃")
+            
+            popup.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    1 -> {
+                        val bottomSheet = UserChangePasswordBottomSheet { newPassword ->
+                            viewModel.changePassword(userId, newPassword)
+                        }
+                        bottomSheet.show(childFragmentManager, "UserChangePasswordBottomSheet")
+                        true
+                    }
+                    2 -> {
+                        currentUserData?.let { user ->
+                            viewModel.updateStatus(userId, !user.isActive)
+                        }
+                        true
+                    }
+                    3 -> {
+                        viewModel.invalidateTokens(userId)
+                        true
+                    }
+                    else -> false
+                }
             }
-            viewModel.changePassword(userId, newPwd)
-        }
-        binding.btnInvalidateTokens.setOnClickListener {
-            viewModel.invalidateTokens(userId)
+            popup.show()
         }
     }
 
@@ -139,13 +158,16 @@ class UserDetailFragment : BaseFragment(R.layout.fragment_user_detail) {
                         binding.progressBar.isVisible = state is UserDetailUiState.Loading
 
                         when (state) {
+                            is UserDetailUiState.Loading -> {
+                                binding.tvTitle.text = "로딩 중..."
+                            }
                             is UserDetailUiState.Success -> {
                                 bindUserData(state.user)
                             }
                             is UserDetailUiState.Error -> {
+                                binding.tvTitle.text = "팀원 상세"
                                 Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
                             }
-                            else -> {}
                         }
                     }
                 }
@@ -167,7 +189,6 @@ class UserDetailFragment : BaseFragment(R.layout.fragment_user_detail) {
                             }
                             is UserDetailEvent.PasswordChanged -> {
                                 showTopToast(getString(R.string.success_password_changed))
-                                binding.etNewPassword.text?.clear()
                             }
                             is UserDetailEvent.TokensInvalidated -> {
                                 showTopToast(getString(R.string.success_tokens_invalidated))
@@ -195,60 +216,28 @@ class UserDetailFragment : BaseFragment(R.layout.fragment_user_detail) {
         toast.show()
     }
 
-    private fun createRoleBadge(label: String): TextView {
-        val dp8 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8f, resources.displayMetrics).toInt()
-        val dp12 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 12f, resources.displayMetrics).toInt()
-        val dp4 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4f, resources.displayMetrics).toInt()
-        return TextView(requireContext()).apply {
-            text = label
-            textSize = 12f
-            setTextColor(Color.WHITE)
-            setBackgroundResource(R.drawable.bg_badge_black)
-            setPadding(dp12, dp4, dp12, dp4)
-            val params = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            params.marginEnd = dp8
-            layoutParams = params
-        }
-    }
-
     private fun bindUserData(user: UserDetail) {
         currentUserData = user
         
-        // Header
-        binding.tvName.text = user.userName
-        binding.tvId.text = "@${user.userId}"
-        
-        // Set all assigned role badges
-        val assignedRoles = user.availableRoles.filter { it.isAssigned }
-        binding.llRoleBadges.removeAllViews()
-        if (assignedRoles.isEmpty()) {
-            val badge = createRoleBadge("사용자")
-            binding.llRoleBadges.addView(badge)
+        // Status Dot + Name in Toolbar Title
+        val dotColor = if (user.isActive) {
+            ContextCompat.getColor(requireContext(), R.color.green_500)
         } else {
-            assignedRoles.forEach { role ->
-                val badge = createRoleBadge(role.displayName)
-                binding.llRoleBadges.addView(badge)
-            }
+            ContextCompat.getColor(requireContext(), R.color.red_500)
         }
-
-        // Status
-        if (user.isActive) {
-            binding.tvStatusBadge.background = null
-            binding.tvStatusBadge.setTextColor(ContextCompat.getColor(requireContext(), R.color.green_500))
-            binding.tvStatusBadge.text = "활성"
-            binding.btnToggleStatus.text = "비활성화"
-        } else {
-            binding.tvStatusBadge.background = null
-            binding.tvStatusBadge.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_500))
-            binding.tvStatusBadge.text = "정지"
-            binding.btnToggleStatus.text = "활성화"
+        val spannableTitle = android.text.SpannableStringBuilder("●  ${user.userName}").apply {
+            setSpan(
+                android.text.style.ForegroundColorSpan(dotColor),
+                0,
+                1,
+                android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
         }
+        binding.tvTitle.text = spannableTitle
+        binding.tvId.text = user.userId
 
         // Basic Info
-        binding.etInfoCompany.setText(user.corpName ?: "")
+        binding.tvInfoCompany.text = user.corpName ?: "-"
         binding.etInfoName.setText(user.userName)
         binding.etInfoEmail.setText(user.userEmail ?: "")
         binding.etInfoTel.setText(user.userTel ?: "")
