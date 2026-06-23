@@ -26,11 +26,13 @@ import kotlinx.coroutines.launch
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.databinding.FragmentStatusEditBinding
 import com.example.flowdesk_android.feature.system_management.domain.model.TenantStatus
+import com.example.flowdesk_android.core.extension.showTopToast
 import com.example.flowdesk_android.core.extension.showCustomDropdown
 import com.example.flowdesk_android.core.extension.setReadOnly
 import com.example.flowdesk_android.core.extension.setupFocusHighlight
 import com.example.flowdesk_android.core.extension.updateColorIndicator
 import com.example.flowdesk_android.core.util.DateUtils
+import androidx.core.content.ContextCompat
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -132,7 +134,7 @@ class StatusEditFragment : Fragment() {
                 imm.showSoftInput(binding.etStatusGroup, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
             } else {
                 binding.tvStatusGroupSelected.text = selected
-                binding.tvStatusGroupSelected.setTextColor(Color.parseColor("#0F172A"))
+                binding.tvStatusGroupSelected.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_primary))
                 binding.etStatusGroup.setText(selected)
             }
         }
@@ -146,7 +148,10 @@ class StatusEditFragment : Fragment() {
         // 상태 고유 키 포커싱 및 실시간 검증 리스너
         binding.etStatusKey.setOnFocusChangeListener { _, hasFocus ->
             binding.lineStatusKey.setBackgroundColor(
-                Color.parseColor(if (hasFocus) "#3B82F6" else "#E2E8F0")
+                ContextCompat.getColor(
+                    requireContext(),
+                    if (hasFocus) R.color.brand_primary else R.color.slate_200
+                )
             )
             if (!hasFocus) {
                 keyTouched = true
@@ -177,13 +182,15 @@ class StatusEditFragment : Fragment() {
     }
 
     private fun applyValidationState(icon: ImageView, hint: TextView, state: ValidationState) {
-        val (iconColor, hintColor) = when (state) {
-            ValidationState.VALID   -> Pair("#10B981", "#10B981")
-            ValidationState.ERROR   -> Pair("#EF4444", "#EF4444")
-            ValidationState.NEUTRAL -> Pair("#E2E8F0", "#94A3B8")
+        val (iconColorRes, hintColorRes) = when (state) {
+            ValidationState.VALID   -> Pair(R.color.color_success_active, R.color.color_success_active)
+            ValidationState.ERROR   -> Pair(R.color.color_error, R.color.color_error)
+            ValidationState.NEUTRAL -> Pair(R.color.slate_200, R.color.text_hint)
         }
-        ImageViewCompat.setImageTintList(icon, ColorStateList.valueOf(Color.parseColor(iconColor)))
-        hint.setTextColor(Color.parseColor(hintColor))
+        val iconColor = ContextCompat.getColor(requireContext(), iconColorRes)
+        val hintColor = ContextCompat.getColor(requireContext(), hintColorRes)
+        ImageViewCompat.setImageTintList(icon, ColorStateList.valueOf(iconColor))
+        hint.setTextColor(hintColor)
     }
 
     private fun setupDataBinding() {
@@ -279,11 +286,11 @@ class StatusEditFragment : Fragment() {
 
             if (defaultGroup != null && defaultGroup != "all") {
                 binding.tvStatusGroupSelected.text = defaultGroup
-                binding.tvStatusGroupSelected.setTextColor(Color.parseColor("#0F172A"))
+                binding.tvStatusGroupSelected.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_primary))
                 binding.etStatusGroup.setText(defaultGroup)
             } else {
                 binding.tvStatusGroupSelected.text = "그룹 선택"
-                binding.tvStatusGroupSelected.setTextColor(Color.parseColor("#CBD5E1"))
+                binding.tvStatusGroupSelected.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_disabled))
                 binding.etStatusGroup.setText("")
             }
         }
@@ -297,17 +304,17 @@ class StatusEditFragment : Fragment() {
         val sortStr = binding.etStatusSort.text.toString().trim()
 
         if (tenantStatusId == -1L && group.isEmpty()) {
-            Toast.makeText(context, "업무 분류를 입력해주세요.", Toast.LENGTH_SHORT).show()
+            showTopToast(getString(R.string.status_msg_enter_group))
             return
         }
 
         if (name.isEmpty()) {
-            Toast.makeText(context, "상태 이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
+            showTopToast(getString(R.string.status_msg_enter_name))
             return
         }
 
         if (!viewModel.validateColorHex(colorInput)) {
-            Toast.makeText(context, "색상은 #RRGGBB 형식만 허용됩니다. (예: #3B82F6)", Toast.LENGTH_LONG).show()
+            showTopToast(getString(R.string.status_msg_invalid_color_format))
             return
         }
 
@@ -323,22 +330,22 @@ class StatusEditFragment : Fragment() {
                 sort = sort,
                 isActive = isActive
             )
-            Toast.makeText(context, "상담 상태가 수정되었습니다.", Toast.LENGTH_SHORT).show()
+            showTopToast(getString(R.string.status_msg_updated))
             findNavController().popBackStack()
         } else {
             val key = binding.etStatusKey.text.toString().trim()
             if (key.isEmpty()) {
-                Toast.makeText(context, "상태 고유 키(Key)를 입력해주세요.", Toast.LENGTH_SHORT).show()
+                showTopToast(getString(R.string.status_msg_enter_key))
                 return
             }
 
             if (!viewModel.validateStatusKey(key)) {
-                Toast.makeText(context, "상태 키는 영문 소문자, 숫자, 언더스코어(_)만 가능합니다.", Toast.LENGTH_LONG).show()
+                showTopToast(getString(R.string.status_msg_invalid_key))
                 return
             }
 
             if (viewModel.isDuplicateKey(group, key)) {
-                Toast.makeText(context, "해당 그룹에 이미 동일한 상태 키가 존재합니다.", Toast.LENGTH_LONG).show()
+                showTopToast(getString(R.string.status_msg_duplicate_key))
                 return
             }
 
@@ -351,7 +358,7 @@ class StatusEditFragment : Fragment() {
                 sort = sort,
                 isActive = isActive
             )
-            Toast.makeText(context, "상담 상태가 추가되었습니다.", Toast.LENGTH_SHORT).show()
+            showTopToast(getString(R.string.status_msg_created))
             findNavController().popBackStack()
         }
     }

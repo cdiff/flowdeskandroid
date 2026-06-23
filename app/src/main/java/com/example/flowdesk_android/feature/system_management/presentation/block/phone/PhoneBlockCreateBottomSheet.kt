@@ -9,9 +9,11 @@ import androidx.fragment.app.activityViewModels
 import com.example.flowdesk_android.R
 import android.graphics.Color
 import com.example.flowdesk_android.databinding.DialogPhoneBlockCreateBinding
+import com.example.flowdesk_android.core.extension.showTopToast
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import androidx.core.content.ContextCompat
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -122,8 +124,8 @@ class PhoneBlockCreateBottomSheet : BottomSheetDialogFragment() {
             binding.vSegmentSelector.translationX = targetX
         }
         
-        val activeColor = Color.parseColor("#3B82F6")
-        val inactiveColor = Color.parseColor("#64748B")
+        val activeColor = ContextCompat.getColor(requireContext(), R.color.brand_primary)
+        val inactiveColor = ContextCompat.getColor(requireContext(), R.color.text_tertiary)
         
         binding.btnModeSingle.setTextColor(if (index == 0) activeColor else inactiveColor)
         binding.btnModeBulk.setTextColor(if (index == 1) activeColor else inactiveColor)
@@ -164,7 +166,7 @@ class PhoneBlockCreateBottomSheet : BottomSheetDialogFragment() {
             viewModel.addBlockPhone(cleanPhone, reason, 1) { result ->
                 setLoading(false)
                 result.onSuccess {
-                    Toast.makeText(requireContext(), "차단 번호가 성공적으로 등록되었습니다.", Toast.LENGTH_SHORT).show()
+                    showTopToast(getString(R.string.block_phone_msg_created))
                     dismiss()
                 }.onFailure { err ->
                     showError(err.message ?: "휴대폰 차단 등록 실패")
@@ -199,8 +201,12 @@ class PhoneBlockCreateBottomSheet : BottomSheetDialogFragment() {
             viewModel.addBulkBlockPhone(phonesPayload, reason, 1) { result ->
                 setLoading(false)
                 result.onSuccess { bulkResult ->
-                    val msg = "대량 번호 등록 완료 (성공: ${bulkResult.successCount}건, 건너뜀: ${bulkResult.skippedCount}건)"
-                    Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
+                    val msg = String.format(
+                        getString(R.string.block_phone_msg_bulk_success),
+                        bulkResult.successCount,
+                        bulkResult.skippedCount
+                    )
+                    showTopToast(msg)
                     dismiss()
                 }.onFailure { err ->
                     showError(err.message ?: "대량 휴대폰 차단 등록 실패")

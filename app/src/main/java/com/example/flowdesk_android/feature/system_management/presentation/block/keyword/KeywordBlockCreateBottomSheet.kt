@@ -9,9 +9,11 @@ import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.databinding.DialogKeywordBlockCreateBinding
+import com.example.flowdesk_android.core.extension.showTopToast
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import androidx.core.content.ContextCompat
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -122,8 +124,8 @@ class KeywordBlockCreateBottomSheet : BottomSheetDialogFragment() {
             binding.vSegmentSelector.translationX = targetX
         }
 
-        val activeColor = Color.parseColor("#3B82F6")
-        val inactiveColor = Color.parseColor("#64748B")
+        val activeColor = ContextCompat.getColor(requireContext(), R.color.brand_primary)
+        val inactiveColor = ContextCompat.getColor(requireContext(), R.color.text_tertiary)
 
         binding.btnModeSingle.setTextColor(if (index == 0) activeColor else inactiveColor)
         binding.btnModeBulk.setTextColor(if (index == 1) activeColor else inactiveColor)
@@ -166,7 +168,7 @@ class KeywordBlockCreateBottomSheet : BottomSheetDialogFragment() {
             viewModel.addBlockWord(keyword, matchType, reason, 1) { result ->
                 setLoading(false)
                 result.onSuccess {
-                    Toast.makeText(requireContext(), "금칙어가 성공적으로 등록되었습니다.", Toast.LENGTH_SHORT).show()
+                    showTopToast(getString(R.string.block_keyword_msg_created))
                     dismiss()
                 }.onFailure { err ->
                     showError(err.message ?: "금칙어 등록 실패")
@@ -183,8 +185,12 @@ class KeywordBlockCreateBottomSheet : BottomSheetDialogFragment() {
             viewModel.addBulkBlockWord(keywords, matchType, reason, 1) { result ->
                 setLoading(false)
                 result.onSuccess { bulkResult ->
-                    val msg = "대량 금칙어 등록 완료 (성공: ${bulkResult.successCount}건, 건너뜀: ${bulkResult.skippedCount}건)"
-                    Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
+                    val msg = String.format(
+                        getString(R.string.block_keyword_msg_bulk_success),
+                        bulkResult.successCount,
+                        bulkResult.skippedCount
+                    )
+                    showTopToast(msg)
                     dismiss()
                 }.onFailure { err ->
                     showError(err.message ?: "대량 금칙어 등록 실패")

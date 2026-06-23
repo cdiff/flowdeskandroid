@@ -17,6 +17,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.databinding.DialogCommonConfirmBinding
 import com.example.flowdesk_android.databinding.FragmentBlockIpDetailBinding
+import com.example.flowdesk_android.core.extension.showTopToast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -44,7 +45,7 @@ class BlockIpDetailFragment : BaseFragment(R.layout.fragment_block_ip_detail) {
         }
     }
 
-    override fun getToolbarView(view: View): View? = view.findViewById(R.id.layout_toolbar)
+    override fun getToolbarView(view: View): View = binding.layoutToolbar
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentBlockIpDetailBinding.bind(view)
@@ -66,7 +67,7 @@ class BlockIpDetailFragment : BaseFragment(R.layout.fragment_block_ip_detail) {
         binding.btnSaveInfo.setOnClickListener {
             val newReason = binding.etReason.text.toString().trim()
             if (newReason.isEmpty()) {
-                Toast.makeText(requireContext(), "차단 사유를 입력해주세요.", Toast.LENGTH_SHORT).show()
+                showTopToast(getString(R.string.block_msg_enter_reason))
                 return@setOnClickListener
             }
             updateReason(newReason)
@@ -95,7 +96,7 @@ class BlockIpDetailFragment : BaseFragment(R.layout.fragment_block_ip_detail) {
                             is BlockIpDetailUiState.Error -> {
                                 binding.progressBar.visibility = View.GONE
                                 setInputsEnabled(false)
-                                Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                                showTopToast(state.message)
                                 findNavController().navigateUp()
                             }
                         }
@@ -104,7 +105,7 @@ class BlockIpDetailFragment : BaseFragment(R.layout.fragment_block_ip_detail) {
 
                 launch {
                     viewModel.errorMessage.collectLatest { msg ->
-                        Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
+                        showTopToast(msg)
                     }
                 }
             }
@@ -141,10 +142,10 @@ class BlockIpDetailFragment : BaseFragment(R.layout.fragment_block_ip_detail) {
             binding.progressBar.visibility = View.GONE
             setInputsEnabled(true)
             result.onSuccess {
-                Toast.makeText(requireContext(), "차단 사유가 수정되었습니다.", Toast.LENGTH_SHORT).show()
+                showTopToast(getString(R.string.block_msg_reason_updated))
                 viewModel.loadDetail(blockIpId)
             }.onFailure {
-                Toast.makeText(requireContext(), "수정에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                showTopToast(getString(R.string.block_msg_reason_update_failed))
             }
         }
     }
@@ -173,10 +174,10 @@ class BlockIpDetailFragment : BaseFragment(R.layout.fragment_block_ip_detail) {
                 binding.progressBar.visibility = View.GONE
                 setInputsEnabled(true)
                 result.onSuccess {
-                    Toast.makeText(requireContext(), "IP 차단이 해제되었습니다.", Toast.LENGTH_SHORT).show()
+                    showTopToast(getString(R.string.block_ip_msg_deleted))
                     findNavController().popBackStack()
                 }.onFailure { err ->
-                    Toast.makeText(requireContext(), err.message ?: "차단 해제 실패", Toast.LENGTH_SHORT).show()
+                    showTopToast(err.message ?: getString(R.string.block_msg_reason_update_failed))
                 }
             }
         }

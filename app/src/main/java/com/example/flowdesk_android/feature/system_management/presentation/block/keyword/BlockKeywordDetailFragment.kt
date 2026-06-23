@@ -19,6 +19,7 @@ import androidx.core.view.updatePadding
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.databinding.DialogCommonConfirmBinding
 import com.example.flowdesk_android.databinding.FragmentBlockKeywordDetailBinding
+import com.example.flowdesk_android.core.extension.showTopToast
 import com.example.flowdesk_android.feature.system_management.domain.model.BlockWordItem
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -43,7 +44,7 @@ class BlockKeywordDetailFragment : BaseFragment(R.layout.fragment_block_keyword_
         }
     }
 
-    override fun getToolbarView(view: View): View? = view.findViewById(R.id.layout_toolbar)
+    override fun getToolbarView(view: View): View = binding.layoutToolbar
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentBlockKeywordDetailBinding.bind(view)
@@ -65,7 +66,7 @@ class BlockKeywordDetailFragment : BaseFragment(R.layout.fragment_block_keyword_
         binding.btnSaveInfo.setOnClickListener {
             val newReason = binding.etReason.text.toString().trim()
             if (newReason.isEmpty()) {
-                Toast.makeText(requireContext(), "차단 사유를 입력해주세요.", Toast.LENGTH_SHORT).show()
+                showTopToast(getString(R.string.block_msg_enter_reason))
                 return@setOnClickListener
             }
             val matchType = getSelectedMatchType()
@@ -103,7 +104,7 @@ class BlockKeywordDetailFragment : BaseFragment(R.layout.fragment_block_keyword_
                             is BlockWordDetailUiState.Error -> {
                                 binding.progressBar.visibility = View.GONE
                                 setInputsEnabled(false)
-                                Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                                showTopToast(state.message)
                                 findNavController().navigateUp()
                             }
                         }
@@ -112,7 +113,7 @@ class BlockKeywordDetailFragment : BaseFragment(R.layout.fragment_block_keyword_
 
                 launch {
                     viewModel.errorMessage.collectLatest { msg ->
-                        Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
+                        showTopToast(msg)
                     }
                 }
             }
@@ -159,10 +160,10 @@ class BlockKeywordDetailFragment : BaseFragment(R.layout.fragment_block_keyword_
             binding.progressBar.visibility = View.GONE
             setInputsEnabled(true)
             result.onSuccess {
-                Toast.makeText(requireContext(), "금칙어 정보가 수정되었습니다.", Toast.LENGTH_SHORT).show()
+                showTopToast(getString(R.string.block_keyword_msg_updated))
                 viewModel.loadDetail(blockWordId)
             }.onFailure {
-                Toast.makeText(requireContext(), "수정에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                showTopToast(getString(R.string.block_msg_reason_update_failed))
             }
         }
     }
@@ -191,10 +192,10 @@ class BlockKeywordDetailFragment : BaseFragment(R.layout.fragment_block_keyword_
                 binding.progressBar.visibility = View.GONE
                 setInputsEnabled(true)
                 result.onSuccess {
-                    Toast.makeText(requireContext(), "금칙어 차단이 해제되었습니다.", Toast.LENGTH_SHORT).show()
+                    showTopToast(getString(R.string.block_keyword_msg_deleted))
                     findNavController().popBackStack()
                 }.onFailure { err ->
-                    Toast.makeText(requireContext(), err.message ?: "차단 해제 실패", Toast.LENGTH_SHORT).show()
+                    showTopToast(err.message ?: getString(R.string.block_msg_reason_update_failed))
                 }
             }
         }

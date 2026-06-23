@@ -24,20 +24,7 @@ class TenantStatusViewModel @Inject constructor(
     val statusGroups = _statusGroups.asStateFlow()
 
     private val _filteredGroups = MutableStateFlow<List<com.example.flowdesk_android.feature.system_management.domain.model.TenantStatusGroup>>(emptyList())
-    val filteredGroups: StateFlow<List<com.example.flowdesk_android.feature.system_management.domain.model.TenantStatusGroup>> = _filteredGroups.asStateFlow()
-
-    // Dynamic stats flows
-    private val _totalGroups = MutableStateFlow(0)
-    val totalGroups = _totalGroups.asStateFlow()
-
-    private val _totalStatuses = MutableStateFlow(0)
-    val totalStatuses = _totalStatuses.asStateFlow()
-
-    private val _activeStatuses = MutableStateFlow(0)
-    val activeStatuses = _activeStatuses.asStateFlow()
-
-    private val _inactiveStatuses = MutableStateFlow(0)
-    val inactiveStatuses = _inactiveStatuses.asStateFlow()
+    val filteredGroups = _filteredGroups.asStateFlow()
 
     // Loading & Error feedback
     private val _isLoading = MutableStateFlow(false)
@@ -47,7 +34,32 @@ class TenantStatusViewModel @Inject constructor(
     val errorMessage = _errorMessage.asSharedFlow()
 
     private val _selectedStatusDetail = MutableStateFlow<TenantStatus?>(null)
-    val selectedStatusDetail: StateFlow<TenantStatus?> = _selectedStatusDetail.asStateFlow()
+    val selectedStatusDetail = _selectedStatusDetail.asStateFlow()
+
+    // 단일 UI 상태 흐름 (combine 적용 및 통계 수치 실시간 유도)
+    val uiState: StateFlow<TenantStatusUiState> = combine(
+        _isLoading,
+        _selectedGroup,
+        _statusGroups,
+        _filteredGroups
+    ) { loading, selected, groups, filtered ->
+        val allItems = filtered.flatMap { it.items }
+        TenantStatusUiState(
+            isLoading = loading,
+            selectedGroup = selected,
+            statusGroups = groups,
+            filteredGroups = filtered,
+            totalGroups = filtered.size,
+            totalStatuses = allItems.size,
+            activeStatuses = allItems.count { it.isActive },
+            inactiveStatuses = allItems.count { !it.isActive }
+        )
+    }.distinctUntilChanged()
+     .stateIn(
+         scope = viewModelScope,
+         started = SharingStarted.WhileSubscribed(5000),
+         initialValue = TenantStatusUiState()
+     )
 
     init {
         // searchQuery 또는 selectedGroup이 바뀔 때마다 자동으로 목록 리프레시
@@ -93,14 +105,7 @@ class TenantStatusViewModel @Inject constructor(
                 _statusGroups.value = groupsFromApi
             }
 
-            // 집계용 모든 아이템 병합 리스트
-            val allItems = response.groups.flatMap { it.items }
-
-            // Dynamic 집계 업데이트
-            _totalGroups.value = response.groups.size
-            _totalStatuses.value = allItems.size
-            _activeStatuses.value = allItems.count { it.isActive }
-            _inactiveStatuses.value = allItems.count { !it.isActive }
+            // 통계 수치는 combine 연산 내에서 filteredGroups를 소스로 실시간 자동 계산되므로 수동 업데이트 제거
         }.onFailure { error ->
             _errorMessage.emit(error.message ?: "목록 로딩 중 오류가 발생했습니다.")
         }

@@ -21,6 +21,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.databinding.FragmentSystemTenantStatusBinding
 import com.example.flowdesk_android.databinding.ItemStatusGroupAccordionBinding
+import com.example.flowdesk_android.databinding.ItemStatusGroupChipBinding
+import com.example.flowdesk_android.core.extension.showTopToast
 import com.example.flowdesk_android.feature.system_management.domain.model.TenantStatus
 import com.example.flowdesk_android.feature.system_management.domain.model.TenantStatusGroup
 import com.example.flowdesk_android.feature.auth.presentation.dashboard.DashboardViewModel
@@ -81,15 +83,15 @@ class TenantStatusFragment : Fragment() {
     }
 
     private fun addChip(inflater: LayoutInflater, label: String, tag: String) {
-        val cardChip = inflater.inflate(
-            R.layout.item_status_group_chip,
+        val chipBinding = ItemStatusGroupChipBinding.inflate(
+            inflater,
             binding.layoutGroupContainer,
             false
-        ) as com.google.android.material.card.MaterialCardView
-        cardChip.tag = tag
-        cardChip.findViewById<TextView>(R.id.tv_group_name).text = label
-        cardChip.setOnClickListener { viewModel.updateGroup(tag) }
-        binding.layoutGroupContainer.addView(cardChip)
+        )
+        chipBinding.root.tag = tag
+        chipBinding.tvGroupName.text = label
+        chipBinding.root.setOnClickListener { viewModel.updateGroup(tag) }
+        binding.layoutGroupContainer.addView(chipBinding.root)
     }
 
     private fun updateChipSelection(selectedGroup: String) {
@@ -101,12 +103,12 @@ class TenantStatusFragment : Fragment() {
 
         for (i in 0 until container.childCount) {
             val card = container.getChildAt(i) as? com.google.android.material.card.MaterialCardView ?: continue
-            val tv = card.findViewById<TextView>(R.id.tv_group_name)
+            val chipBinding = ItemStatusGroupChipBinding.bind(card)
             val isSelected = card.tag == selectedGroup
             card.setCardBackgroundColor(
                 android.content.res.ColorStateList.valueOf(if (isSelected) selectedBg else unselectedBg)
             )
-            tv.setTextColor(if (isSelected) selectedText else unselectedText)
+            chipBinding.tvGroupName.setTextColor(if (isSelected) selectedText else unselectedText)
         }
     }
 
@@ -215,23 +217,22 @@ class TenantStatusFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
 
-                launch { viewModel.statusGroups.collect { renderGroupChips(it) } }
+                launch {
+                    viewModel.uiState.collectLatest { state ->
+                        renderGroupChips(state.statusGroups)
+                        updateChipSelection(state.selectedGroup)
+                        renderAccordionGroups(state.filteredGroups)
 
-                launch { viewModel.selectedGroup.collect { updateChipSelection(it) } }
-
-                launch { viewModel.filteredGroups.collect { renderAccordionGroups(it) } }
-
-                launch { viewModel.totalGroups.collect { binding.tvStatTotalGroups.text = it.toString() } }
-
-                launch { viewModel.totalStatuses.collect { binding.tvStatTotalStatuses.text = it.toString() } }
-
-                launch { viewModel.activeStatuses.collect { binding.tvStatActiveStatuses.text = it.toString() } }
-
-                launch { viewModel.inactiveStatuses.collect { binding.tvStatInactiveStatuses.text = it.toString() } }
+                        binding.tvStatTotalGroups.text = state.totalGroups.toString()
+                        binding.tvStatTotalStatuses.text = state.totalStatuses.toString()
+                        binding.tvStatActiveStatuses.text = state.activeStatuses.toString()
+                        binding.tvStatInactiveStatuses.text = state.inactiveStatuses.toString()
+                    }
+                }
 
                 launch {
                     viewModel.errorMessage.collectLatest { msg ->
-                        Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
+                        showTopToast(msg)
                     }
                 }
 

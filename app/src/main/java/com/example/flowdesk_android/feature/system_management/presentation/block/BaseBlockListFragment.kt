@@ -6,11 +6,10 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
+import com.example.flowdesk_android.core.extension.showTopToast
 import com.example.flowdesk_android.databinding.FragmentBlockListBinding
 
 abstract class BaseBlockListFragment<T> : Fragment() {
@@ -112,7 +111,7 @@ abstract class BaseBlockListFragment<T> : Fragment() {
         binding.progressBar.visibility = View.GONE
         binding.llEmpty.visibility = View.VISIBLE
         binding.rvList.visibility = View.GONE
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        showTopToast(message)
     }
 
     override fun onDestroyView() {

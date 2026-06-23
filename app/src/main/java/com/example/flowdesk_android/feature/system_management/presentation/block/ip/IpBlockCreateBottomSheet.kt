@@ -9,10 +9,12 @@ import androidx.fragment.app.activityViewModels
 import com.example.flowdesk_android.R
 import android.graphics.Color
 import com.example.flowdesk_android.databinding.DialogIpBlockCreateBinding
+import com.example.flowdesk_android.core.extension.showTopToast
 import com.example.flowdesk_android.feature.system_management.domain.model.BlockIpItem
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import androidx.core.content.ContextCompat
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -123,8 +125,8 @@ class IpBlockCreateBottomSheet : BottomSheetDialogFragment() {
             binding.vSegmentSelector.translationX = targetX
         }
         
-        val activeColor = Color.parseColor("#3B82F6")
-        val inactiveColor = Color.parseColor("#64748B")
+        val activeColor = ContextCompat.getColor(requireContext(), R.color.brand_primary)
+        val inactiveColor = ContextCompat.getColor(requireContext(), R.color.text_tertiary)
         
         binding.btnModeSingle.setTextColor(if (index == 0) activeColor else inactiveColor)
         binding.btnModeBulk.setTextColor(if (index == 1) activeColor else inactiveColor)
@@ -158,7 +160,7 @@ class IpBlockCreateBottomSheet : BottomSheetDialogFragment() {
             viewModel.addBlockIp(ip, reason, 1) { result ->
                 setLoading(false)
                 result.onSuccess {
-                    Toast.makeText(requireContext(), "차단 IP가 성공적으로 등록되었습니다.", Toast.LENGTH_SHORT).show()
+                    showTopToast(getString(R.string.block_ip_msg_created))
                     dismiss()
                 }.onFailure { err ->
                     showError(err.message ?: "IP 차단 등록 실패")
@@ -175,8 +177,12 @@ class IpBlockCreateBottomSheet : BottomSheetDialogFragment() {
             viewModel.addBulkBlockIp(ips, reason, 1) { result ->
                 setLoading(false)
                 result.onSuccess { bulkResult ->
-                    val msg = "대량 IP 등록 완료 (성공: ${bulkResult.successCount}건, 건너뜀: ${bulkResult.skippedCount}건)"
-                    Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
+                    val msg = String.format(
+                        getString(R.string.block_ip_msg_bulk_success),
+                        bulkResult.successCount,
+                        bulkResult.skippedCount
+                    )
+                    showTopToast(msg)
                     dismiss()
                 }.onFailure { err ->
                     showError(err.message ?: "대량 IP 차단 등록 실패")
