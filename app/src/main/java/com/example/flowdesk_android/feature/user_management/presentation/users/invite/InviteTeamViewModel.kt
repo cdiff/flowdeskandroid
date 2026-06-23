@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.example.flowdesk_android.feature.auth.domain.usecase.AuthenticateSessionUseCase
+import com.example.flowdesk_android.feature.auth.domain.model.AuthSession
 
 sealed class InviteTeamUiState {
     object Idle : InviteTeamUiState()
@@ -28,7 +30,8 @@ sealed class InviteTeamEvent {
 @HiltViewModel
 class InviteTeamViewModel @Inject constructor(
     private val userRepository: UserRepository,
-    private val roleRepository: RoleRepository
+    private val roleRepository: RoleRepository,
+    private val authSessionUseCase: AuthenticateSessionUseCase
 ) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow<InviteTeamUiState>(InviteTeamUiState.Idle)
@@ -55,7 +58,6 @@ class InviteTeamViewModel @Inject constructor(
     fun inviteUser(
         userId: String,
         password: String,
-        corpName: String,
         userName: String,
         userEmail: String,
         userTel: String,
@@ -64,6 +66,14 @@ class InviteTeamViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             _uiState.value = InviteTeamUiState.Loading
+
+            val currentSession = authSessionUseCase.sessionState.value
+            val corpName = if (currentSession is AuthSession.Active) {
+                currentSession.user.corpName
+            } else {
+                "Acme Corporation" // Fallback
+            }
+
             userRepository.createUser(
                 userId = userId,
                 password = password,

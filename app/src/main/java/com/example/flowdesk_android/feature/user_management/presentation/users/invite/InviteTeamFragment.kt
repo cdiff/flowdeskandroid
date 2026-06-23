@@ -83,7 +83,6 @@ class InviteTeamFragment : BaseFragment(R.layout.fragment_user_invite) {
             viewModel.inviteUser(
                 userId = userId,
                 password = password,
-                corpName = "Acme Corporation",
                 userName = userName,
                 userEmail = userEmail,
                 userTel = userTel,

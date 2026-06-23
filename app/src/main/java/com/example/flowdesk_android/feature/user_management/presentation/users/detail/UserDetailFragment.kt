@@ -30,9 +30,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import com.example.flowdesk_android.core.base.BaseFragment
 import androidx.navigation.fragment.findNavController
-import java.text.SimpleDateFormat
-import java.util.Locale
-import java.util.TimeZone
+import com.example.flowdesk_android.core.extension.showTopToast
+import com.example.flowdesk_android.core.extension.toFormattedDateString
 
 @AndroidEntryPoint
 class UserDetailFragment : BaseFragment(R.layout.fragment_user_detail) {
@@ -203,18 +202,6 @@ class UserDetailFragment : BaseFragment(R.layout.fragment_user_detail) {
         }
     }
 
-    @Suppress("DEPRECATION")
-    private fun showTopToast(message: String) {
-        val inflater = requireActivity().layoutInflater
-        val layout = inflater.inflate(R.layout.view_common_toast_top, null)
-        layout.findViewById<TextView>(R.id.tv_toast_message).text = message
-
-        val toast = Toast(requireContext())
-        toast.setGravity(android.view.Gravity.TOP or android.view.Gravity.CENTER_HORIZONTAL, 0, 100)
-        toast.duration = Toast.LENGTH_SHORT
-        toast.view = layout
-        toast.show()
-    }
 
     private fun bindUserData(user: UserDetail) {
         currentUserData = user
@@ -244,26 +231,7 @@ class UserDetailFragment : BaseFragment(R.layout.fragment_user_detail) {
         binding.etInfoHp.setText(user.userHp ?: "")
 
         // Registration Date
-        user.regDtm?.let { isoString ->
-            try {
-                // Parse assuming format "2026-01-28T11:11:44.000Z"
-                val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-                parser.timeZone = TimeZone.getTimeZone("UTC")
-                val date = parser.parse(isoString)
-                
-                if (date != null) {
-                    val formatter = SimpleDateFormat("yyyy. MM. dd. a hh:mm", Locale.KOREA)
-                    formatter.timeZone = TimeZone.getDefault()
-                    binding.tvRegDate.text = formatter.format(date)
-                } else {
-                    binding.tvRegDate.text = isoString
-                }
-            } catch (e: Exception) {
-                binding.tvRegDate.text = isoString
-            }
-        } ?: run {
-            binding.tvRegDate.text = "-"
-        }
+        binding.tvRegDate.text = user.regDtm?.toFormattedDateString() ?: "-"
 
         // Bind Roles
         val roles = user.availableRoles.map { userRole ->

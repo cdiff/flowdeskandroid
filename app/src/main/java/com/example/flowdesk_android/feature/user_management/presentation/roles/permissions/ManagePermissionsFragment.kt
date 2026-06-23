@@ -23,6 +23,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.example.flowdesk_android.core.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import com.example.flowdesk_android.core.extension.showTopToast
 
 @AndroidEntryPoint
 class ManagePermissionsFragment : BaseFragment(R.layout.fragment_role_manage_permissions) {
@@ -167,16 +168,6 @@ class ManagePermissionsFragment : BaseFragment(R.layout.fragment_role_manage_per
         viewModel.savePermissions(currentCheckedIds)
     }
 
-    @Suppress("DEPRECATION")
-    private fun showTopToast(message: String) {
-        val layout = requireActivity().layoutInflater.inflate(R.layout.view_common_toast_top, null)
-        layout.findViewById<TextView>(R.id.tv_toast_message).text = message
-        val toast = Toast(requireContext())
-        toast.setGravity(android.view.Gravity.TOP or android.view.Gravity.CENTER_HORIZONTAL, 0, 100)
-        toast.duration = Toast.LENGTH_SHORT
-        toast.view = layout
-        toast.show()
-    }
 
     private fun showRoleSelectionBottomSheet() {
         val roles = rolesViewModel.filteredRoles.value
