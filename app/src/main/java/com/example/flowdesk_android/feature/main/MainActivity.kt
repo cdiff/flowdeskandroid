@@ -141,20 +141,21 @@ class MainActivity : AppCompatActivity() {
         menu.clear()
 
         currentMenuTree.forEachIndexed { index, menuDto ->
-            val cleanDisplayName = menuDto.displayName
-                .replace("&", "·")
-                .replace("관리", "")
-                .trim()
+            val cleanDisplayName = if (menuDto.displayName.trim().endsWith("관리")) {
+                val raw = menuDto.displayName.trim()
+                raw.substring(0, raw.length - 2).trim()
+            } else {
+                menuDto.displayName
+            }.replace("&", "·").trim()
             val menuItem = menu.add(0, index, menuDto.order, cleanDisplayName)
             
             val iconRes = when (menuDto.pageName) {
-                "super" -> com.example.flowdesk_android.R.drawable.ic_super_admin
-                "system_management" -> com.example.flowdesk_android.R.drawable.ic_system
-                "counsel_management" -> com.example.flowdesk_android.R.drawable.ic_counsel
-                "roles", "content_management" -> com.example.flowdesk_android.R.drawable.ic_roles
-                "users", "user_management" -> com.example.flowdesk_android.R.drawable.ic_users
-                "permissions" -> com.example.flowdesk_android.R.drawable.ic_permissions
-                else -> com.example.flowdesk_android.R.drawable.ic_default_menu
+                "super" -> R.drawable.selector_nav_super_admin
+                "user_management" -> R.drawable.selector_nav_users
+                "system_management" -> R.drawable.selector_nav_system
+                "content_management" -> R.drawable.selector_nav_content
+                "counsel_management" -> R.drawable.selector_nav_counsel
+                else -> R.drawable.ic_default_menu
             }
             menuItem.setIcon(iconRes)
         }

@@ -37,11 +37,7 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage_main) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentMypageMainBinding.bind(view)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(bottom = systemBars.bottom)
-            insets
-        }
+
 
         binding.clProfileSection.setOnClickListener {
             findNavController().navigate(R.id.editProfileFragment)
@@ -154,7 +150,7 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage_main) {
              }
 
              val titleView = TextView(requireContext()).apply {
-                 text = menuDto.displayName.replace("관리", "").trim()
+                 text = menuDto.displayName.trim()
                  textSize = 12f
                  setTextColor(ContextCompat.getColor(context, R.color.dack_gray_text))
                  gravity = Gravity.CENTER
@@ -171,11 +167,10 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage_main) {
     private fun getIconForMenu(pageName: String): Int {
         return when (pageName) {
             "super" -> R.drawable.ic_super_admin
+            "user_management" -> R.drawable.ic_users
             "system_management" -> R.drawable.ic_system
+            "content_management" -> R.drawable.ic_roles
             "counsel_management" -> R.drawable.ic_counsel
-            "roles" -> R.drawable.ic_roles
-            "users" -> R.drawable.ic_users
-            "permissions" -> R.drawable.ic_permissions
             else -> R.drawable.ic_default_menu
         }
     }

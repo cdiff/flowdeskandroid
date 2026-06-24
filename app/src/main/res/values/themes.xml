@@ -62,9 +62,10 @@
     </style>
 
     <style name="BottomNavTextAppearance" parent="TextAppearance.MaterialComponents.Caption">
-        <item name="android:textSize">10sp</item>
+        <item name="android:textSize">10.5sp</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:letterSpacing">-0.04</item>
+        <item name="android:singleLine">true</item>
     </style>
 
 </resources>
