@@ -97,9 +97,9 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="소속 회사"
+                            android:text="@string/mypage_label_company"
                             android:textSize="13sp"
-                            android:textColor="@color/gray_text"
+                            android:textColor="@color/text_secondary"
                             android:layout_marginBottom="4dp"/>
                         <TextView
                             android:id="@+id/tv_company_name"
@@ -114,7 +114,7 @@
                     <View
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
-                        android:background="#E5E5E5"
+                        android:background="@color/bg_divider"
                         android:layout_marginVertical="8dp"/>
 
                     <LinearLayout
@@ -128,9 +128,9 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="보유 권한"
+                            android:text="@string/mypage_label_permissions"
                             android:textSize="13sp"
-                            android:textColor="@color/gray_text"
+                            android:textColor="@color/text_secondary"
                             android:layout_marginBottom="4dp"/>
                         <TextView
                             android:id="@+id/tv_permission_count"
@@ -153,8 +153,8 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="팀원을 초대하고\n함께 업무를 시작해보세요!"
-                        android:textColor="@color/dack_gray"
+                        android:text="@string/mypage_banner_invite_title"
+                        android:textColor="@color/text_secondary"
                         android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -165,9 +165,9 @@
                         android:id="@+id/btn_invite"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="초대하기"
+                        android:text="@string/mypage_btn_invite"
                         android:textSize="12sp"
-                        android:backgroundTint="@color/login_blue"
+                        android:backgroundTint="@color/brand_primary"
                         android:textColor="@color/white"
                         android:minHeight="0dp"
                         android:paddingVertical="8dp"
@@ -183,7 +183,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="8dp"
-                android:background="#F0F0F0"/>
+                android:background="@color/bg_divider_light"/>
 
             <!-- My Permissions Section -->
             <LinearLayout
@@ -196,10 +196,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="나의 권한"
+                    android:text="@string/mypage_label_my_permissions"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@color/black"
+                    android:textColor="@color/text_primary"
                     android:layout_marginBottom="20dp"/>
 
                 <GridLayout
@@ -216,9 +216,9 @@
              <View
                 android:layout_width="match_parent"
                 android:layout_height="8dp"
-                android:background="#F0F0F0"/>
+                android:background="@color/bg_divider_light"/>
 
-            <!-- Detailed Permissions Section -->
+            <!-- Notification Settings Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -229,26 +229,158 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="권한 상세 정보"
+                    android:text="@string/mypage_label_notification_settings"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@color/black"
+                    android:textColor="@color/text_primary"
                     android:layout_marginBottom="20dp"/>
 
-                <LinearLayout
-                    android:id="@+id/ll_permission_details"
+                <!-- Item 1: New Counsel -->
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <!-- Items added dynamically -->
-                </LinearLayout>
+                    android:paddingVertical="12dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/switch_new_counsel"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginRight="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/mypage_label_new_counsel"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginBottom="4dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/mypage_desc_new_counsel"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_secondary"/>
+                    </LinearLayout>
+
+                    <com.example.flowdesk_android.core.widget.IosSwitch
+                        android:id="@+id/switch_new_counsel"
+                        android:layout_width="48dp"
+                        android:layout_height="28dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/bg_divider_light"/>
+
+                <!-- Item 2: Team Invite -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="12dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/switch_team_invite"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginRight="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/mypage_label_team_invite"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginBottom="4dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/mypage_desc_team_invite"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_secondary"/>
+                    </LinearLayout>
+
+                    <com.example.flowdesk_android.core.widget.IosSwitch
+                        android:id="@+id/switch_team_invite"
+                        android:layout_width="48dp"
+                        android:layout_height="28dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/bg_divider_light"/>
+
+                <!-- Item 3: Security Login -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="12dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/switch_security_login"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginRight="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/mypage_label_security_login"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginBottom="4dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/mypage_desc_security_login"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_secondary"/>
+                    </LinearLayout>
+
+                    <com.example.flowdesk_android.core.widget.IosSwitch
+                        android:id="@+id/switch_security_login"
+                        android:layout_width="48dp"
+                        android:layout_height="28dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
             </LinearLayout>
 
             <!-- Thick Divider 3 (Between Detailed Permissions and Account Management) -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="8dp"
-                android:background="#F0F0F0"/>
+                android:background="@color/bg_divider_light"/>
 
             <!-- Account Management Section (Logout) -->
             <LinearLayout
@@ -261,10 +393,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="계정 관리"
+                    android:text="@string/mypage_label_account_management"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@color/black"
+                    android:textColor="@color/text_primary"
                     android:layout_marginBottom="20dp"/>
 
                 <!-- Logout Current Device -->
@@ -280,9 +412,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="로그아웃"
+                        android:text="@string/mypage_btn_logout"
                         android:textSize="16sp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/text_primary"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"/>
@@ -310,9 +442,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="모든 기기 로그아웃"
+                        android:text="@string/mypage_btn_logout_all"
                         android:textSize="16sp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/text_primary"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"/>

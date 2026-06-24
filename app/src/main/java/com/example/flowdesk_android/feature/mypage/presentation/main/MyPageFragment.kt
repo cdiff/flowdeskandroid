@@ -21,6 +21,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.feature.auth.domain.model.Menu
 import com.example.flowdesk_android.databinding.FragmentMypageMainBinding
+import com.example.flowdesk_android.databinding.DialogUserLogoutAllConfirmationBinding
+import com.example.flowdesk_android.core.extension.showTopToast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -54,24 +56,23 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage_main) {
         }
 
         observeViewModel()
+        initNotificationSettings()
     }
 
     private fun showLogoutAllDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_user_logout_all_confirmation, null)
+        val dialogBinding = DialogUserLogoutAllConfirmationBinding.bind(dialogView)
         val dialog = android.app.AlertDialog.Builder(requireContext())
             .setView(dialogView)
             .create()
 
         dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
 
-        val btnCancel = dialogView.findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.btn_cancel)
-        val btnConfirm = dialogView.findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.btn_confirm)
-
-        btnCancel.setOnClickListener {
+        dialogBinding.btnCancel.setOnClickListener {
             dialog.dismiss()
         }
 
-        btnConfirm.setOnClickListener {
+        dialogBinding.btnConfirm.setOnClickListener {
             viewModel.logoutAll()
             dialog.dismiss()
         }
@@ -86,7 +87,9 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage_main) {
                     viewModel.uiState.collect { state ->
                         when (state) {
                             is MyPageUiState.Success -> updateUI(state)
-                            is MyPageUiState.Error -> { /* handle */ }
+                            is MyPageUiState.Error -> {
+                                showTopToast(state.message.takeIf { it.isNotEmpty() } ?: getString(R.string.mypage_error_load_failed))
+                            }
                             is MyPageUiState.Loading -> { /* handle */ }
                         }
                     }
@@ -102,7 +105,7 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage_main) {
                                 requireActivity().finish()
                             }
                             is MyPageEvent.ShowToast -> {
-                                android.widget.Toast.makeText(context, event.message, android.widget.Toast.LENGTH_SHORT).show()
+                                showTopToast(event.message)
                             }
                         }
                     }
@@ -113,12 +116,14 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage_main) {
 
     private fun updateUI(state: MyPageUiState.Success) {
         val user = state.user.user
-        binding.tvUserName.text = "${user.name}님"
+        binding.tvUserName.text = getString(R.string.mypage_msg_user_suffix, user.name)
         binding.tvRoleBadge.text = state.user.roles.firstOrNull()?.uppercase() ?: "MEMBER"
         binding.tvCompanyName.text = user.corpName
 
         val permissionCount = state.user.permissions.count { it.value }
-        binding.tvPermissionCount.text = "${permissionCount}개"
+        binding.tvPermissionCount.text = getString(R.string.mypage_msg_count_suffix, permissionCount)
+
+        setupMyPermissionsGrid(state.user.menuTree)
     }
 
     private fun setupMyPermissionsGrid(menuTree: List<Menu>) {
@@ -149,7 +154,7 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage_main) {
              }
 
              val titleView = TextView(requireContext()).apply {
-                 text = menuDto.displayName
+                 text = menuDto.displayName.replace("관리", "").trim()
                  textSize = 12f
                  setTextColor(ContextCompat.getColor(context, R.color.dack_gray_text))
                  gravity = Gravity.CENTER
@@ -161,83 +166,13 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage_main) {
         }
     }
 
-    private fun setupPermissionDetails(menuTree: List<Menu>, permissions: Map<String, Boolean>) {
-        binding.llPermissionDetails.removeAllViews()
 
-        menuTree.sortedBy { it.order }.forEach { menuDto ->
-            val detailLayout = LinearLayout(requireContext()).apply {
-                orientation = LinearLayout.VERTICAL
-                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
-                    bottomMargin = 24.dpToPx()
-                }
-            }
-
-            val headerLayout = LinearLayout(requireContext()).apply {
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
-                    bottomMargin = 8.dpToPx()
-                }
-            }
-            
-            val iconView = ImageView(requireContext()).apply {
-                layoutParams = LinearLayout.LayoutParams(24.dpToPx(), 24.dpToPx()).apply {
-                    rightMargin = 8.dpToPx()
-                }
-                setImageResource(getIconForMenu(menuDto.pageName))
-                imageTintList = ContextCompat.getColorStateList(context, R.color.dack_gray_text) 
-            }
-
-            val titleView = TextView(requireContext()).apply {
-                text = menuDto.displayName
-                textSize = 16f
-                setTypeface(null, android.graphics.Typeface.BOLD)
-                setTextColor(ContextCompat.getColor(context, R.color.black))
-            }
-            
-            headerLayout.addView(iconView)
-            headerLayout.addView(titleView)
-            detailLayout.addView(headerLayout)
-
-            val chipsContainer = com.google.android.material.chip.ChipGroup(requireContext()).apply {
-                layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            }
-
-            val relatedPermissions = permissions.filter { (key, value) -> key.startsWith(menuDto.pageName) && value }
-            
-            if (relatedPermissions.isNotEmpty()) {
-                relatedPermissions.forEach { (key, _) ->
-                    val actionName = getActionNameFromKey(key)
-                    val chip = com.google.android.material.chip.Chip(requireContext()).apply {
-                        text = actionName
-                        textSize = 12f
-                        setTextColor(ContextCompat.getColor(context, R.color.green_accent))
-                        setChipBackgroundColorResource(R.color.green_light)
-                        chipStrokeWidth = 0f
-                        textStartPadding = 8.dpToPx().toFloat()
-                        textEndPadding = 8.dpToPx().toFloat()
-                    }
-                    chipsContainer.addView(chip)
-                }
-            } else {
-                 val chip = com.google.android.material.chip.Chip(requireContext()).apply {
-                        text = "전체 권한" 
-                        textSize = 12f
-                        setTextColor(ContextCompat.getColor(context, R.color.green_accent))
-                        setChipBackgroundColorResource(R.color.green_light)
-                        chipStrokeWidth = 0f
-                 }
-                 chipsContainer.addView(chip)
-            }
-            
-            detailLayout.addView(chipsContainer)
-            binding.llPermissionDetails.addView(detailLayout)
-        }
-    }
 
     private fun getIconForMenu(pageName: String): Int {
         return when (pageName) {
             "super" -> R.drawable.ic_super_admin
+            "system_management" -> R.drawable.ic_system
+            "counsel_management" -> R.drawable.ic_counsel
             "roles" -> R.drawable.ic_roles
             "users" -> R.drawable.ic_users
             "permissions" -> R.drawable.ic_permissions
@@ -245,13 +180,26 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage_main) {
         }
     }
 
-    private fun getActionNameFromKey(key: String): String {
-        return when {
-            key.endsWith(".read") -> "목록 조회"
-            key.endsWith(".create") -> "팀원 추가" 
-            key.endsWith(".update") -> "정보 수정"
-            key.endsWith(".delete") -> "삭제"
-            else -> key.substringAfterLast(".")
+    private fun initNotificationSettings() {
+        val prefs = requireContext().getSharedPreferences("mypage_prefs", android.content.Context.MODE_PRIVATE)
+        
+        binding.switchNewCounsel.isChecked = prefs.getBoolean("key_new_counsel", true)
+        binding.switchTeamInvite.isChecked = prefs.getBoolean("key_team_invite", true)
+        binding.switchSecurityLogin.isChecked = prefs.getBoolean("key_security_login", true)
+
+        binding.switchNewCounsel.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean("key_new_counsel", isChecked).apply()
+            showTopToast(getString(R.string.mypage_msg_notification_updated))
+        }
+
+        binding.switchTeamInvite.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean("key_team_invite", isChecked).apply()
+            showTopToast(getString(R.string.mypage_msg_notification_updated))
+        }
+
+        binding.switchSecurityLogin.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean("key_security_login", isChecked).apply()
+            showTopToast(getString(R.string.mypage_msg_notification_updated))
         }
     }
 

@@ -2,7 +2,6 @@ package com.example.flowdesk_android.feature.mypage.presentation.edit_profile
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -14,6 +13,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.databinding.FragmentMypageEditProfileBinding
+import com.example.flowdesk_android.core.extension.showTopToast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -55,7 +55,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_mypage_edit_profile) {
             val hp = binding.etHp.text.toString()
 
             if (name.isBlank() || email.isBlank()) {
-                Toast.makeText(context, "이름과 이메일은 필수입니다.", Toast.LENGTH_SHORT).show()
+                showTopToast(getString(R.string.mypage_msg_name_email_required))
                 return@setOnClickListener
             }
 
@@ -85,7 +85,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_mypage_edit_profile) {
                                 binding.etHp.setText(user.hp)
                             }
                             is EditProfileUiState.Error -> {
-                                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                                showTopToast(state.message.takeIf { it.isNotEmpty() } ?: getString(R.string.mypage_error_load_failed))
                             }
                         }
                     }
@@ -95,11 +95,11 @@ class EditProfileFragment : Fragment(R.layout.fragment_mypage_edit_profile) {
                     viewModel.event.collect { event ->
                         when (event) {
                             is EditProfileEvent.Updated -> {
-                                Toast.makeText(context, "정보가 수정되었습니다.", Toast.LENGTH_SHORT).show()
+                                showTopToast(getString(R.string.mypage_msg_profile_updated))
                                 findNavController().navigateUp()
                             }
                             is EditProfileEvent.Error -> {
-                                Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                                showTopToast(event.message.takeIf { it.isNotEmpty() } ?: getString(R.string.mypage_error_update_failed))
                             }
                         }
                     }

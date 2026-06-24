@@ -43,7 +43,7 @@ class EditProfileViewModel @Inject constructor(
             _uiState.value = EditProfileUiState.Loading
             authRepository.getMe()
                 .onSuccess { _uiState.value = EditProfileUiState.Success(it) }
-                .onFailure { _uiState.value = EditProfileUiState.Error(it.message ?: "조회 실패") }
+                .onFailure { _uiState.value = EditProfileUiState.Error(it.message ?: "") }
         }
     }
 
@@ -54,7 +54,7 @@ class EditProfileViewModel @Inject constructor(
                     _event.send(EditProfileEvent.Updated)
                     loadProfile()
                 }
-                .onFailure { _event.send(EditProfileEvent.Error(it.message ?: "수정 실패")) }
+                .onFailure { _event.send(EditProfileEvent.Error(it.message ?: "")) }
         }
     }
 }

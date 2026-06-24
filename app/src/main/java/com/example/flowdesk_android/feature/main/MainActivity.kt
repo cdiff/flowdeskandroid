@@ -143,10 +143,14 @@ class MainActivity : AppCompatActivity() {
         currentMenuTree.forEachIndexed { index, menuDto ->
             val cleanDisplayName = menuDto.displayName
                 .replace("&", "·")
+                .replace("관리", "")
+                .trim()
             val menuItem = menu.add(0, index, menuDto.order, cleanDisplayName)
             
             val iconRes = when (menuDto.pageName) {
-                "super", "system_management" -> com.example.flowdesk_android.R.drawable.ic_super_admin
+                "super" -> com.example.flowdesk_android.R.drawable.ic_super_admin
+                "system_management" -> com.example.flowdesk_android.R.drawable.ic_system
+                "counsel_management" -> com.example.flowdesk_android.R.drawable.ic_counsel
                 "roles", "content_management" -> com.example.flowdesk_android.R.drawable.ic_roles
                 "users", "user_management" -> com.example.flowdesk_android.R.drawable.ic_users
                 "permissions" -> com.example.flowdesk_android.R.drawable.ic_permissions

@@ -45,7 +45,7 @@ class MyPageViewModel @Inject constructor(
             _uiState.value = MyPageUiState.Loading
             authRepository.getMe()
                 .onSuccess { _uiState.value = MyPageUiState.Success(it) }
-                .onFailure { _uiState.value = MyPageUiState.Error(it.message ?: "조회 실패") }
+                .onFailure { _uiState.value = MyPageUiState.Error(it.message ?: "") }
         }
     }
 
