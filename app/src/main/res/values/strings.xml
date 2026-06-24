@@ -94,4 +94,52 @@
     <string name="block_ip_msg_updated">IP 차단 정보가 수정되었습니다.</string>
     <string name="block_keyword_msg_updated">금칙어 정보가 수정되었습니다.</string>
     <string name="block_phone_msg_updated">휴대폰 차단 정보가 수정되었습니다.</string>
+
+    <!-- Super Admin -->
+    <string name="tenant_msg_enter_name">테넌트명을 입력해주세요.</string>
+    <string name="tenant_msg_enter_display_name">표시 이름을 입력해주세요.</string>
+    <string name="tenant_msg_enter_domain">도메인을 입력해주세요.</string>
+    <string name="tenant_msg_created">테넌트가 생성되었습니다.</string>
+    <string name="tenant_msg_deleted">테넌트가 삭제되었습니다.</string>
+    <string name="tenant_msg_status_changed">상태가 변경되었습니다.</string>
+    <string name="tenant_msg_status_change_requested">상태 변경을 요청했습니다.</string>
+    <string name="tenant_delete_title">테넌트 삭제</string>
+    <string name="tenant_delete_message">\'%1$s\' 테넌트를 정말 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.</string>
+    <string name="tenant_msg_updated">테넌트 정보가 수정되었습니다.</string>
+
+    <string name="page_msg_enter_name">페이지 이름을 입력해주세요.</string>
+    <string name="page_msg_enter_display_name">표시 이름을 입력해주세요.</string>
+    <string name="page_msg_enter_path">경로를 입력해주세요.</string>
+    <string name="page_msg_created">페이지가 생성되었습니다.</string>
+    <string name="page_msg_deleted">페이지가 삭제되었습니다.</string>
+    <string name="page_msg_status_changed">페이지 상태가 변경되었습니다.</string>
+    <string name="page_delete_title">페이지 삭제</string>
+    <string name="page_delete_message">\'%1$s\' 페이지를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.</string>
+
+    <string name="action_msg_enter_name">액션 이름을 입력해주세요.</string>
+    <string name="action_msg_enter_display_name">표시 이름을 입력해주세요.</string>
+    <string name="action_msg_created">액션이 생성되었습니다.</string>
+    <string name="action_msg_deleted">액션이 삭제되었습니다.</string>
+    <string name="action_msg_status_changed">액션 상태가 변경되었습니다.</string>
+    <string name="action_delete_title">액션 삭제</string>
+    <string name="action_delete_message">\'%1$s\' 액션을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.</string>
+
+    <string name="label_status_active">활성</string>
+    <string name="label_status_inactive">비활성</string>
+    <string name="label_status_active_short">활성 %1$s</string>
+    <string name="label_status_count_total">총 %1$d개</string>
+    <string name="label_status_count_active">활성 %1$d개</string>
+    <string name="label_status_count_inactive">비활성 %1$d개</string>
+    <string name="chart_label_user">사용자</string>
+    <string name="chart_label_counsel">상담</string>
+    <string name="chart_label_tenant">테넌트</string>
+    <string name="chart_label_month_suffix">%1$s월</string>
+    <string name="label_action_save">저장</string>
+    <string name="label_action_edit">수정</string>
+    <string name="label_action_saving">저장 중...</string>
+    <string name="label_action_cancel">취소</string>
+    <string name="label_action_confirm">확인</string>
+    <string name="label_action_delete">삭제</string>
+    <string name="page_status_toggle_confirm_message">\'%1$s\' 페이지를 %2$s하시겠습니까?</string>
+    <string name="action_status_toggle_confirm_message">\'%1$s\' 액션을 %2$s하시겠습니까?</string>
 </resources>

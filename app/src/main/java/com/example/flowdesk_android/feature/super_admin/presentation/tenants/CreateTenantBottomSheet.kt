@@ -4,19 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.flowdesk_android.R
+import com.example.flowdesk_android.core.extension.showTopToast
+import com.example.flowdesk_android.databinding.DialogTenantCreateBottomSheetBinding
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -25,19 +23,18 @@ class CreateTenantBottomSheet(private val onSuccess: () -> Unit) : BottomSheetDi
 
     private val viewModel: TenantsViewModel by viewModels({ requireParentFragment() })
 
-    private lateinit var btnClose: ImageView
-    private lateinit var btnCreate: View
-    private lateinit var etTenantName: EditText
-    private lateinit var etDisplayName: EditText
-    private lateinit var etDomain: EditText
-    private lateinit var progressBar: ProgressBar
+    private var _binding: DialogTenantCreateBottomSheetBinding? = null
+    private val binding get() = _binding!!
 
     override fun getTheme(): Int = R.style.CustomBottomSheetDialogTheme
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.dialog_tenant_create_bottom_sheet, container, false)
+    ): View {
+        _binding = DialogTenantCreateBottomSheetBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -53,38 +50,33 @@ class CreateTenantBottomSheet(private val onSuccess: () -> Unit) : BottomSheetDi
             }
         }
 
-        initViews(view)
         setupListeners()
         observeViewModel()
     }
 
-    private fun initViews(view: View) {
-        btnClose       = view.findViewById(R.id.btn_close)
-        btnCreate      = view.findViewById(R.id.btn_create)
-        etTenantName   = view.findViewById(R.id.et_tenant_name)
-        etDisplayName  = view.findViewById(R.id.et_display_name)
-        etDomain       = view.findViewById(R.id.et_domain)
-        progressBar    = view.findViewById(R.id.progress_bar)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun setupListeners() {
-        btnClose.setOnClickListener { dismiss() }
+        binding.btnClose.setOnClickListener { dismiss() }
 
-        btnCreate.setOnClickListener {
-            val tenantName  = etTenantName.text.toString().trim()
-            val displayName = etDisplayName.text.toString().trim()
-            val domain      = etDomain.text.toString().trim()
+        binding.btnCreate.setOnClickListener {
+            val tenantName  = binding.etTenantName.text.toString().trim()
+            val displayName = binding.etDisplayName.text.toString().trim()
+            val domain      = binding.etDomain.text.toString().trim()
 
             if (tenantName.isBlank()) {
-                etTenantName.error = "테넌트명을 입력해주세요."
+                binding.etTenantName.error = getString(R.string.tenant_msg_enter_name)
                 return@setOnClickListener
             }
             if (displayName.isBlank()) {
-                etDisplayName.error = "표시 이름을 입력해주세요."
+                binding.etDisplayName.error = getString(R.string.tenant_msg_enter_display_name)
                 return@setOnClickListener
             }
             if (domain.isBlank()) {
-                etDomain.error = "도메인을 입력해주세요."
+                binding.etDomain.error = getString(R.string.tenant_msg_enter_domain)
                 return@setOnClickListener
             }
 
@@ -97,8 +89,8 @@ class CreateTenantBottomSheet(private val onSuccess: () -> Unit) : BottomSheetDi
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.uiState.collect { state ->
-                        progressBar.isVisible = state is TenantListUiState.Loading
-                        btnCreate.isEnabled   = state !is TenantListUiState.Loading
+                        binding.progressBar.isVisible = state is TenantListUiState.Loading
+                        binding.btnCreate.isEnabled   = state !is TenantListUiState.Loading
                     }
                 }
 
@@ -106,12 +98,12 @@ class CreateTenantBottomSheet(private val onSuccess: () -> Unit) : BottomSheetDi
                     viewModel.event.collect { event ->
                         when (event) {
                             is TenantListEvent.TenantCreated -> {
-                                Toast.makeText(context, "테넌트가 생성되었습니다.", Toast.LENGTH_SHORT).show()
+                                showTopToast(getString(R.string.tenant_msg_created))
                                 onSuccess()
                                 dismiss()
                             }
                             is TenantListEvent.Error -> {
-                                Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
+                                showTopToast(event.message)
                             }
                             else -> {}
                         }

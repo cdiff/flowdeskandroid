@@ -6,18 +6,16 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView
 import com.example.flowdesk_android.R
+import com.example.flowdesk_android.core.extension.showTopToast
+import com.example.flowdesk_android.databinding.FragmentSuperAdminTenantsBinding
 import com.example.flowdesk_android.feature.super_admin.domain.model.Tenant
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -28,40 +26,27 @@ class TenantsFragment : Fragment() {
     private val viewModel: TenantsViewModel by viewModels()
     private lateinit var tenantAdapter: TenantAdapter
 
-    private lateinit var rvTenants: RecyclerView
-    private lateinit var progressBar: ProgressBar
-    private lateinit var etSearch: EditText
-    private lateinit var tvBadgeTotal: TextView
-    private lateinit var tvBadgeActive: TextView
-    private lateinit var tvBadgeInactive: TextView
-    private lateinit var llEmpty: View
-    private lateinit var btnCreateTenant: View
-    private lateinit var bannerInfo: View
-    private lateinit var btnCloseBanner: View
+    private var _binding: FragmentSuperAdminTenantsBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_super_admin_tenants, container, false)
-        initViews(view)
+    ): View {
+        _binding = FragmentSuperAdminTenantsBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         setupListeners()
         observeViewModel()
-        return view
     }
 
-    private fun initViews(view: View) {
-        rvTenants       = view.findViewById(R.id.rv_tenants)
-        progressBar     = view.findViewById(R.id.progress_bar)
-        etSearch        = view.findViewById(R.id.et_search)
-        tvBadgeTotal    = view.findViewById(R.id.tv_badge_total)
-        tvBadgeActive   = view.findViewById(R.id.tv_badge_active)
-        tvBadgeInactive = view.findViewById(R.id.tv_badge_inactive)
-        llEmpty         = view.findViewById(R.id.ll_empty)
-        btnCreateTenant = view.findViewById(R.id.btn_create_tenant)
-        bannerInfo      = view.findViewById(R.id.banner_info)
-        btnCloseBanner  = view.findViewById(R.id.btn_close_banner)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun setupRecyclerView() {
@@ -72,28 +57,28 @@ class TenantsFragment : Fragment() {
             },
             onToggleStatusClick = { tenant ->
                 viewModel.toggleStatus(tenant)
-                showTopToast("상태 변경을 요청했습니다.")
+                showTopToast(getString(R.string.tenant_msg_status_change_requested))
             },
             onDeleteClick = { tenant ->
                 showDeleteDialog(tenant)
             }
         )
-        rvTenants.adapter = tenantAdapter
+        binding.rvTenants.adapter = tenantAdapter
     }
 
     private fun setupListeners() {
-        btnCloseBanner.setOnClickListener {
-            bannerInfo.visibility = View.GONE
+        binding.btnCloseBanner.setOnClickListener {
+            binding.bannerInfo.visibility = View.GONE
         }
 
-        btnCreateTenant.setOnClickListener {
+        binding.btnCreateTenant.setOnClickListener {
             val bottomSheet = CreateTenantBottomSheet {
                 viewModel.fetchTenants()
             }
             bottomSheet.show(childFragmentManager, CreateTenantBottomSheet.TAG)
         }
 
-        etSearch.addTextChangedListener(object : TextWatcher {
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 viewModel.search(s?.toString() ?: "")
@@ -109,32 +94,32 @@ class TenantsFragment : Fragment() {
                     viewModel.uiState.collect { state ->
                         when (state) {
                             is TenantListUiState.Loading -> {
-                                progressBar.visibility = View.VISIBLE
-                                rvTenants.visibility = View.GONE
-                                llEmpty.visibility = View.GONE
+                                binding.progressBar.visibility = View.VISIBLE
+                                binding.rvTenants.visibility = View.GONE
+                                binding.llEmpty.visibility = View.GONE
                             }
                             is TenantListUiState.Success -> {
-                                progressBar.visibility = View.GONE
+                                binding.progressBar.visibility = View.GONE
                                 
                                 val total    = state.tenants.size
                                 val active   = state.tenants.count { it.isActive }
                                 val inactive = total - active
-                                tvBadgeTotal.text    = "총 ${total}개"
-                                tvBadgeActive.text   = "활성 ${active}개"
-                                tvBadgeInactive.text = "비활성 ${inactive}개"
+                                binding.tvBadgeTotal.text    = getString(R.string.label_status_count_total, total)
+                                binding.tvBadgeActive.text   = getString(R.string.label_status_count_active, active)
+                                binding.tvBadgeInactive.text = getString(R.string.label_status_count_inactive, inactive)
 
                                 if (state.tenants.isEmpty()) {
-                                    rvTenants.visibility = View.GONE
-                                    llEmpty.visibility = View.VISIBLE
+                                    binding.rvTenants.visibility = View.GONE
+                                    binding.llEmpty.visibility = View.VISIBLE
                                 } else {
-                                    rvTenants.visibility = View.VISIBLE
-                                    llEmpty.visibility = View.GONE
+                                    binding.rvTenants.visibility = View.VISIBLE
+                                    binding.llEmpty.visibility = View.GONE
                                 }
                             }
                             is TenantListUiState.Error -> {
-                                progressBar.visibility = View.GONE
-                                rvTenants.visibility = View.VISIBLE
-                                llEmpty.visibility = View.GONE
+                                binding.progressBar.visibility = View.GONE
+                                binding.rvTenants.visibility = View.VISIBLE
+                                binding.llEmpty.visibility = View.GONE
                                 showTopToast(state.message)
                             }
                             else -> {}
@@ -151,9 +136,9 @@ class TenantsFragment : Fragment() {
                 launch {
                     viewModel.event.collect { event ->
                         when (event) {
-                            is TenantListEvent.TenantCreated -> showTopToast("테넌트가 생성되었습니다.")
-                            is TenantListEvent.TenantDeleted -> showTopToast("테넌트가 삭제되었습니다.")
-                            is TenantListEvent.StatusToggled -> showTopToast("상태가 변경되었습니다.")
+                            is TenantListEvent.TenantCreated -> showTopToast(getString(R.string.tenant_msg_created))
+                            is TenantListEvent.TenantDeleted -> showTopToast(getString(R.string.tenant_msg_deleted))
+                            is TenantListEvent.StatusToggled -> showTopToast(getString(R.string.tenant_msg_status_changed))
                             is TenantListEvent.Error         -> showTopToast(event.message)
                         }
                     }
@@ -170,27 +155,14 @@ class TenantsFragment : Fragment() {
             .create()
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        dialogView.findViewById<TextView>(R.id.tv_title).text = "테넌트 삭제"
+        dialogView.findViewById<TextView>(R.id.tv_title).text = getString(R.string.tenant_delete_title)
         dialogView.findViewById<TextView>(R.id.tv_message).text =
-            "'${tenant.tenantName}' 테넌트를 정말 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다."
+            getString(R.string.tenant_delete_message, tenant.tenantName)
         dialogView.findViewById<View>(R.id.btn_cancel).setOnClickListener { dialog.dismiss() }
         dialogView.findViewById<View>(R.id.btn_confirm).setOnClickListener {
             viewModel.deleteTenant(tenant.tenantId)
             dialog.dismiss()
         }
         dialog.show()
-    }
-
-    @Suppress("DEPRECATION")
-    private fun showTopToast(message: String) {
-        val inflater = requireActivity().layoutInflater
-        val layout = inflater.inflate(R.layout.view_common_toast_top, null)
-        layout.findViewById<TextView>(R.id.tv_toast_message).text = message
-
-        val toast = Toast(requireContext())
-        toast.setGravity(android.view.Gravity.TOP or android.view.Gravity.CENTER_HORIZONTAL, 0, 100)
-        toast.duration = Toast.LENGTH_SHORT
-        toast.view = layout
-        toast.show()
     }
 }

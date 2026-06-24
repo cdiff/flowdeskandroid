@@ -92,8 +92,11 @@ feature/user/
 ### 3) Presentation Layer (프레젠테이션 계층)
 * **역할**: 사용자에게 UI를 보여주고, 사용자 이벤트를 처리합니다.
 * **규칙**:
-  * UI 로직(Fragment, Adapter 등)과 상태 관리 로직(ViewModel)을 분리합니다.
+  * UI 로직(Fragment, Adapter 등)과 상태 관리 로직(ViewModel)을 철저히 분리합니다.
   * ViewModel은 Data 레이어(Repository)에 직접 접근하지 않고, 반드시 **UseCase**를 통해서만 비즈니스 로직을 실행합니다.
+  * **ViewBinding 엄격 적용**: 수동 `findViewById` 호출을 배제하고 뷰바인딩을 사용하며, Fragment/BottomSheet 수명 주기에 맞춰 메모리 해제(`onDestroyView() -> _binding = null`)를 수행합니다.
+  * **하드코딩 배제**: 문자열은 `strings.xml`, 색상(HEX)은 `colors.xml` 시맨틱 자원으로 추출하여 참조합니다.
+  * **단일 UiState 지향**: 상태 일관성 유지를 위해 화면 단위로 단일 `UiState` 모델을 제공하고 단방향 데이터 흐름(UDF)을 보장합니다.
 
 ---
 
@@ -111,10 +114,94 @@ UI (Fragment)
 
   ... 데이터 반환 ...
 
-API/DB 결과 
+  ➡️ API/DB 결과 
   ➡️ DTO 반환 
   ➡️ Mapper를 통해 Domain Model로 변환 
   ➡️ UseCase 
   ➡️ ViewModel (상태 업데이트: StateFlow) 
   ➡️ UI (화면 갱신)
 ```
+
+---
+
+## 6. UI 상태 및 뷰바인딩 관리 표준 가이드
+
+본 프로젝트에서는 모던 안드로이드 개발(MAD) 트렌드에 맞춰 일관되고 버그 없는 UI 화면을 보장하기 위해 아래의 UI 프레젠테이션 개발 가이드라인을 강제합니다.
+
+### 1) ViewBinding 수명 주기 및 메모리 누수 방지
+Fragment나 BottomSheetDialogFragment는 뷰의 수명 주기가 객체 자체의 수명 주기보다 짧기 때문에, 바인딩 참조 해제가 누락되면 메모리 누수(Memory Leak)가 발생합니다.
+* **표준 템플릿**:
+  ```kotlin
+  class ExampleFragment : Fragment(R.layout.fragment_example) {
+      private var _binding: FragmentExampleBinding? = null
+      private val binding get() = _binding!!
+
+      override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+          super.onViewCreated(view, savedInstanceState)
+          _binding = FragmentExampleBinding.bind(view)
+          // binding.tvTitle.text = ...
+      }
+
+      override fun onDestroyView() {
+          super.onDestroyView()
+          _binding = null // 메모리 누수 방지를 위한 명시적 해제
+      }
+  }
+  ```
+
+### 2) MVVM + 단일 UiState + combine 흐름
+여러 개의 상태가 복합적으로 작용하는 화면에서는 상태 파편화를 막기 위해 **단일 UiState 데이터 클래스**와 **선택적 Flow 결합(combine)**을 적용합니다.
+
+* **동작 아키텍처 흐름**:
+```
+[ViewModel]
+ 1. 원천 소스 Flow 분리 관리 (Private)
+    - _isLoading: MutableStateFlow
+    - _selectedGroup: MutableStateFlow
+    - _filteredGroups: MutableStateFlow
+    
+ 2. combine + stateIn 결합 발행 (Public)
+    - val uiState: StateFlow<UiState> = combine(...) { ... }
+      -> 통계 카운트 등 파생 상태(Derived State)는 combine 내에서 실시간 유도 연산하여 방출
+
+ 3. 중복 방출 차단
+    - distinctUntilChanged() 필터를 적용해 동일 상태의 재발행 차단
+
+          ▼ (uiState 발행)
+
+[View (Fragment)]
+ 1. 단일 수집 파이프라인으로 통합
+    - lifecycleScope.launch { 
+          uiState.collectLatest { state ->
+              // 로딩 바 활성 제어
+              // 칩 및 아코디언 목록 리프레시
+              // 통계 카운트 텍스트 갱신
+          }
+      }
+```
+
+### 3) 리소스 추출 및 시맨틱 바인딩 규칙
+* **한국어 문자열**: Kotlin/XML 상의 모든 한글 문자열은 `strings.xml`에 자원으로 선언하고 `context.getString(R.string.key)` 또는 XML `@string/key`로 연동하여 하드코딩을 원천 배제합니다.
+* **색상(Color)**: 소스 내 `Color.parseColor("#3B82F6")` 형태의 하드코딩 HEX 지정을 금지하고, `colors.xml`에 정의된 시맨틱 자원(예: `R.color.brand_primary`)을 `ContextCompat.getColor(context, id)`를 통해 획득하여 디자인 일관성을 준수합니다.
+
+---
+
+## 7. 실용주의 개발 핵심 철학 (Pragmatic Guidelines)
+
+본 프로젝트는 구조적 완성도와 개발 생산성 사이의 균형을 유지하기 위해 아래의 **5가지 실용주의 설계 가이드라인**을 최우선으로 삼아 설계 및 리팩토링을 진행합니다.
+
+> [!IMPORTANT]
+> **FlowDesk Android 개발 핵심 5원칙**
+>
+> 1. **기본은 MVVM + 단일 UiState**
+>    - 화면 상태 관리는 단방향 데이터 흐름(UDF) 보장을 위해 단일 `UiState` 관찰 구조를 표준으로 채택하되, 불필요한 보일러플레이트가 많은 MVI 대신 가볍고 직관적인 MVVM을 뼈대로 삼습니다.
+> 2. **combine은 “진짜 필요할 때만”**
+>    - 여러 소스의 유기적인 결합(예: 필터, 검색, 정렬 조건)이 상태를 결정할 때에만 `combine`을 활용합니다. 단순 상태나 독립적 라이프사이클을 갖는 데이터는 억지로 묶지 않고 개별 Flow로 깔끔하게 노출합니다.
+> 3. **UseCase는 “비즈니스 로직 있을 때만”**
+>    - 단순 조회 및 CRUD 전달만 하는 무의미한 Passthrough UseCase(단순히 Repository의 함수를 호출하여 넘기기만 하는 클래스) 생성을 금지합니다. 복잡한 유효성 검사, 결합, 비즈니스 계산 등이 필요한 경우에만 UseCase를 추가하고, 그 외에는 ViewModel에서 Repository에 직접 접근하는 것을 지향하여 구조를 경량화합니다.
+> 4. **Base는 최소화**
+>    - 공통 코드를 줄이겠다는 목적으로 무분별하게 Base 클래스(`BaseFragment`, `BaseViewModel` 등)에 의존하거나 비대하게 기능을 밀어 넣지 않습니다. 상속(Inheritance)보다는 조합(Composition)과 Kotlin 확장 함수(Extension)를 활용해 독립적이고 가벼운 설계를 유지합니다.
+> 5. **화면 단순하면 과감히 단순하게**
+>    - 아키텍처 원칙은 절대적인 법률이 아닌 도구입니다. 화면이 단순하고 데이터 흐름이 단조로운 경우, 복잡한 상태 결합이나 구조화 단계를 생략하고 과감하게 단순(Simple State / Direct Flow)하게 작성하여 생산성을 유지합니다.
+
+

@@ -1,23 +1,16 @@
 package com.example.flowdesk_android.feature.super_admin.presentation.tenants
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.flowdesk_android.R
+import com.example.flowdesk_android.core.extension.showTopToast
+import com.example.flowdesk_android.databinding.FragmentSuperAdminTenantDetailBinding
 import com.example.flowdesk_android.feature.super_admin.domain.model.TenantDetail
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 import com.example.flowdesk_android.core.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -30,105 +23,55 @@ class TenantDetailFragment : BaseFragment(R.layout.fragment_super_admin_tenant_d
 
     private val viewModel: TenantDetailViewModel by viewModels()
 
-    // ── Views ──────────────────────────────────────────────
-    private lateinit var clHeader: View
-    private lateinit var btnBack: View
-    private lateinit var btnAction: TextView
-    private lateinit var progressBar: ProgressBar
-    private lateinit var llContent: LinearLayout
-    private lateinit var llError: LinearLayout
-    private lateinit var tvErrorMessage: TextView
-    private lateinit var btnRetry: View
+    private var _binding: FragmentSuperAdminTenantDetailBinding? = null
+    private val binding get() = _binding!!
 
-    // 보기 모드
-    private lateinit var tvTenantId: TextView
-    private lateinit var tvStatusView: TextView
-    private lateinit var tvNameView: TextView
-    private lateinit var tvDisplayNameView: TextView
-    private lateinit var tvDomainView: TextView
-    private lateinit var tvCreatedAt: TextView
-    private lateinit var tvUpdatedAt: TextView
-
-
-    private lateinit var tilName: TextInputLayout
-    private lateinit var etNameEdit: TextInputEditText
-    private lateinit var tilDisplayName: TextInputLayout
-    private lateinit var etDisplayNameEdit: TextInputEditText
-    private lateinit var tilDomain: TextInputLayout
-    private lateinit var etDomainEdit: TextInputEditText
-
-    // ── State ──────────────────────────────────────────────
     private var isEditMode = false
     private var tenantId: Int = -1
     private var currentTenant: TenantDetail? = null
 
-    // ──────────────────────────────────────────────────────
-    override fun getToolbarView(view: View): View? = view.findViewById(R.id.cl_header)
- 
+    override fun getToolbarView(view: View): View = binding.clHeader
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        _binding = FragmentSuperAdminTenantDetailBinding.bind(view)
+        super.onViewCreated(view, savedInstanceState)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun initView() {
-        val view = requireView()
         tenantId = arguments?.getInt("tenant_id", -1) ?: -1
-        initViews(view)
         setupListeners()
         if (tenantId != -1) viewModel.fetchDetail(tenantId)
     }
 
-    // ── View 초기화 ────────────────────────────────────────
-    private fun initViews(v: View) {
-        clHeader         = v.findViewById(R.id.cl_header)
-        btnBack          = v.findViewById(R.id.btn_back)
-        btnAction        = v.findViewById(R.id.btn_action)
-        progressBar      = v.findViewById(R.id.progress_bar)
-        llContent        = v.findViewById(R.id.ll_content)
-        llError          = v.findViewById(R.id.ll_error)
-        tvErrorMessage   = v.findViewById(R.id.tv_error_message)
-        btnRetry         = v.findViewById(R.id.btn_retry)
-
-        tvTenantId       = v.findViewById(R.id.tv_tenant_id)
-        tvStatusView     = v.findViewById(R.id.tv_status_view)
-        tvNameView       = v.findViewById(R.id.tv_name_view)
-        tvDisplayNameView= v.findViewById(R.id.tv_display_name_view)
-        tvDomainView     = v.findViewById(R.id.tv_domain_view)
-        tvCreatedAt      = v.findViewById(R.id.tv_created_at)
-        tvUpdatedAt      = v.findViewById(R.id.tv_updated_at)
-
-
-        tilName          = v.findViewById(R.id.til_name)
-        etNameEdit       = v.findViewById(R.id.et_name_edit)
-        tilDisplayName   = v.findViewById(R.id.til_display_name)
-        etDisplayNameEdit= v.findViewById(R.id.et_display_name_edit)
-        tilDomain        = v.findViewById(R.id.til_domain)
-        etDomainEdit     = v.findViewById(R.id.et_domain_edit)
-    }
-
-    // ── 리스너 ─────────────────────────────────────────────
     private fun setupListeners() {
-        btnBack.setOnClickListener {
+        binding.btnBack.setOnClickListener {
             findNavController().popBackStack()
         }
 
-        btnAction.setOnClickListener {
+        binding.btnAction.setOnClickListener {
             if (isEditMode) {
-                // 저장
                 val tenant = currentTenant ?: return@setOnClickListener
                 viewModel.saveTenant(
                     tenantId    = tenant.tenantId,
-                    tenantName  = etNameEdit.text?.toString() ?: "",
-                    displayName = etDisplayNameEdit.text?.toString() ?: "",
-                    domain      = etDomainEdit.text?.toString() ?: ""
+                    tenantName  = binding.etNameEdit.text?.toString() ?: "",
+                    displayName = binding.etDisplayNameEdit.text?.toString() ?: "",
+                    domain      = binding.etDomainEdit.text?.toString() ?: ""
                 )
             } else {
-                // 수정 모드 진입
                 enterEditMode()
             }
         }
 
-        btnRetry.setOnClickListener {
+        binding.btnRetry.setOnClickListener {
             if (tenantId != -1) viewModel.fetchDetail(tenantId)
         }
     }
 
-    // ── ViewModel 관찰 ─────────────────────────────────────
     override fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -143,7 +86,7 @@ class TenantDetailFragment : BaseFragment(R.layout.fragment_super_admin_tenant_d
                                 showContent()
                             }
                             is TenantDetailUiState.Error -> {
-                                tvErrorMessage.text = state.message
+                                binding.tvErrorMessage.text = state.message
                                 showError()
                             }
                         }
@@ -154,7 +97,7 @@ class TenantDetailFragment : BaseFragment(R.layout.fragment_super_admin_tenant_d
                     viewModel.event.collect { event ->
                         when (event) {
                             is TenantDetailEvent.SaveSuccess -> {
-                                showTopToast("테넌트 정보가 수정되었습니다.")
+                                showTopToast(getString(R.string.tenant_msg_updated))
                                 findNavController().popBackStack()
                             }
                             is TenantDetailEvent.Error -> {
@@ -166,12 +109,12 @@ class TenantDetailFragment : BaseFragment(R.layout.fragment_super_admin_tenant_d
 
                 launch {
                     viewModel.isSaving.collect { saving ->
-                        btnAction.isEnabled = !saving
-                        btnAction.alpha = if (saving) 0.5f else 1.0f
-                        btnAction.text = when {
-                            saving -> "저장 중..."
-                            isEditMode -> "저장"
-                            else -> "수정"
+                        binding.btnAction.isEnabled = !saving
+                        binding.btnAction.alpha = if (saving) 0.5f else 1.0f
+                        binding.btnAction.text = when {
+                            saving -> getString(R.string.label_action_saving)
+                            isEditMode -> getString(R.string.label_action_save)
+                            else -> getString(R.string.label_action_edit)
                         }
                     }
                 }
@@ -179,69 +122,63 @@ class TenantDetailFragment : BaseFragment(R.layout.fragment_super_admin_tenant_d
         }
     }
 
-    // ── 데이터 바인딩 ──────────────────────────────────────
     private fun bindData(tenant: TenantDetail) {
-        tvTenantId.text = "#${tenant.tenantId}"
+        binding.tvTenantId.text = "#${tenant.tenantId}"
 
         if (tenant.isActive) {
-            tvStatusView.text = "활성"
-            tvStatusView.setTextColor(requireContext().getColor(R.color.green_accent))
-            tvStatusView.setBackgroundResource(R.drawable.bg_tag_light_green)
+            binding.tvStatusView.text = getString(R.string.label_status_active)
+            binding.tvStatusView.setTextColor(requireContext().getColor(R.color.color_success))
+            binding.tvStatusView.setBackgroundResource(R.drawable.bg_tag_light_green)
         } else {
-            tvStatusView.text = "비활성"
-            tvStatusView.setTextColor(requireContext().getColor(R.color.gray_text))
-            tvStatusView.setBackgroundResource(R.drawable.bg_rect_rounded_light_gray)
+            binding.tvStatusView.text = getString(R.string.label_status_inactive)
+            binding.tvStatusView.setTextColor(requireContext().getColor(R.color.text_secondary))
+            binding.tvStatusView.setBackgroundResource(R.drawable.bg_rect_rounded_light_gray)
         }
 
-        tvNameView.text = tenant.tenantName
-        tvDisplayNameView.text = tenant.displayName
-        tvDomainView.text = tenant.domain ?: "-"
-        tvCreatedAt.text = formatDate(tenant.createdAt)
-        tvUpdatedAt.text = formatDate(tenant.updatedAt)
+        binding.tvNameView.text = tenant.tenantName
+        binding.tvDisplayNameView.text = tenant.displayName
+        binding.tvDomainView.text = tenant.domain ?: "-"
+        binding.tvCreatedAt.text = formatDate(tenant.createdAt)
+        binding.tvUpdatedAt.text = formatDate(tenant.updatedAt)
     }
 
-    // ── 모드 전환 ──────────────────────────────────────────
     private fun enterEditMode() {
         val tenant = currentTenant ?: return
         isEditMode = true
-        btnAction.text = "저장"
+        binding.btnAction.text = getString(R.string.label_action_save)
 
-        // 보기 → 숨김 (상태는 변경할 수 없으므로 tvStatusView는 숨기지 않고 그대로 표시합니다)
-        tvNameView.visibility = View.GONE
-        tvDisplayNameView.visibility = View.GONE
-        tvDomainView.visibility = View.GONE
+        binding.tvNameView.visibility = View.GONE
+        binding.tvDisplayNameView.visibility = View.GONE
+        binding.tvDomainView.visibility = View.GONE
 
-        // 편집 필드 → 표시 및 현재 값 세팅
-        etNameEdit.setText(tenant.tenantName)
-        tilName.visibility = View.VISIBLE
+        binding.etNameEdit.setText(tenant.tenantName)
+        binding.tilName.visibility = View.VISIBLE
 
-        etDisplayNameEdit.setText(tenant.displayName)
-        tilDisplayName.visibility = View.VISIBLE
+        binding.etDisplayNameEdit.setText(tenant.displayName)
+        binding.tilDisplayName.visibility = View.VISIBLE
 
-        etDomainEdit.setText(tenant.domain ?: "")
-        tilDomain.visibility = View.VISIBLE
+        binding.etDomainEdit.setText(tenant.domain ?: "")
+        binding.tilDomain.visibility = View.VISIBLE
     }
 
-    // ── 상태 표시 ──────────────────────────────────────────
     private fun showLoading() {
-        progressBar.visibility = View.VISIBLE
-        llContent.visibility = View.GONE
-        llError.visibility = View.GONE
+        binding.progressBar.visibility = View.VISIBLE
+        binding.llContent.visibility = View.GONE
+        binding.llError.visibility = View.GONE
     }
 
     private fun showContent() {
-        progressBar.visibility = View.GONE
-        llContent.visibility = View.VISIBLE
-        llError.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
+        binding.llContent.visibility = View.VISIBLE
+        binding.llError.visibility = View.GONE
     }
 
     private fun showError() {
-        progressBar.visibility = View.GONE
-        llContent.visibility = View.GONE
-        llError.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.GONE
+        binding.llContent.visibility = View.GONE
+        binding.llError.visibility = View.VISIBLE
     }
 
-    // ── 날짜 포맷 ──────────────────────────────────────────
     private fun formatDate(raw: String?): String {
         if (raw.isNullOrBlank()) return "-"
         return try {
@@ -253,18 +190,5 @@ class TenantDetailFragment : BaseFragment(R.layout.fragment_super_admin_tenant_d
         } catch (e: Exception) {
             raw
         }
-    }
-
-    // ── Toast ──────────────────────────────────────────────
-    @Suppress("DEPRECATION")
-    private fun showTopToast(message: String) {
-        val layout = requireActivity().layoutInflater
-            .inflate(R.layout.view_common_toast_top, null)
-        layout.findViewById<TextView>(R.id.tv_toast_message).text = message
-        val toast = Toast(requireContext())
-        toast.setGravity(android.view.Gravity.TOP or android.view.Gravity.CENTER_HORIZONTAL, 0, 100)
-        toast.duration = Toast.LENGTH_SHORT
-        toast.view = layout
-        toast.show()
     }
 }

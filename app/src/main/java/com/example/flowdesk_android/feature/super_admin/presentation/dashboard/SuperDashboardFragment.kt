@@ -4,9 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -14,6 +11,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.flowdesk_android.R
+import com.example.flowdesk_android.core.extension.showTopToast
+import com.example.flowdesk_android.databinding.FragmentSuperAdminDashboardBinding
+import com.example.flowdesk_android.databinding.ItemSuperAdminTenantStatCardBinding
 import com.example.flowdesk_android.feature.super_admin.domain.model.DashboardStats
 import com.example.flowdesk_android.feature.super_admin.domain.model.MonthlyTrends
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,70 +24,25 @@ class SuperDashboardFragment : Fragment() {
 
     private val viewModel: SuperDashboardViewModel by viewModels()
 
-    // ── Overview
-    private lateinit var tvTotalTenants: TextView
-    private lateinit var tvActiveTenants: TextView
-    private lateinit var tvTotalUsers: TextView
-    private lateinit var tvActiveUsers: TextView
-    private lateinit var tvTotalCounsels: TextView
-    private lateinit var tvTotalPosts: TextView
-    private lateinit var tvTotalRoles: TextView
-    private lateinit var tvTotalPermissions: TextView
-
-    // ── Today
-    private lateinit var tvNewUsers: TextView
-    private lateinit var tvNewCounsels: TextView
-    private lateinit var tvNewPosts: TextView
-    private lateinit var tvActiveSessions: TextView
-
-    // ── Security
-    private lateinit var tvBlockedIps: TextView
-    private lateinit var tvBlockedHps: TextView
-    private lateinit var tvBlockedWords: TextView
-
-    // ── Chart
-    private lateinit var lineChart: com.github.mikephil.charting.charts.LineChart
-
-    // ── Containers
-    private lateinit var llTenantStats: LinearLayout
-    private lateinit var progressBar: View
+    private var _binding: FragmentSuperAdminDashboardBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_super_admin_dashboard, container, false)
+    ): View {
+        _binding = FragmentSuperAdminDashboardBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        bindViews(view)
         observeState()
     }
 
-    private fun bindViews(view: View) {
-        tvTotalTenants     = view.findViewById(R.id.tv_total_tenants)
-        tvActiveTenants    = view.findViewById(R.id.tv_active_tenants_label)
-        tvTotalUsers       = view.findViewById(R.id.tv_total_users)
-        tvActiveUsers      = view.findViewById(R.id.tv_active_users_label)
-        tvTotalCounsels    = view.findViewById(R.id.tv_total_counsels)
-        tvTotalPosts       = view.findViewById(R.id.tv_total_posts)
-        tvTotalRoles       = view.findViewById(R.id.tv_total_roles)
-        tvTotalPermissions = view.findViewById(R.id.tv_total_permissions)
-
-        tvNewUsers       = view.findViewById(R.id.tv_new_users)
-        tvNewCounsels    = view.findViewById(R.id.tv_new_counsels)
-        tvNewPosts       = view.findViewById(R.id.tv_new_posts)
-        tvActiveSessions = view.findViewById(R.id.tv_active_sessions)
-
-        tvBlockedIps   = view.findViewById(R.id.tv_blocked_ips)
-        tvBlockedHps   = view.findViewById(R.id.tv_blocked_hps)
-        tvBlockedWords = view.findViewById(R.id.tv_blocked_words)
-
-        lineChart = view.findViewById(R.id.line_chart)
-
-        llTenantStats = view.findViewById(R.id.ll_tenant_stats)
-        progressBar   = view.findViewById(R.id.progress_bar)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun observeState() {
@@ -102,7 +57,7 @@ class SuperDashboardFragment : Fragment() {
                         }
                         is SuperDashboardUiState.Error -> {
                             showLoading(false)
-                            Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                            showTopToast(state.message)
                         }
                     }
                 }
@@ -111,60 +66,64 @@ class SuperDashboardFragment : Fragment() {
     }
 
     private fun showLoading(isLoading: Boolean) {
-        progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
     private fun bindData(data: DashboardStats) {
-        with(data.overview) {
-            tvTotalTenants.text     = totalTenants.toString()
-            tvActiveTenants.text    = "활성 $activeTenants"
-            tvTotalUsers.text       = totalUsers.toString()
-            tvActiveUsers.text      = "활성 $activeUsers"
-            tvTotalCounsels.text    = totalCounsels.toString()
-            tvTotalPosts.text       = totalPosts.toString()
-            tvTotalRoles.text       = totalRoles.toString()
-            tvTotalPermissions.text = totalPermissions.toString()
-        }
+        with(binding) {
+            with(data.overview) {
+                layoutOverview.tvTotalTenants.text     = totalTenants.toString()
+                layoutOverview.tvActiveTenantsLabel.text = getString(R.string.label_status_active_short, activeTenants.toString())
+                layoutOverview.tvTotalUsers.text       = totalUsers.toString()
+                layoutOverview.tvActiveUsersLabel.text  = getString(R.string.label_status_active_short, activeUsers.toString())
+                layoutOverview.tvTotalCounsels.text    = totalCounsels.toString()
+                layoutOverview.tvTotalPosts.text       = totalPosts.toString()
+                layoutOverview.tvTotalRoles.text       = totalRoles.toString()
+                layoutOverview.tvTotalPermissions.text = totalPermissions.toString()
+            }
 
-        with(data.today) {
-            tvNewUsers.text       = newUsers.toString()
-            tvNewCounsels.text    = newCounsels.toString()
-            tvNewPosts.text       = newPosts.toString()
-            tvActiveSessions.text = activeSessions.toString()
-        }
+            with(data.today) {
+                layoutToday.tvNewUsers.text       = newUsers.toString()
+                layoutToday.tvNewCounsels.text    = newCounsels.toString()
+                layoutToday.tvNewPosts.text       = newPosts.toString()
+                layoutToday.tvActiveSessions.text = activeSessions.toString()
+            }
 
-        with(data.security) {
-            tvBlockedIps.text   = totalBlockedIps.toString()
-            tvBlockedHps.text   = totalBlockedHps.toString()
-            tvBlockedWords.text = totalBlockedWords.toString()
+            with(data.security) {
+                layoutSecurity.tvBlockedIps.text   = totalBlockedIps.toString()
+                layoutSecurity.tvBlockedHps.text   = totalBlockedHps.toString()
+                layoutSecurity.tvBlockedWords.text = totalBlockedWords.toString()
+            }
         }
 
         renderLineChart(data.monthlyTrends)
 
-        llTenantStats.removeAllViews()
+        binding.llTenantStats.removeAllViews()
         data.tenantStats.forEach { tenant ->
-            val cardView = LayoutInflater.from(requireContext())
-                .inflate(R.layout.item_super_admin_tenant_stat_card, llTenantStats, false)
+            val cardBinding = ItemSuperAdminTenantStatCardBinding.inflate(
+                LayoutInflater.from(requireContext()),
+                binding.llTenantStats,
+                false
+            )
 
-            cardView.findViewById<TextView>(R.id.tv_tenant_name).text    = tenant.tenantName
-            cardView.findViewById<TextView>(R.id.tv_tenant_id).text      = tenant.tenantId.toString()
-            cardView.findViewById<TextView>(R.id.tv_tenant_session).text = tenant.activeSessionCount.toString()
-            cardView.findViewById<TextView>(R.id.tv_tenant_users).text   = tenant.userCount.toString()
-            cardView.findViewById<TextView>(R.id.tv_tenant_posts).text   = tenant.postCount.toString()
-            cardView.findViewById<TextView>(R.id.tv_tenant_roles).text   = tenant.roleCount.toString()
+            cardBinding.tvTenantName.text    = tenant.tenantName
+            cardBinding.tvTenantId.text      = tenant.tenantId.toString()
+            cardBinding.tvTenantSession.text = tenant.activeSessionCount.toString()
+            cardBinding.tvTenantUsers.text   = tenant.userCount.toString()
+            cardBinding.tvTenantPosts.text   = tenant.postCount.toString()
+            cardBinding.tvTenantRoles.text   = tenant.roleCount.toString()
 
-            val tvStatus = cardView.findViewById<TextView>(R.id.tv_tenant_status)
             if (tenant.isActive) {
-                tvStatus.text = "활성"
-                tvStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.green_accent))
-                tvStatus.setBackgroundResource(R.drawable.bg_tag_light_green)
+                cardBinding.tvTenantStatus.text = getString(R.string.label_status_active)
+                cardBinding.tvTenantStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.color_success))
+                cardBinding.tvTenantStatus.setBackgroundResource(R.drawable.bg_tag_light_green)
             } else {
-                tvStatus.text = "비활성"
-                tvStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_text))
-                tvStatus.setBackgroundResource(R.drawable.bg_rect_rounded_light_gray)
+                cardBinding.tvTenantStatus.text = getString(R.string.label_status_inactive)
+                cardBinding.tvTenantStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary))
+                cardBinding.tvTenantStatus.setBackgroundResource(R.drawable.bg_rect_rounded_light_gray)
             }
 
-            llTenantStats.addView(cardView)
+            binding.llTenantStats.addView(cardBinding.root)
         }
     }
 
@@ -174,20 +133,36 @@ class SuperDashboardFragment : Fragment() {
         val last6Tenants  = trends.tenantRegistrations.takeLast(6)
 
         val xLabels = last6Users.map { 
-            it.month.substringAfter("-").trimStart('0') + "월"
+            val monthVal = it.month.substringAfter("-").trimStart('0')
+            getString(R.string.chart_label_month_suffix, monthVal)
         }
 
         val userEntries    = last6Users.mapIndexed    { i, e -> com.github.mikephil.charting.data.Entry(i.toFloat(), e.count.toFloat()) }
         val counselEntries = last6Counsels.mapIndexed { i, e -> com.github.mikephil.charting.data.Entry(i.toFloat(), e.count.toFloat()) }
         val tenantEntries  = last6Tenants.mapIndexed  { i, e -> com.github.mikephil.charting.data.Entry(i.toFloat(), e.count.toFloat()) }
 
-        val setUsers = createChartDataSet(userEntries, "사용자", ContextCompat.getColor(requireContext(), R.color.green_accent), R.drawable.bg_chart_gradient_green)
-        val setCounsels = createChartDataSet(counselEntries, "상담", ContextCompat.getColor(requireContext(), R.color.login_blue), R.drawable.bg_chart_gradient_blue)
-        val setTenants = createChartDataSet(tenantEntries, "테넌트", ContextCompat.getColor(requireContext(), R.color.red), R.drawable.bg_chart_gradient_red)
+        val setUsers = createChartDataSet(
+            userEntries,
+            getString(R.string.chart_label_user),
+            ContextCompat.getColor(requireContext(), R.color.color_success_active),
+            R.drawable.bg_chart_gradient_green
+        )
+        val setCounsels = createChartDataSet(
+            counselEntries,
+            getString(R.string.chart_label_counsel),
+            ContextCompat.getColor(requireContext(), R.color.brand_primary),
+            R.drawable.bg_chart_gradient_blue
+        )
+        val setTenants = createChartDataSet(
+            tenantEntries,
+            getString(R.string.chart_label_tenant),
+            ContextCompat.getColor(requireContext(), R.color.color_error),
+            R.drawable.bg_chart_gradient_red
+        )
 
-        lineChart.data = com.github.mikephil.charting.data.LineData(setCounsels, setUsers, setTenants)
+        binding.layoutChart.lineChart.data = com.github.mikephil.charting.data.LineData(setCounsels, setUsers, setTenants)
         
-        with(lineChart) {
+        with(binding.layoutChart.lineChart) {
             description.isEnabled = false
             legend.isEnabled = false
             
@@ -196,11 +171,11 @@ class SuperDashboardFragment : Fragment() {
                 position = com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM
                 setDrawGridLines(true)
                 enableGridDashedLine(10f, 10f, 0f)
-                gridColor = 0xFFE5E7EB.toInt()
-                textColor = ContextCompat.getColor(requireContext(), R.color.gray_text)
+                gridColor = ContextCompat.getColor(requireContext(), R.color.bg_divider)
+                textColor = ContextCompat.getColor(requireContext(), R.color.text_secondary)
                 textSize = 9f
                 setDrawAxisLine(true)
-                axisLineColor = 0xFFE5E7EB.toInt()
+                axisLineColor = ContextCompat.getColor(requireContext(), R.color.bg_divider)
                 granularity = 1f
                 setLabelCount(6, true)
                 valueFormatter = object : com.github.mikephil.charting.formatter.ValueFormatter() {
@@ -213,11 +188,11 @@ class SuperDashboardFragment : Fragment() {
 
             axisLeft.apply {
                 isEnabled = true
-                textColor = ContextCompat.getColor(requireContext(), R.color.gray_text)
+                textColor = ContextCompat.getColor(requireContext(), R.color.text_secondary)
                 textSize = 9f
                 setDrawGridLines(true)
                 enableGridDashedLine(10f, 10f, 0f)
-                gridColor = 0xFFE5E7EB.toInt()
+                gridColor = ContextCompat.getColor(requireContext(), R.color.bg_divider)
                 setDrawAxisLine(false)
                 axisMinimum = 0f
                 setLabelCount(5, true)

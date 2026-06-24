@@ -8,9 +8,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,11 +41,23 @@ class ActionsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<ActionListUiState>(ActionListUiState.Loading)
     val uiState: StateFlow<ActionListUiState> = _uiState.asStateFlow()
 
-    private val _filteredActions = MutableStateFlow<List<Action>>(emptyList())
-    val filteredActions: StateFlow<List<Action>> = _filteredActions.asStateFlow()
+    private val _allActions = MutableStateFlow<List<Action>>(emptyList())
+    private val _searchQuery = MutableStateFlow("")
 
-    private var allActions: List<Action> = emptyList()
-    private var currentSearchQuery = ""
+    val filteredActions: StateFlow<List<Action>> = combine(_allActions, _searchQuery) { actions, query ->
+        if (query.isBlank()) {
+            actions
+        } else {
+            actions.filter {
+                it.actionName.contains(query, ignoreCase = true) ||
+                it.displayName.contains(query, ignoreCase = true)
+            }
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
     private val _event = Channel<ActionListEvent>()
     val event: Flow<ActionListEvent> = _event.receiveAsFlow()
@@ -54,29 +69,16 @@ class ActionsViewModel @Inject constructor(
             _uiState.value = ActionListUiState.Loading
             superRepository.getActions()
                 .onSuccess { actions ->
-                    allActions = actions
-                    applyFilter()
+                    _allActions.value = actions
                     _uiState.value = if (actions.isEmpty()) ActionListUiState.Empty
                                      else ActionListUiState.Success(actions)
                 }
-                .onFailure { _uiState.value = ActionListUiState.Error(it.message ?: "오류 발생") }
+                .onFailure { _uiState.value = ActionListUiState.Error(it.message ?: "조회 실패") }
         }
     }
 
     fun search(query: String) {
-        currentSearchQuery = query
-        applyFilter()
-    }
-
-    private fun applyFilter() {
-        _filteredActions.value = if (currentSearchQuery.isBlank()) {
-            allActions
-        } else {
-            allActions.filter {
-                it.actionName.contains(currentSearchQuery, ignoreCase = true) ||
-                it.displayName.contains(currentSearchQuery, ignoreCase = true)
-            }
-        }
+        _searchQuery.value = query
     }
 
     fun createAction(actionName: String, displayName: String) {
@@ -86,7 +88,7 @@ class ActionsViewModel @Inject constructor(
                     _event.send(ActionListEvent.ActionCreated)
                     fetchActions()
                 }
-                .onFailure { _event.send(ActionListEvent.Error(it.message ?: "액션 생성 실패")) }
+                .onFailure { _event.send(ActionListEvent.Error(it.message ?: "생성 실패")) }
         }
     }
 
@@ -108,7 +110,7 @@ class ActionsViewModel @Inject constructor(
                     _event.send(ActionListEvent.ActionDeleted)
                     fetchActions()
                 }
-                .onFailure { _event.send(ActionListEvent.Error(it.message ?: "액션 삭제 실패")) }
+                .onFailure { _event.send(ActionListEvent.Error(it.message ?: "삭제 실패")) }
         }
     }
 }

@@ -8,9 +8,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,12 +41,39 @@ class PagesViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<PageListUiState>(PageListUiState.Loading)
     val uiState: StateFlow<PageListUiState> = _uiState.asStateFlow()
 
-    private val _filteredPages = MutableStateFlow<List<Page>>(emptyList())
-    val filteredPages: StateFlow<List<Page>> = _filteredPages.asStateFlow()
+    private val _allPages = MutableStateFlow<List<Page>>(emptyList())
+    private val _searchQuery = MutableStateFlow("")
+    
+    private val _expandedParents = MutableStateFlow<Set<Int>>(emptySet())
+    val expandedParents: StateFlow<Set<Int>> = _expandedParents.asStateFlow()
 
-    private var allPages: List<Page> = emptyList()
-    val expandedParents = mutableSetOf<Int>()
-    private var currentSearchQuery = ""
+    val filteredPages: StateFlow<List<Page>> = combine(_allPages, _searchQuery, _expandedParents) { pages, query, expanded ->
+        if (query.isNotBlank()) {
+            pages.filter {
+                it.pageName.contains(query, ignoreCase = true) ||
+                it.displayName.contains(query, ignoreCase = true) ||
+                it.path.contains(query, ignoreCase = true)
+            }
+        } else {
+            val result = mutableListOf<Page>()
+            val roots = pages.filter { it.parentId == null }.sortedBy { it.sortOrder }
+            val childrenMap = pages.filter { it.parentId != null }.groupBy { it.parentId }
+
+            for (root in roots) {
+                result.add(root)
+                if (expanded.contains(root.pageId)) {
+                    childrenMap[root.pageId]?.sortedBy { it.sortOrder }?.let { children ->
+                        result.addAll(children)
+                    }
+                }
+            }
+            result
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
     private val _event = Channel<PageListEvent>()
     val event: Flow<PageListEvent> = _event.receiveAsFlow()
@@ -55,50 +85,26 @@ class PagesViewModel @Inject constructor(
             _uiState.value = PageListUiState.Loading
             superRepository.getPages()
                 .onSuccess { pages ->
-                    allPages = pages
-                    updateFilteredPages()
+                    _allPages.value = pages
                     _uiState.value = if (pages.isEmpty()) PageListUiState.Empty
                                      else PageListUiState.Success(pages)
                 }
-                .onFailure { _uiState.value = PageListUiState.Error(it.message ?: "오류 발생") }
+                .onFailure { _uiState.value = PageListUiState.Error(it.message ?: "조회 실패") }
         }
     }
 
     fun search(query: String) {
-        currentSearchQuery = query
-        updateFilteredPages()
+        _searchQuery.value = query
     }
 
     fun toggleParent(pageId: Int) {
-        if (expandedParents.contains(pageId)) expandedParents.remove(pageId)
-        else expandedParents.add(pageId)
-        updateFilteredPages()
-    }
-
-    private fun updateFilteredPages() {
-        if (currentSearchQuery.isNotBlank()) {
-            // 검색 시에는 평면 리스트로 일치하는 항목만 표시
-            _filteredPages.value = allPages.filter {
-                it.pageName.contains(currentSearchQuery, ignoreCase = true) ||
-                it.displayName.contains(currentSearchQuery, ignoreCase = true) ||
-                it.path.contains(currentSearchQuery, ignoreCase = true)
-            }
+        val current = _expandedParents.value.toMutableSet()
+        if (current.contains(pageId)) {
+            current.remove(pageId)
         } else {
-            // 기본 계층 뷰: 부모 페이지 + 펼쳐진 부모의 자식 페이지
-            val result = mutableListOf<Page>()
-            val roots = allPages.filter { it.parentId == null }.sortedBy { it.sortOrder }
-            val childrenMap = allPages.filter { it.parentId != null }.groupBy { it.parentId }
-
-            for (root in roots) {
-                result.add(root)
-                if (expandedParents.contains(root.pageId)) {
-                    childrenMap[root.pageId]?.sortedBy { it.sortOrder }?.let { children ->
-                        result.addAll(children)
-                    }
-                }
-            }
-            _filteredPages.value = result
+            current.add(pageId)
         }
+        _expandedParents.value = current
     }
 
     fun createPage(
@@ -115,13 +121,22 @@ class PagesViewModel @Inject constructor(
                     _event.send(PageListEvent.PageCreated)
                     fetchPages()
                 }
-                .onFailure { _event.send(PageListEvent.Error(it.message ?: "페이지 생성 실패")) }
+                .onFailure { _event.send(PageListEvent.Error(it.message ?: "생성 실패")) }
         }
     }
 
     fun updatePageStatus(page: Page, isActive: Boolean) {
         viewModelScope.launch {
-            superRepository.updatePage(pageId = page.pageId, pageName = null, path = null, displayName = null, description = null, parentId = null, sortOrder = null, isActive = if (isActive) 1 else 0)
+            superRepository.updatePage(
+                pageId = page.pageId,
+                pageName = null,
+                path = null,
+                displayName = null,
+                description = null,
+                parentId = null,
+                sortOrder = null,
+                isActive = if (isActive) 1 else 0
+            )
                 .onSuccess {
                     _event.send(PageListEvent.PageUpdated)
                     fetchPages()
@@ -137,7 +152,7 @@ class PagesViewModel @Inject constructor(
                     _event.send(PageListEvent.PageDeleted)
                     fetchPages()
                 }
-                .onFailure { _event.send(PageListEvent.Error(it.message ?: "페이지 삭제 실패")) }
+                .onFailure { _event.send(PageListEvent.Error(it.message ?: "삭제 실패")) }
         }
     }
 }
