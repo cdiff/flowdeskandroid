@@ -188,8 +188,8 @@
             android:layout_height="36dp"
             android:orientation="horizontal"
             android:background="@android:color/transparent"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp">
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp">
 
             <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
                 android:text="일" android:textColor="#EF4444" android:textStyle="bold" android:gravity="center" android:textSize="12sp" />
@@ -212,6 +212,7 @@
             android:id="@+id/vp_calendar"
             android:layout_width="match_parent"
             android:layout_height="340dp"
+            android:layout_marginHorizontal="8dp"
             android:background="@android:color/transparent" />
 
         <!-- ── 선택된 날짜 예약 패널 (하단) ── -->

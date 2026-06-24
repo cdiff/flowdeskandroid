@@ -28,9 +28,9 @@ class IosSwitch @JvmOverloads constructor(
 
     // Colors
     private val colorOn = Color.parseColor("#34C759") // iOS Green
-    private val colorOff = Color.parseColor("#E9E9EB") // iOS Light Gray
+    private val colorOff = Color.parseColor("#D8DCE0")
     private val colorThumb = Color.WHITE
-    private val colorThumbStroke = Color.parseColor("#1A000000") // Very light transparent black for stroke/shadow
+    private val colorThumbStroke = Color.parseColor("#D8DCE0") // Match off-track color for smooth border
 
     // Paints
     private val paintTrack = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -41,7 +41,7 @@ class IosSwitch @JvmOverloads constructor(
     }
     private val paintThumbStroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        strokeWidth = dpToPx(0.5f)
+        strokeWidth = dpToPx(1.5f)
         color = colorThumbStroke
     }
 
@@ -97,8 +97,8 @@ class IosSwitch @JvmOverloads constructor(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         // iOS switch is typically 48dp x 28dp.
-        val defaultWidth = dpToPx(48f).toInt()
-        val defaultHeight = dpToPx(28f).toInt()
+        val defaultWidth = dpToPx(40f).toInt()
+        val defaultHeight = dpToPx(20f).toInt()
 
         val measureWidth = measureDimension(defaultWidth, widthMeasureSpec)
         val measureHeight = measureDimension(defaultHeight, heightMeasureSpec)

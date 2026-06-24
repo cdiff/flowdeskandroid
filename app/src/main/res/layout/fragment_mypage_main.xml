@@ -5,7 +5,7 @@
 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.ui.mypage.MyPageFragment">
+    tools:context=".feature.mypage.presentation.main.MyPageFragment">
 
     <ScrollView
         android:layout_width="0dp"

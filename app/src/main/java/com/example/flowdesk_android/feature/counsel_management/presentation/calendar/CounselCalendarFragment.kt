@@ -542,7 +542,7 @@ class CounselCalendarFragment : Fragment() {
                             4.dpToPx(itemView.context)
                         )
                         layoutParams = params
-                        setBackgroundResource(R.drawable.bg_reservation_indicator)
+                        setBackgroundResource(R.drawable.bg_calendar_reservation_bar)
                     }
                     layoutIndicators.addView(dot)
                 }

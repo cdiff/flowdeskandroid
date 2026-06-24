@@ -39,19 +39,14 @@
 
     </FrameLayout>
 
-    <!-- 남는 세로 공간을 채워서 하단 바를 최하단으로 밀어냄 -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-    <!-- 예약 인디케이터 바 (하단) -->
+    <!-- 예약 인디케이터 바 (날짜 숫자 바로 약간 밑에 오도록 위치) -->
     <LinearLayout
         android:id="@+id/layout_reservations"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
         android:orientation="horizontal"
-        android:gravity="bottom" />
+        android:gravity="center" />
 
     <!-- 숨겨진 badge (기존 코드 호환용) -->
     <TextView

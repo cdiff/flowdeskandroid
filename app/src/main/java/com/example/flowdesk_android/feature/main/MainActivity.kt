@@ -14,11 +14,8 @@ import androidx.navigation.fragment.NavHostFragment
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.feature.auth.domain.model.Menu
 import com.example.flowdesk_android.databinding.ActivityMainBinding
-import com.example.flowdesk_android.feature.mypage.presentation.main.MyPageUiState
-import com.example.flowdesk_android.feature.mypage.presentation.main.MyPageViewModel
 import com.example.flowdesk_android.feature.auth.presentation.dashboard.DashboardViewModel
 import com.example.flowdesk_android.feature.auth.presentation.dashboard.DashboardState
-import com.example.flowdesk_android.feature.auth.presentation.dashboard.DashboardEffect
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
