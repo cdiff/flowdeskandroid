@@ -26,6 +26,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.flowdesk_android.R
+import com.example.flowdesk_android.databinding.FragmentCounselCalendarBinding
+import com.example.flowdesk_android.databinding.ItemCalendarMonthPageBinding
+import com.example.flowdesk_android.databinding.ItemCalendarGridDayBinding
+import com.example.flowdesk_android.databinding.ItemCalendarReservationCardBinding
 import com.example.flowdesk_android.feature.counsel_management.domain.model.CounselItem
 import com.example.flowdesk_android.feature.counsel_management.domain.model.EmployeeStat
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,24 +49,9 @@ class CounselCalendarFragment : Fragment() {
     private val startMonth = YearMonth.now().minusMonths(100)
     private val endMonth = YearMonth.now().plusMonths(100)
 
-    // Views
-    private lateinit var btnPrevMonth: ImageButton
-    private lateinit var tvSelectedMonth: TextView
-    private lateinit var btnNextMonth: ImageButton
-    private lateinit var spinnerManager: View
-    private lateinit var tvManagerSelected: TextView
-    private lateinit var tvMonthlyCount: TextView
-    private lateinit var vpCalendar: ViewPager2
-    private lateinit var progressBar: ProgressBar
-
-    // 하단 패널 Views
-    private lateinit var llSelectedDayPanel: LinearLayout
-    private lateinit var llSelectedDateHeader: LinearLayout
-    private lateinit var tvSelectedDate: TextView
-    private lateinit var tvSelectedCount: TextView
-    private lateinit var llNoSelection: LinearLayout
-    private lateinit var llEmptyReservations: LinearLayout
-    private lateinit var rvDayReservations: RecyclerView
+    // Binding
+    private var _binding: FragmentCounselCalendarBinding? = null
+    private val binding get() = _binding!!
 
     private lateinit var pagerAdapter: MonthPagerAdapter
     private lateinit var dayReservationAdapter: DayReservationAdapter
@@ -77,49 +66,31 @@ class CounselCalendarFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_counsel_calendar, container, false)
+    ): View {
+        _binding = FragmentCounselCalendarBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        bindViews(view)
         setupViewPager()
         setupDayReservationList()
         setupListeners()
         observeState()
     }
 
-    private fun bindViews(view: View) {
-        btnPrevMonth = view.findViewById(R.id.btn_prev_month)
-        tvSelectedMonth = view.findViewById(R.id.tv_selected_month)
-        btnNextMonth = view.findViewById(R.id.btn_next_month)
-        spinnerManager = view.findViewById(R.id.spinner_manager)
-        tvManagerSelected = view.findViewById(R.id.tv_manager_selected)
-        tvMonthlyCount = view.findViewById(R.id.tv_monthly_count)
-        vpCalendar = view.findViewById(R.id.vp_calendar)
-        progressBar = view.findViewById(R.id.progress_bar)
-        llSelectedDayPanel = view.findViewById(R.id.ll_selected_day_panel)
-        llSelectedDateHeader = view.findViewById(R.id.ll_selected_date_header)
-        tvSelectedDate = view.findViewById(R.id.tv_selected_date)
-        tvSelectedCount = view.findViewById(R.id.tv_selected_count)
-        llNoSelection = view.findViewById(R.id.ll_no_selection)
-        llEmptyReservations = view.findViewById(R.id.ll_empty_reservations)
-        rvDayReservations = view.findViewById(R.id.rv_day_reservations)
-    }
-
     private fun setupViewPager() {
         pagerAdapter = MonthPagerAdapter(startMonth, endMonth) { date ->
             onDateSelected(date)
         }
-        vpCalendar.adapter = pagerAdapter
+        binding.vpCalendar.adapter = pagerAdapter
 
         // 현재 달로 초기 스크롤 세팅
         val initialPosition = pagerAdapter.getPosition(YearMonth.now())
-        vpCalendar.setCurrentItem(initialPosition, false)
+        binding.vpCalendar.setCurrentItem(initialPosition, false)
 
         // 가로 스와이프 페이지 변경 콜백
-        vpCalendar.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+        binding.vpCalendar.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 val targetMonth = pagerAdapter.getYearMonth(position)
                 if (viewModel.selectedMonth.value != targetMonth) {
@@ -129,7 +100,7 @@ class CounselCalendarFragment : Fragment() {
         })
 
         // NestedScrollView 터치 간섭 방지: 가로 스와이프 우선 처리 적용
-        val child = vpCalendar.getChildAt(0)
+        val child = binding.vpCalendar.getChildAt(0)
         if (child is RecyclerView) {
             child.addOnItemTouchListener(object : RecyclerView.SimpleOnItemTouchListener() {
                 private var startX = 0f
@@ -167,8 +138,8 @@ class CounselCalendarFragment : Fragment() {
             }
             findNavController().navigate(R.id.counselDetailFragment, bundle)
         }
-        rvDayReservations.layoutManager = LinearLayoutManager(requireContext())
-        rvDayReservations.adapter = dayReservationAdapter
+        binding.rvDayReservations.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvDayReservations.adapter = dayReservationAdapter
     }
 
     private fun onDateSelected(date: LocalDate) {
@@ -176,33 +147,33 @@ class CounselCalendarFragment : Fragment() {
         pagerAdapter.activeAdapters.values.forEach { it.setSelectedDate(date) }
 
         val dayName = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.KOREAN)
-        tvSelectedDate.text = "${date.monthValue}월 ${date.dayOfMonth}일 $dayName"
-        llSelectedDateHeader.visibility = View.VISIBLE
+        binding.tvSelectedDate.text = getString(R.string.counsel_calendar_date_format, date.monthValue, date.dayOfMonth, dayName)
+        binding.llSelectedDateHeader.visibility = View.VISIBLE
 
         val reservations = allReservations[date] ?: emptyList()
-        tvSelectedCount.text = "${reservations.size}건"
+        binding.tvSelectedCount.text = getString(R.string.counsel_count_suffix, reservations.size)
 
         if (reservations.isEmpty()) {
-            rvDayReservations.visibility = View.GONE
-            llNoSelection.visibility = View.GONE
-            llEmptyReservations.visibility = View.VISIBLE
+            binding.rvDayReservations.visibility = View.GONE
+            binding.llNoSelection.visibility = View.GONE
+            binding.llEmptyReservations.visibility = View.VISIBLE
         } else {
-            llNoSelection.visibility = View.GONE
-            llEmptyReservations.visibility = View.GONE
-            rvDayReservations.visibility = View.VISIBLE
+            binding.llNoSelection.visibility = View.GONE
+            binding.llEmptyReservations.visibility = View.GONE
+            binding.rvDayReservations.visibility = View.VISIBLE
             dayReservationAdapter.updateList(reservations)
         }
     }
 
     private fun setupListeners() {
-        btnPrevMonth.setOnClickListener {
-            if (vpCalendar.currentItem > 0) {
-                vpCalendar.currentItem = vpCalendar.currentItem - 1
+        binding.btnPrevMonth.setOnClickListener {
+            if (binding.vpCalendar.currentItem > 0) {
+                binding.vpCalendar.currentItem = binding.vpCalendar.currentItem - 1
             }
         }
-        btnNextMonth.setOnClickListener {
-            if (vpCalendar.currentItem < pagerAdapter.itemCount - 1) {
-                vpCalendar.currentItem = vpCalendar.currentItem + 1
+        binding.btnNextMonth.setOnClickListener {
+            if (binding.vpCalendar.currentItem < pagerAdapter.itemCount - 1) {
+                binding.vpCalendar.currentItem = binding.vpCalendar.currentItem + 1
             }
         }
     }
@@ -213,20 +184,20 @@ class CounselCalendarFragment : Fragment() {
 
                 launch {
                     viewModel.selectedMonth.collect { month ->
-                        tvSelectedMonth.text = "${month.year}년 ${month.monthValue}월"
+                        binding.tvSelectedMonth.text = getString(R.string.counsel_calendar_month_format, month.year, month.monthValue)
                         
-                        val currentMonth = pagerAdapter.getYearMonth(vpCalendar.currentItem)
+                        val currentMonth = pagerAdapter.getYearMonth(binding.vpCalendar.currentItem)
                         if (currentMonth != month) {
                             val targetPosition = pagerAdapter.getPosition(month)
-                            vpCalendar.setCurrentItem(targetPosition, false)
+                            binding.vpCalendar.setCurrentItem(targetPosition, false)
                         }
 
                         selectedDate = null
                         pagerAdapter.activeAdapters.values.forEach { it.setSelectedDate(null) }
-                        llSelectedDateHeader.visibility = View.GONE
-                        llNoSelection.visibility = View.VISIBLE
-                        llEmptyReservations.visibility = View.GONE
-                        rvDayReservations.visibility = View.GONE
+                        binding.llSelectedDateHeader.visibility = View.GONE
+                        binding.llNoSelection.visibility = View.VISIBLE
+                        binding.llEmptyReservations.visibility = View.GONE
+                        binding.rvDayReservations.visibility = View.GONE
                     }
                 }
 
@@ -239,7 +210,7 @@ class CounselCalendarFragment : Fragment() {
 
                 launch {
                     viewModel.monthlyReservationCount.collect { count ->
-                        tvMonthlyCount.text = "이번 달 예약: ${count}건"
+                        binding.tvMonthlyCount.text = getString(R.string.counsel_label_monthly_reservation_count, count)
                     }
                 }
 
@@ -247,19 +218,19 @@ class CounselCalendarFragment : Fragment() {
                     viewModel.uiState.collect { state ->
                         when (state) {
                             is CalendarUiState.Loading -> {
-                                progressBar.visibility = View.VISIBLE
-                                vpCalendar.alpha = 0.5f
+                                binding.progressBar.visibility = View.VISIBLE
+                                binding.vpCalendar.alpha = 0.5f
                             }
                             is CalendarUiState.Success -> {
-                                progressBar.visibility = View.GONE
-                                vpCalendar.alpha = 1.0f
+                                binding.progressBar.visibility = View.GONE
+                                binding.vpCalendar.alpha = 1.0f
                                 allReservations = state.reservations
                                 pagerAdapter.activeAdapters.values.forEach { it.updateReservations(state.reservations) }
                                 selectedDate?.let { onDateSelected(it) }
                             }
                             is CalendarUiState.Error -> {
-                                progressBar.visibility = View.GONE
-                                vpCalendar.alpha = 1.0f
+                                binding.progressBar.visibility = View.GONE
+                                binding.vpCalendar.alpha = 1.0f
                                 Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
                             }
                         }
@@ -267,6 +238,12 @@ class CounselCalendarFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.vpCalendar.adapter = null
+        _binding = null
     }
 
     private fun generateCalendarDays(month: YearMonth): List<CalendarDay> {
@@ -300,18 +277,18 @@ class CounselCalendarFragment : Fragment() {
         val hasUnassigned = employeeList.any { it.empSeq == 0 }
         val list = mutableListOf<EmployeeStat>()
         if (!hasUnassigned) {
-            list.add(EmployeeStat(empSeq = 0, empName = "미배정", count = 0))
+            list.add(EmployeeStat(empSeq = 0, empName = getString(R.string.counsel_label_unassigned), count = 0))
         }
         list.addAll(employeeList.map {
             if (it.empSeq == 0 || it.empName.isBlank()) {
-                it.copy(empName = "미배정")
+                it.copy(empName = getString(R.string.counsel_label_unassigned))
             } else {
                 it
             }
         })
         displayEmployeeList = list.distinctBy { it.empSeq }
 
-        val labels = mutableListOf("모든 담당자") + displayEmployeeList.map { it.empName }
+        val labels = mutableListOf(getString(R.string.counsel_label_all_managers)) + displayEmployeeList.map { it.empName }
 
         val selectedEmpSeq = viewModel.selectedEmpSeq.value
         val defaultIdx = if (selectedEmpSeq == null) 0 else {
@@ -319,9 +296,9 @@ class CounselCalendarFragment : Fragment() {
             if (idx >= 0) idx + 1 else 0
         }
         selectedManagerIndex = defaultIdx
-        tvManagerSelected.text = labels.getOrNull(defaultIdx) ?: "모든 담당자"
+        binding.tvManagerSelected.text = labels.getOrNull(defaultIdx) ?: getString(R.string.counsel_label_all_managers)
 
-        spinnerManager.setOnClickListener {
+        binding.spinnerManager.setOnClickListener {
             showManagerDropdown(labels)
         }
     }
@@ -344,10 +321,10 @@ class CounselCalendarFragment : Fragment() {
                 val isSelected = position == selectedManagerIndex
                 layoutRoot.isSelected = isSelected
                 if (isSelected) {
-                    tvText.setTextColor(Color.parseColor("#1D4ED8"))
+                    tvText.setTextColor(androidx.core.content.ContextCompat.getColor(context, R.color.counsel_dropdown_selected_text))
                     tvText.setTypeface(null, android.graphics.Typeface.BOLD)
                 } else {
-                    tvText.setTextColor(Color.parseColor("#475569"))
+                    tvText.setTextColor(androidx.core.content.ContextCompat.getColor(context, R.color.counsel_dropdown_unselected_text))
                     tvText.setTypeface(null, android.graphics.Typeface.NORMAL)
                 }
                 return view
@@ -355,9 +332,9 @@ class CounselCalendarFragment : Fragment() {
         }
 
         managerPopup?.dismiss()
-        managerPopup = spinnerManager.showCustomDropdown(adapter) { position ->
+        managerPopup = binding.spinnerManager.showCustomDropdown(adapter) { position ->
             selectedManagerIndex = position
-            tvManagerSelected.text = labels[position]
+            binding.tvManagerSelected.text = labels[position]
 
             val empSeq = if (position == 0) null else displayEmployeeList.getOrNull(position - 1)?.empSeq
             viewModel.selectEmpSeq(empSeq)
@@ -386,9 +363,10 @@ class CounselCalendarFragment : Fragment() {
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MonthViewHolder {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_calendar_month_page, parent, false)
-            return MonthViewHolder(view)
+            val binding = ItemCalendarMonthPageBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
+            )
+            return MonthViewHolder(binding)
         }
 
         override fun onBindViewHolder(holder: MonthViewHolder, position: Int) {
@@ -401,9 +379,9 @@ class CounselCalendarFragment : Fragment() {
             activeAdapters.remove(holder.bindingAdapterPosition)
         }
 
-        inner class MonthViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            private val rvGrid: RecyclerView = itemView.findViewById(R.id.rv_calendar_grid)
-
+        inner class MonthViewHolder(
+            private val binding: ItemCalendarMonthPageBinding
+        ) : RecyclerView.ViewHolder(binding.root) {
             fun bind(month: YearMonth) {
                 val days = generateCalendarDays(month)
                 val adapter = CalendarAdapter(days, allReservations) { date ->
@@ -412,9 +390,9 @@ class CounselCalendarFragment : Fragment() {
                 
                 selectedDate?.let { adapter.setSelectedDate(it) }
 
-                rvGrid.layoutManager = GridLayoutManager(itemView.context, 7)
-                rvGrid.adapter = adapter
-                rvGrid.itemAnimator = null
+                binding.rvCalendarGrid.layoutManager = GridLayoutManager(itemView.context, 7)
+                binding.rvCalendarGrid.adapter = adapter
+                binding.rvCalendarGrid.itemAnimator = null
 
                 activeAdapters[bindingAdapterPosition] = adapter
             }
@@ -462,8 +440,10 @@ class CounselCalendarFragment : Fragment() {
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DayViewHolder {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_calendar_grid_day, parent, false)
+            val binding = ItemCalendarGridDayBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
+            )
+            val view = binding.root
 
             val rowCount = if (days.size <= 35) 5 else 6
             val density = parent.context.resources.displayMetrics.density
@@ -482,7 +462,7 @@ class CounselCalendarFragment : Fragment() {
                     cellHeightPx
                 )
             }
-            return DayViewHolder(view)
+            return DayViewHolder(binding)
         }
 
         override fun onBindViewHolder(holder: DayViewHolder, position: Int) {
@@ -491,14 +471,13 @@ class CounselCalendarFragment : Fragment() {
 
         override fun getItemCount(): Int = days.size
 
-        inner class DayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            private val tvDayNumber: TextView = itemView.findViewById(R.id.tv_day_number)
-            private val layoutIndicators: LinearLayout = itemView.findViewById(R.id.layout_reservations)
-            private val layoutDayCell: View = itemView.findViewById(R.id.layout_day_cell)
+        inner class DayViewHolder(
+            private val binding: ItemCalendarGridDayBinding
+        ) : RecyclerView.ViewHolder(binding.root) {
 
             fun bind(day: CalendarDay) {
                 val date = day.date
-                tvDayNumber.text = date.dayOfMonth.toString()
+                binding.tvDayNumber.text = date.dayOfMonth.toString()
 
                 val isToday = date == LocalDate.now()
                 val isSelected = date == selectedDate
@@ -507,34 +486,34 @@ class CounselCalendarFragment : Fragment() {
                 when {
                     isSelected -> {
                         // 선택된 날: 테두리+연보라 배경만 유지
-                        tvDayNumber.setTextColor(Color.parseColor("#7C3AED"))
-                        layoutDayCell.setBackgroundResource(R.drawable.bg_day_cell_selected)
+                        binding.tvDayNumber.setTextColor(androidx.core.content.ContextCompat.getColor(itemView.context, R.color.counsel_calendar_selected_day))
+                        binding.layoutDayCell.setBackgroundResource(R.drawable.bg_day_cell_selected)
                     }
                     isToday -> {
                         // 오늘: 파란 테두리+연파랑 배경만 유지
-                        tvDayNumber.setTextColor(Color.parseColor("#1D4ED8"))
-                        layoutDayCell.setBackgroundResource(R.drawable.bg_day_cell_today)
+                        binding.tvDayNumber.setTextColor(androidx.core.content.ContextCompat.getColor(itemView.context, R.color.counsel_calendar_today))
+                        binding.layoutDayCell.setBackgroundResource(R.drawable.bg_day_cell_today)
                     }
                     day.isCurrentMonth -> {
                         val dayOfWeek = date.dayOfWeek.value
-                        tvDayNumber.setTextColor(
+                        binding.tvDayNumber.setTextColor(
                             when (dayOfWeek) {
-                                7 -> Color.parseColor("#EF4444")
-                                6 -> Color.parseColor("#3B82F6")
-                                else -> Color.parseColor("#374151")
+                                7 -> androidx.core.content.ContextCompat.getColor(itemView.context, R.color.counsel_calendar_sunday)
+                                6 -> androidx.core.content.ContextCompat.getColor(itemView.context, R.color.counsel_calendar_saturday)
+                                else -> androidx.core.content.ContextCompat.getColor(itemView.context, R.color.counsel_calendar_day_normal)
                             }
                         )
-                        layoutDayCell.setBackgroundResource(R.drawable.bg_day_cell_normal)
+                        binding.layoutDayCell.setBackgroundResource(R.drawable.bg_day_cell_normal)
                     }
                     else -> {
                         // 이전/다음 달 날짜: 흐리게
-                        tvDayNumber.setTextColor(Color.parseColor("#C7D2E2"))
-                        layoutDayCell.setBackgroundResource(R.drawable.bg_day_cell_normal)
+                        binding.tvDayNumber.setTextColor(androidx.core.content.ContextCompat.getColor(itemView.context, R.color.counsel_calendar_day_disabled))
+                        binding.layoutDayCell.setBackgroundResource(R.drawable.bg_day_cell_normal)
                     }
                 }
 
                 // 예약 인디케이터 (하단 바 가로 꽉 채우기)
-                layoutIndicators.removeAllViews()
+                binding.layoutReservations.removeAllViews()
                 if (hasReservation) {
                     val dot = View(itemView.context).apply {
                         val params = LinearLayout.LayoutParams(
@@ -544,11 +523,8 @@ class CounselCalendarFragment : Fragment() {
                         layoutParams = params
                         setBackgroundResource(R.drawable.bg_calendar_reservation_bar)
                     }
-                    layoutIndicators.addView(dot)
+                    binding.layoutReservations.addView(dot)
                 }
-
-
-
 
                 itemView.setOnClickListener {
                     if (day.isCurrentMonth) {
@@ -574,9 +550,10 @@ class CounselCalendarFragment : Fragment() {
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_calendar_reservation_card, parent, false)
-            return CardViewHolder(view)
+            val binding = ItemCalendarReservationCardBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
+            )
+            return CardViewHolder(binding)
         }
 
         override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
@@ -585,15 +562,14 @@ class CounselCalendarFragment : Fragment() {
 
         override fun getItemCount(): Int = items.size
 
-        inner class CardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            private val tvName: TextView = itemView.findViewById(R.id.tv_name)
-            private val tvTime: TextView = itemView.findViewById(R.id.tv_time)
-            private val tvPhone: TextView = itemView.findViewById(R.id.tv_phone)
+        inner class CardViewHolder(
+            private val binding: ItemCalendarReservationCardBinding
+        ) : RecyclerView.ViewHolder(binding.root) {
 
             fun bind(item: CounselItem) {
-                tvName.text = item.name
-                tvTime.text = formatTime(item.counselResvDtm)
-                tvPhone.text = formatPhone(item.counselHp)
+                binding.tvName.text = item.name
+                binding.tvTime.text = formatTime(item.counselResvDtm)
+                binding.tvPhone.text = formatPhone(item.counselHp)
 
                 itemView.setOnClickListener { onItemClick(item) }
             }

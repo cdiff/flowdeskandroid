@@ -98,18 +98,18 @@ class CounselListAdapter(
             }
 
             // 6. Assigned Employee Spinner
-            binding.tvEmployeeName.text = item.empName ?: "미배정"
+            binding.tvEmployeeName.text = item.empName ?: context.getString(R.string.counsel_label_unassigned)
             binding.layoutEmployee.setOnClickListener { view ->
                 val popup = PopupMenu(context, view)
-                popup.menu.add("담당자 변경 (준비 중)")
+                popup.menu.add(context.getString(R.string.counsel_manager_change_coming_soon))
                 popup.show()
             }
 
             // 7. Dates (Registration & Reservation)
-            binding.tvRegDate.text = "등록일: ${formatDateTime(item.regDtm)}"
+            binding.tvRegDate.text = context.getString(R.string.counsel_label_reg_date_prefix, formatDateTime(item.regDtm) ?: "")
             val resvDateStr = formatDateTime(item.counselResvDtm)
             if (!resvDateStr.isNullOrBlank()) {
-                binding.tvResvDate.text = "예약일: $resvDateStr"
+                binding.tvResvDate.text = context.getString(R.string.counsel_label_resv_date_prefix, resvDateStr)
                 binding.tvResvDate.visibility = View.VISIBLE
             } else {
                 binding.tvResvDate.visibility = View.GONE
@@ -129,10 +129,10 @@ class CounselListAdapter(
                         val tv = TextView(context).apply {
                             text = "${fv.label}: $rawVal"
                             textSize = 10f
-                            setTextColor(Color.parseColor("#4B5563"))
+                            setTextColor(androidx.core.content.ContextCompat.getColor(context, R.color.text_secondary))
                             setPadding(8.dpToPx(context), 3.dpToPx(context), 8.dpToPx(context), 3.dpToPx(context))
                             background = GradientDrawable().apply {
-                                setColor(Color.parseColor("#E5E7EB"))
+                                setColor(androidx.core.content.ContextCompat.getColor(context, R.color.slate_200))
                                 cornerRadius = 4.dpToPx(context).toFloat()
                             }
                             layoutParams = LinearLayout.LayoutParams(
@@ -152,7 +152,8 @@ class CounselListAdapter(
         }
 
         private fun getStatusColor(statusName: String): Int {
-            return statusColorMap[statusName] ?: Color.parseColor("#9CA3AF")
+            val context = itemView.context
+            return statusColorMap[statusName] ?: androidx.core.content.ContextCompat.getColor(context, R.color.slate_400)
         }
 
         private fun formatDateTime(isoString: String?): String? {

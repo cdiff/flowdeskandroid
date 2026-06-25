@@ -21,6 +21,7 @@ import com.example.flowdesk_android.feature.counsel_management.data.dto.CounselU
 import com.example.flowdesk_android.feature.counsel_management.data.dto.FieldValueRequest
 import com.example.flowdesk_android.core.extension.setReadOnly
 import com.example.flowdesk_android.feature.counsel_management.domain.model.CounselFieldValue
+import com.example.flowdesk_android.databinding.FragmentCounselDetailInfoBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -34,38 +35,29 @@ class CounselDetailInfoFragment : Fragment() {
     // 부모 Fragment(CounselDetailFragment)와 같은 ViewModel 공유
     private val viewModel: CounselDetailViewModel by viewModels({ requireParentFragment() })
 
-    private lateinit var etUtmSource: EditText
-    private lateinit var etUtmMedium: EditText
-    private lateinit var etUtmCampaign: EditText
-    private lateinit var etReserveTime: EditText
-    private lateinit var etCounselMemo: EditText
-    private lateinit var cardDynamicFields: View
-    private lateinit var llDynamicFieldsContainer: LinearLayout
-    private lateinit var btnSave: View
+    // Binding
+    private var _binding: FragmentCounselDetailInfoBinding? = null
+    private val binding get() = _binding!!
 
     private var selectedResvDtm: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_counsel_detail_info, container, false)
+    ): View {
+        _binding = FragmentCounselDetailInfoBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        bindViews(view)
         observeViewModel()
         setupListeners()
     }
 
-    private fun bindViews(view: View) {
-        etUtmSource = view.findViewById(R.id.et_utm_source)
-        etUtmMedium = view.findViewById(R.id.et_utm_medium)
-        etUtmCampaign = view.findViewById(R.id.et_utm_campaign)
-        etReserveTime = view.findViewById(R.id.et_reserve_time)
-        etCounselMemo = view.findViewById(R.id.et_counsel_memo)
-        cardDynamicFields = view.findViewById(R.id.card_dynamic_fields)
-        llDynamicFieldsContainer = view.findViewById(R.id.ll_dynamic_fields_container)
-        btnSave = view.findViewById(R.id.btn_save_info)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun observeViewModel() {
@@ -77,20 +69,20 @@ class CounselDetailInfoFragment : Fragment() {
                     viewModel.uiState.collect { state ->
                         if (state is CounselDetailUiState.Success) {
                             val d = state.detail
-                            etUtmSource.setText(d.counselSource ?: "")
-                            etUtmMedium.setText(d.counselMedium ?: "")
-                            etUtmCampaign.setText(d.counselCampaign ?: "")
-                            etCounselMemo.setText(d.counselMemo ?: "")
+                            binding.etUtmSource.setText(d.counselSource ?: "")
+                            binding.etUtmMedium.setText(d.counselMedium ?: "")
+                            binding.etUtmCampaign.setText(d.counselCampaign ?: "")
+                            binding.etCounselMemo.setText(d.counselMemo ?: "")
                             selectedResvDtm = d.counselResvDtm
-                            etReserveTime.setText(d.counselResvDtm?.let { formatDisplay(it) } ?: "")
+                            binding.etReserveTime.setText(d.counselResvDtm?.let { formatDisplay(it) } ?: "")
 
                             // 동적 필드 영역 렌더링
                             val fields = d.fieldValues
                             if (fields.isNotEmpty()) {
-                                cardDynamicFields.visibility = View.VISIBLE
+                                binding.cardDynamicFields.visibility = View.VISIBLE
                                 renderDynamicFields(fields)
                             } else {
-                                cardDynamicFields.visibility = View.GONE
+                                binding.cardDynamicFields.visibility = View.GONE
                             }
                         }
                     }
@@ -101,7 +93,7 @@ class CounselDetailInfoFragment : Fragment() {
                     viewModel.updateState.collect { state ->
                         when (state) {
                             is CounselUpdateState.Success -> {
-                                Toast.makeText(requireContext(), "수정이 완료되었습니다.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(requireContext(), getString(R.string.counsel_toast_info_updated), Toast.LENGTH_SHORT).show()
                                 viewModel.resetUpdateState()
                             }
                             is CounselUpdateState.Error -> {
@@ -117,17 +109,17 @@ class CounselDetailInfoFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        etReserveTime.setOnClickListener {
+        binding.etReserveTime.setOnClickListener {
             showDateTimePicker()
         }
 
-        btnSave.setOnClickListener {
+        binding.btnSaveInfo.setOnClickListener {
             val request = CounselUpdateRequest(
-                counselSource = etUtmSource.text?.toString()?.ifBlank { null },
-                counselMedium = etUtmMedium.text?.toString()?.ifBlank { null },
-                counselCampaign = etUtmCampaign.text?.toString()?.ifBlank { null },
+                counselSource = binding.etUtmSource.text?.toString()?.ifBlank { null },
+                counselMedium = binding.etUtmMedium.text?.toString()?.ifBlank { null },
+                counselCampaign = binding.etUtmCampaign.text?.toString()?.ifBlank { null },
                 counselResvDtm = selectedResvDtm,
-                counselMemo = etCounselMemo.text?.toString()?.ifBlank { null },
+                counselMemo = binding.etCounselMemo.text?.toString()?.ifBlank { null },
                 fieldValues = null
             )
             viewModel.updateCounsel(request)
@@ -135,7 +127,7 @@ class CounselDetailInfoFragment : Fragment() {
     }
 
     private fun renderDynamicFields(fields: List<CounselFieldValue>) {
-        llDynamicFieldsContainer.removeAllViews()
+        binding.llDynamicFieldsContainer.removeAllViews()
         val context = requireContext()
         val density = context.resources.displayMetrics.density
         val margin12 = (12 * density).toInt()
@@ -158,7 +150,7 @@ class CounselDetailInfoFragment : Fragment() {
                 )
                 text = field.label
                 textSize = 13f
-                setTextColor(Color.parseColor("#334155"))
+                setTextColor(androidx.core.content.ContextCompat.getColor(context, R.color.slate_700))
                 typeface = android.graphics.Typeface.DEFAULT_BOLD
                 setPadding((4 * density).toInt(), 0, 0, (6 * density).toInt())
             }
@@ -171,7 +163,7 @@ class CounselDetailInfoFragment : Fragment() {
                 setBackgroundResource(R.drawable.bg_edit_text)
                 setPadding((12 * density).toInt(), 0, (12 * density).toInt(), 0)
                 textSize = 14f
-                setTextColor(Color.parseColor("#1E293B"))
+                setTextColor(androidx.core.content.ContextCompat.getColor(context, R.color.slate_800))
                 tag = FieldTag(field.fieldId, field.fieldType)
 
                 val rawValue = when (field.fieldType) {
@@ -193,7 +185,7 @@ class CounselDetailInfoFragment : Fragment() {
                         if (calendarDrawable != null) {
                             val sizePx = (18 * density).toInt()
                             calendarDrawable.setBounds(0, 0, sizePx, sizePx)
-                            androidx.core.graphics.drawable.DrawableCompat.setTint(calendarDrawable, Color.parseColor("#94A3B8"))
+                            androidx.core.graphics.drawable.DrawableCompat.setTint(calendarDrawable, androidx.core.content.ContextCompat.getColor(context, R.color.slate_400))
                             setCompoundDrawables(null, null, calendarDrawable, null)
                         }
                     }
@@ -203,7 +195,7 @@ class CounselDetailInfoFragment : Fragment() {
                         if (calendarDrawable != null) {
                             val sizePx = (18 * density).toInt()
                             calendarDrawable.setBounds(0, 0, sizePx, sizePx)
-                            androidx.core.graphics.drawable.DrawableCompat.setTint(calendarDrawable, Color.parseColor("#94A3B8"))
+                            androidx.core.graphics.drawable.DrawableCompat.setTint(calendarDrawable, androidx.core.content.ContextCompat.getColor(context, R.color.slate_400))
                             setCompoundDrawables(null, null, calendarDrawable, null)
                         }
                     }
@@ -218,7 +210,7 @@ class CounselDetailInfoFragment : Fragment() {
 
             fieldContainer.addView(labelView)
             fieldContainer.addView(editTextView)
-            llDynamicFieldsContainer.addView(fieldContainer)
+            binding.llDynamicFieldsContainer.addView(fieldContainer)
         }
     }
 
@@ -228,7 +220,7 @@ class CounselDetailInfoFragment : Fragment() {
             TimePickerDialog(requireContext(), { _, hour, minute ->
                 val dtm = "%04d-%02d-%02dT%02d:%02d:00".format(year, month + 1, day, hour, minute)
                 selectedResvDtm = dtm
-                etReserveTime.setText(formatDisplay(dtm))
+                binding.etReserveTime.setText(formatDisplay(dtm))
             }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), true).show()
         }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
     }

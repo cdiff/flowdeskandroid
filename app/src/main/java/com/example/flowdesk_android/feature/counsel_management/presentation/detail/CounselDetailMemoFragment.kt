@@ -14,6 +14,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flowdesk_android.R
+import com.example.flowdesk_android.databinding.FragmentCounselDetailMemoBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -22,31 +23,33 @@ class CounselDetailMemoFragment : Fragment() {
 
     private val viewModel: CounselDetailViewModel by viewModels({ requireParentFragment() })
 
-    private lateinit var rvMemos: RecyclerView
-    private lateinit var etMemoInput: EditText
-    private lateinit var btnSendMemo: View
-    private lateinit var llEmptyMemo: View
+    // Binding
+    private var _binding: FragmentCounselDetailMemoBinding? = null
+    private val binding get() = _binding!!
 
     private val memoAdapter = CounselMemoAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_counsel_detail_memo, container, false)
+    ): View {
+        _binding = FragmentCounselDetailMemoBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        rvMemos = view.findViewById(R.id.rv_memos)
-        etMemoInput = view.findViewById(R.id.et_memo_input)
-        btnSendMemo = view.findViewById(R.id.btn_send_memo)
-        llEmptyMemo = view.findViewById(R.id.ll_empty_memo)
-
-        rvMemos.layoutManager = LinearLayoutManager(requireContext())
-        rvMemos.adapter = memoAdapter
+        binding.rvMemos.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvMemos.adapter = memoAdapter
 
         observeViewModel()
         setupListeners()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun observeViewModel() {
@@ -56,11 +59,11 @@ class CounselDetailMemoFragment : Fragment() {
                     viewModel.memoList.collect { list ->
                         memoAdapter.submitList(list)
                         if (list.isEmpty()) {
-                            llEmptyMemo.visibility = View.VISIBLE
-                            rvMemos.visibility = View.GONE
+                            binding.llEmptyMemo.visibility = View.VISIBLE
+                            binding.rvMemos.visibility = View.GONE
                         } else {
-                            llEmptyMemo.visibility = View.GONE
-                            rvMemos.visibility = View.VISIBLE
+                            binding.llEmptyMemo.visibility = View.GONE
+                            binding.rvMemos.visibility = View.VISIBLE
                         }
                     }
                 }
@@ -69,7 +72,7 @@ class CounselDetailMemoFragment : Fragment() {
                     viewModel.memoAddState.collect { state ->
                         when (state) {
                             is CounselUpdateState.Success -> {
-                                etMemoInput.setText("")
+                                binding.etMemoInput.setText("")
                                 viewModel.resetMemoAddState()
                             }
                             is CounselUpdateState.Error -> {
@@ -85,10 +88,10 @@ class CounselDetailMemoFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        btnSendMemo.setOnClickListener {
-            val memoText = etMemoInput.text?.toString()?.trim()
+        binding.btnSendMemo.setOnClickListener {
+            val memoText = binding.etMemoInput.text?.toString()?.trim()
             if (memoText.isNullOrBlank()) {
-                Toast.makeText(requireContext(), "메모 내용을 입력해 주세요.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.counsel_toast_enter_memo), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             viewModel.addCounselMemo(memoText)

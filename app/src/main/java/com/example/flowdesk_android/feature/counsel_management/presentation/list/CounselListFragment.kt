@@ -37,6 +37,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import androidx.navigation.fragment.findNavController
+import com.example.flowdesk_android.databinding.FragmentCounselListBinding
 
 @AndroidEntryPoint
 class CounselListFragment : Fragment() {
@@ -47,18 +48,9 @@ class CounselListFragment : Fragment() {
     private lateinit var statusAdapter: CounselStatusAdapter
     private lateinit var counselAdapter: CounselListAdapter
 
-    // Views
-    private lateinit var layoutTabTotal: View
-    private lateinit var tvStatusTotalCountBadge: TextView
-    private lateinit var rvStatusTabs: RecyclerView
-    private lateinit var etSearch: EditText
-    private lateinit var btnFilterDialog: View
-    private lateinit var viewFilterActiveDot: View
-    private lateinit var tvCounselCount: TextView
-    private lateinit var rvCounsels: RecyclerView
-    private lateinit var progressBar: ProgressBar
-    private lateinit var llEmpty: View
-    private lateinit var nestedScrollView: NestedScrollView
+    // Binding
+    private var _binding: FragmentCounselListBinding? = null
+    private val binding get() = _binding!!
 
     // Search Job
     private var searchJob: Job? = null
@@ -70,31 +62,19 @@ class CounselListFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_counsel_list, container, false)
+    ): View {
+        _binding = FragmentCounselListBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        bindViews(view)
         setupAdapters()
         setupListeners()
         observeState()
         
         // 상세화면 등에서 상태 변경 후 목록으로 복귀할 때 데이터를 갱신하기 위해 새로고침 수행
         viewModel.refreshAll()
-    }
-
-    private fun bindViews(view: View) {
-        layoutTabTotal = view.findViewById(R.id.layout_tab_total)
-        tvStatusTotalCountBadge = view.findViewById(R.id.tv_status_total_count_badge)
-        rvStatusTabs = view.findViewById(R.id.rv_status_tabs)
-        etSearch = view.findViewById(R.id.et_search)
-        btnFilterDialog = view.findViewById(R.id.btn_filter_dialog)
-        viewFilterActiveDot = view.findViewById(R.id.view_filter_active_dot)
-        tvCounselCount = view.findViewById(R.id.tv_counsel_count)
-        rvCounsels = view.findViewById(R.id.rv_counsels)
-        progressBar = view.findViewById(R.id.progress_bar)
-        llEmpty = view.findViewById(R.id.ll_empty)
-        nestedScrollView = view.findViewById(R.id.nested_scroll_view)
     }
 
     private fun setupAdapters() {
@@ -107,16 +87,16 @@ class CounselListFragment : Fragment() {
                 viewModel.updateStatusFilter(status.counselStat)
             }
         }
-        rvStatusTabs.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        rvStatusTabs.adapter = statusAdapter
+        binding.rvStatusTabs.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        binding.rvStatusTabs.adapter = statusAdapter
 
         // Vertical Counsel List Adapter
         counselAdapter = CounselListAdapter(
             onCopyClick = { phone ->
                 val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                val clip = ClipData.newPlainText("전화번호", phone)
+                val clip = ClipData.newPlainText(getString(R.string.label_phone), phone)
                 clipboard.setPrimaryClip(clip)
-                Toast.makeText(requireContext(), "전화번호가 복사되었습니다.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.counsel_toast_phone_copied), Toast.LENGTH_SHORT).show()
             },
             onOptionsClick = { item, anchorView ->
                 showItemOptionsMenu(item, anchorView)
@@ -128,20 +108,20 @@ class CounselListFragment : Fragment() {
                 findNavController().navigate(R.id.counselDetailFragment, bundle)
             }
         )
-        rvCounsels.layoutManager = LinearLayoutManager(requireContext())
-        rvCounsels.adapter = counselAdapter
+        binding.rvCounsels.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvCounsels.adapter = counselAdapter
     }
 
     private fun setupListeners() {
         // "Total" Tab Click listener
-        layoutTabTotal.setOnClickListener {
+        binding.layoutTabTotal.setOnClickListener {
             statusAdapter.clearSelection() // Unselect others
             setTotalTabStyle(isSelected = true)
             viewModel.updateStatusFilter(null)
         }
 
         // Search text change listener (Debounced)
-        etSearch.addTextChangedListener(object : TextWatcher {
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 searchJob?.cancel()
@@ -154,7 +134,7 @@ class CounselListFragment : Fragment() {
         })
 
         // Infinite Scroll listener on NestedScrollView
-        nestedScrollView.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, _, scrollY, _, _ ->
+        binding.nestedScrollView.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, _, scrollY, _, _ ->
             val contentHeight = v.getChildAt(0).measuredHeight
             val scrollHeight = v.measuredHeight
             if (scrollY >= contentHeight - scrollHeight - 100) {
@@ -163,34 +143,38 @@ class CounselListFragment : Fragment() {
         })
 
         // Open Filter Bottom Sheet Click
-        btnFilterDialog.setOnClickListener {
+        binding.btnFilterDialog.setOnClickListener {
             val filterBottomSheet = CounselFilterBottomSheetFragment()
             filterBottomSheet.show(childFragmentManager, "CounselFilterBottomSheet")
         }
     }
 
     private fun setTotalTabStyle(isSelected: Boolean) {
-        val countBadge = tvStatusTotalCountBadge
+        val context = requireContext()
+        val countBadge = binding.tvStatusTotalCountBadge
         val card = countBadge.parent as? com.google.android.material.card.MaterialCardView
         if (isSelected) {
-            card?.setCardBackgroundColor(Color.parseColor("#1E293B"))
-            countBadge.setTextColor(Color.WHITE)
+            card?.setCardBackgroundColor(androidx.core.content.ContextCompat.getColor(context, R.color.counsel_tab_selected_bg))
+            countBadge.setTextColor(androidx.core.content.ContextCompat.getColor(context, R.color.white))
         } else {
-            card?.setCardBackgroundColor(Color.WHITE)
-            card?.strokeWidth = (1.5 * requireContext().resources.displayMetrics.density).toInt()
-            card?.strokeColor = Color.parseColor("#E2E8F0")
-            countBadge.setTextColor(Color.parseColor("#374151"))
+            card?.setCardBackgroundColor(androidx.core.content.ContextCompat.getColor(context, R.color.counsel_tab_unselected_bg))
+            card?.strokeWidth = (1.5 * context.resources.displayMetrics.density).toInt()
+            card?.strokeColor = androidx.core.content.ContextCompat.getColor(context, R.color.counsel_tab_unselected_stroke)
+            countBadge.setTextColor(androidx.core.content.ContextCompat.getColor(context, R.color.counsel_tab_unselected_text))
         }
     }
 
     private fun showItemOptionsMenu(item: CounselItem, view: View) {
-        val popup = PopupMenu(requireContext(), view)
-        popup.menu.add("수정")
-        popup.menu.add("삭제")
+        val context = requireContext()
+        val popup = PopupMenu(context, view)
+        val editTitle = context.getString(R.string.counsel_menu_edit)
+        val deleteTitle = context.getString(R.string.counsel_menu_delete)
+        popup.menu.add(editTitle)
+        popup.menu.add(deleteTitle)
         popup.setOnMenuItemClickListener { menuItem ->
             when (menuItem.title) {
-                "수정" -> showEditDialog(item)
-                "삭제" -> showDeleteConfirmDialog(item)
+                editTitle -> showEditDialog(item)
+                deleteTitle -> showDeleteConfirmDialog(item)
             }
             true
         }
@@ -216,8 +200,8 @@ class CounselListFragment : Fragment() {
         val btnCancel = dialogView.findViewById<View>(R.id.btn_cancel)
         val btnConfirm = dialogView.findViewById<View>(R.id.btn_confirm)
 
-        tvTitle.text = "상담 삭제"
-        tvMessage.text = "'${item.name}' 고객의 상담 정보를 정말 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다."
+        tvTitle.text = getString(R.string.counsel_dialog_delete_title)
+        tvMessage.text = getString(R.string.counsel_dialog_delete_message, item.name)
         cbConfirm.visibility = View.GONE
 
         btnCancel.setOnClickListener {
@@ -241,24 +225,24 @@ class CounselListFragment : Fragment() {
                     viewModel.uiState.collectLatest { state ->
                         when (state) {
                             is CounselListUiState.Loading -> {
-                                progressBar.visibility = View.VISIBLE
-                                llEmpty.visibility = View.GONE
+                                binding.progressBar.visibility = View.VISIBLE
+                                binding.llEmpty.visibility = View.GONE
                             }
                             is CounselListUiState.Success -> {
-                                progressBar.visibility = View.GONE
+                                binding.progressBar.visibility = View.GONE
                                 counselAdapter.submitList(state.items)
-                                tvCounselCount.text = "총 ${state.totalCount}건"
+                                binding.tvCounselCount.text = getString(R.string.counsel_total_count, state.totalCount)
                                 if (state.items.isEmpty()) {
-                                    llEmpty.visibility = View.VISIBLE
-                                    rvCounsels.visibility = View.GONE
+                                    binding.llEmpty.visibility = View.VISIBLE
+                                    binding.rvCounsels.visibility = View.GONE
                                 } else {
-                                    llEmpty.visibility = View.GONE
-                                    rvCounsels.visibility = View.VISIBLE
+                                    binding.llEmpty.visibility = View.GONE
+                                    binding.rvCounsels.visibility = View.VISIBLE
                                 }
                             }
                             is CounselListUiState.Error -> {
-                                progressBar.visibility = View.GONE
-                                llEmpty.visibility = View.VISIBLE
+                                binding.progressBar.visibility = View.GONE
+                                binding.llEmpty.visibility = View.VISIBLE
                                 Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
                             }
                         }
@@ -271,7 +255,7 @@ class CounselListFragment : Fragment() {
                         statusAdapter.submitList(list)
                         counselAdapter.setStatusColors(list)
                         val totalSum = list.sumOf { it.count }
-                        tvStatusTotalCountBadge.text = totalSum.toString()
+                        binding.tvStatusTotalCountBadge.text = totalSum.toString()
                     }
                 }
 
@@ -282,10 +266,15 @@ class CounselListFragment : Fragment() {
                                 filter.endDate != null ||
                                 filter.empSeq != null ||
                                 filter.webCode != null
-                        viewFilterActiveDot.visibility = if (isAnyFilterActive) View.VISIBLE else View.GONE
+                        binding.viewFilterActiveDot.visibility = if (isAnyFilterActive) View.VISIBLE else View.GONE
                     }
                 }
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

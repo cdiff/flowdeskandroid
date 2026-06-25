@@ -115,4 +115,19 @@
     <color name="tab_unselected_stroke">@color/slate_200</color>
     <color name="bg_card_selected">#EFF6FF</color>
     <color name="bg_card_unselected">@color/bg_card</color>
+
+    <!-- Counsel Specific Colors -->
+    <color name="counsel_tab_selected_bg">@color/slate_800</color>
+    <color name="counsel_tab_unselected_bg">@color/white</color>
+    <color name="counsel_tab_unselected_stroke">@color/slate_200</color>
+    <color name="counsel_tab_unselected_text">#374151</color>
+    <color name="counsel_dropdown_selected_text">#1D4ED8</color>
+    <color name="counsel_dropdown_unselected_text">#475569</color>
+    <color name="counsel_calendar_selected_day">#7C3AED</color>
+    <color name="counsel_calendar_today">#1D4ED8</color>
+    <color name="counsel_calendar_sunday">#EF4444</color>
+    <color name="counsel_calendar_saturday">#3B82F6</color>
+    <color name="counsel_calendar_day_normal">#374151</color>
+    <color name="counsel_calendar_day_disabled">#C7D2E2</color>
+    <color name="counsel_detail_purple_badge">#8B5CF6</color>
 </resources>

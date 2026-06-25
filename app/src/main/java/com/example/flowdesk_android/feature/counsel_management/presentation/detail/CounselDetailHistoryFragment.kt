@@ -12,6 +12,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flowdesk_android.R
+import com.example.flowdesk_android.databinding.FragmentCounselDetailHistoryBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -20,22 +21,32 @@ class CounselDetailHistoryFragment : Fragment() {
 
     private val viewModel: CounselDetailViewModel by viewModels({ requireParentFragment() })
 
-    private lateinit var rvHistory: RecyclerView
+    // Binding
+    private var _binding: FragmentCounselDetailHistoryBinding? = null
+    private val binding get() = _binding!!
+
     private val historyAdapter = CounselHistoryAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_counsel_detail_history, container, false)
+    ): View {
+        _binding = FragmentCounselDetailHistoryBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        rvHistory = view.findViewById(R.id.rv_history)
-        rvHistory.layoutManager = LinearLayoutManager(requireContext())
-        rvHistory.adapter = historyAdapter
+        binding.rvHistory.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvHistory.adapter = historyAdapter
 
         observeViewModel()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun observeViewModel() {

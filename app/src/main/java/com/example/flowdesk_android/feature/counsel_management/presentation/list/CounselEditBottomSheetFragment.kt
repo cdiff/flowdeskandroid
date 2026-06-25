@@ -69,7 +69,7 @@ class CounselEditBottomSheetFragment : BottomSheetDialogFragment() {
             val memo = etMemo.text.toString().trim().ifBlank { null }
 
             if (name.isEmpty() || phone.isEmpty()) {
-                Toast.makeText(requireContext(), "이름과 전화번호는 필수 입력 항목입니다.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.counsel_edit_error_required_fields), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 

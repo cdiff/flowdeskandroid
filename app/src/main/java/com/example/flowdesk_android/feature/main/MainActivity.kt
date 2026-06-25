@@ -14,8 +14,8 @@ import androidx.navigation.fragment.NavHostFragment
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.feature.auth.domain.model.Menu
 import com.example.flowdesk_android.databinding.ActivityMainBinding
-import com.example.flowdesk_android.feature.auth.presentation.dashboard.DashboardViewModel
-import com.example.flowdesk_android.feature.auth.presentation.dashboard.DashboardState
+import com.example.flowdesk_android.feature.main.MainViewModel
+import com.example.flowdesk_android.feature.main.MainUiState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
-    private val viewModel: DashboardViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels()
     private var currentMenuTree: List<Menu> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,19 +68,10 @@ class MainActivity : AppCompatActivity() {
         }
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
-        // 1. 전달받은 인증 및 권한 데이터가 있는지 확인
+        // MainViewModel 초기화 및 세션 수집 시작
         val authMeInfoJson = intent.getStringExtra("EXTRA_AUTH_ME_INFO")
-        if (!authMeInfoJson.isNullOrEmpty()) {
-            try {
-                val authMeInfo = com.google.gson.Gson().fromJson(authMeInfoJson, com.example.flowdesk_android.feature.auth.domain.model.AuthMeInfo::class.java)
-                setupDynamicNavigation(authMeInfo)
-            } catch (e: Exception) {
-                observeViewModel()
-            }
-        } else {
-            // 2. 전달된 데이터가 없으면 기존 방식(비동기 호출 관찰)으로 폴백
-            observeViewModel()
-        }
+        viewModel.init(authMeInfoJson)
+        observeViewModel()
     }
 
     private fun setupDynamicNavigation(info: com.example.flowdesk_android.feature.auth.domain.model.AuthMeInfo) {
@@ -109,9 +100,9 @@ class MainActivity : AppCompatActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.dashboardState.collect { state ->
+                viewModel.uiState.collect { state ->
                     when (state) {
-                        is DashboardState.Success -> {
+                        is MainUiState.Success -> {
                             val navGraph = navController.navInflater.inflate(R.navigation.nav_graph_main)
                             val firstMenu = state.data.menuTree?.sortedBy { it.order }?.firstOrNull()
                             val startDestId = when (firstMenu?.pageName) {

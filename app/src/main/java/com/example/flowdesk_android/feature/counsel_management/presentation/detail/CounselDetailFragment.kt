@@ -18,6 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.flowdesk_android.R
+import com.example.flowdesk_android.databinding.FragmentCounselDetailBinding
 import com.example.flowdesk_android.feature.counsel_management.domain.model.CounselDetail
 import com.example.flowdesk_android.feature.counsel_management.domain.model.CounselStatusStat
 import com.example.flowdesk_android.feature.counsel_management.domain.model.EmployeeStat
@@ -32,32 +33,9 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
 
     private val viewModel: CounselDetailViewModel by viewModels()
 
-    // Views
-    private lateinit var btnBack: View
-    private lateinit var btnDelete: View
-    private lateinit var btnBlockPhone: View
-    private lateinit var btnBlockIp: View
-    private lateinit var btnBlockKeyword: View
-
-    private lateinit var tvName: TextView
-    private lateinit var tvStatusTag: TextView
-    private lateinit var tvPhone: TextView
-    private lateinit var tvWebsite: TextView
-    private lateinit var tvIp: TextView
-    private lateinit var tvManager: TextView
-    private lateinit var tvCreatedAt: TextView
-    private lateinit var tvUpdatedAt: TextView
-
-    // 커스텀 스피너 버튼 뷰
-    private lateinit var spinnerStatusAnchor: View
-    private lateinit var tvStatusSelected: TextView
-    private lateinit var vStatusDot: CardView
-
-    private lateinit var spinnerManagerAnchor: View
-    private lateinit var tvManagerSelected: TextView
-
-    private lateinit var tabLayout: TabLayout
-    private lateinit var tabContentContainer: ViewGroup
+    // Binding
+    private var _binding: FragmentCounselDetailBinding? = null
+    private val binding get() = _binding!!
 
     // 팝업 윈도우
     private var statusPopup: ListPopupWindow? = null
@@ -72,13 +50,25 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
     private var selectedStatusIndex: Int = 0
     private var selectedManagerIndex: Int = 0
 
-    override fun getToolbarView(view: View): View? {
-        return view.findViewById(R.id.layout_toolbar)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentCounselDetailBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    override fun getToolbarView(view: View): View {
+        return binding.layoutToolbar
     }
 
     override fun initView() {
-        val view = requireView()
-        bindViews(view)
         setupTabLayout()
         setupListeners()
 
@@ -86,38 +76,10 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
         viewModel.init(counselSeq)
     }
 
-    private fun bindViews(view: View) {
-        btnBack = view.findViewById(R.id.btn_back)
-
-        tvName = view.findViewById(R.id.tv_detail_name)
-        tvStatusTag = view.findViewById(R.id.tv_detail_status_tag)
-        tvPhone = view.findViewById(R.id.tv_detail_phone)
-        tvWebsite = view.findViewById(R.id.tv_detail_website)
-        tvIp = view.findViewById(R.id.tv_detail_ip)
-        tvManager = view.findViewById(R.id.tv_detail_manager)
-        tvCreatedAt = view.findViewById(R.id.tv_detail_created_at)
-        tvUpdatedAt = view.findViewById(R.id.tv_detail_updated_at)
-
-        // 커스텀 스피너 버튼 뷰 바인딩
-        spinnerStatusAnchor = view.findViewById(R.id.spinner_status)
-        tvStatusSelected = view.findViewById(R.id.tv_status_selected)
-        vStatusDot = view.findViewById(R.id.v_status_dot)
-
-        spinnerManagerAnchor = view.findViewById(R.id.spinner_manager)
-        tvManagerSelected = view.findViewById(R.id.tv_manager_selected)
-
-        tabLayout = view.findViewById(R.id.tab_layout)
-        tabContentContainer = view.findViewById(R.id.tab_content_container)
-        btnDelete = view.findViewById(R.id.btn_delete)
-        btnBlockPhone = view.findViewById(R.id.btn_block_phone)
-        btnBlockIp = view.findViewById(R.id.btn_block_ip)
-        btnBlockKeyword = view.findViewById(R.id.btn_block_keyword)
-    }
-
     private fun setupTabLayout() {
         replaceTabContent(0)
 
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 replaceTabContent(tab?.position ?: 0)
             }
@@ -139,25 +101,25 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
     }
 
     private fun setupListeners() {
-        btnBack.setOnClickListener {
+        binding.btnBack.setOnClickListener {
             findNavController().navigateUp()
         }
 
-        spinnerStatusAnchor.setOnClickListener {
+        binding.spinnerStatus.setOnClickListener {
             statusPopup?.let { if (it.isShowing) { it.dismiss(); return@setOnClickListener } }
             showStatusPopup()
         }
 
-        spinnerManagerAnchor.setOnClickListener {
+        binding.spinnerManager.setOnClickListener {
             managerPopup?.let { if (it.isShowing) { it.dismiss(); return@setOnClickListener } }
             showManagerPopup()
         }
 
-        btnDelete.setOnClickListener {
+        binding.btnDelete.setOnClickListener {
             showDeleteConfirmDialog()
         }
 
-        btnBlockPhone.setOnClickListener {
+        binding.btnBlockPhone.setOnClickListener {
             val phone = currentDetail?.counselHp
             val sheet = com.example.flowdesk_android.feature.system_management.presentation.block.phone.PhoneBlockCreateBottomSheet.newInstance(
                 phone = phone,
@@ -166,7 +128,7 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
             sheet.show(childFragmentManager, "PhoneBlockCreateBottomSheet")
         }
 
-        btnBlockIp.setOnClickListener {
+        binding.btnBlockIp.setOnClickListener {
             val ip = currentDetail?.counselIp
             val sheet = com.example.flowdesk_android.feature.system_management.presentation.block.ip.IpBlockCreateBottomSheet.newInstance(
                 ip = ip,
@@ -175,7 +137,7 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
             sheet.show(childFragmentManager, "IpBlockCreateBottomSheet")
         }
 
-        btnBlockKeyword.setOnClickListener {
+        binding.btnBlockKeyword.setOnClickListener {
             val sheet = com.example.flowdesk_android.feature.system_management.presentation.block.keyword.KeywordBlockCreateBottomSheet.newInstance(
                 keyword = null,
                 hideModeSelector = true
@@ -199,8 +161,8 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
         val btnCancel = dialogView.findViewById<View>(R.id.btn_cancel)
         val btnConfirm = dialogView.findViewById<View>(R.id.btn_confirm)
 
-        tvTitle.text = "상담 삭제"
-        tvMessage.text = "'${current.name}' 고객의 상담 정보를 정말 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다."
+        tvTitle.text = getString(R.string.counsel_dialog_delete_title)
+        tvMessage.text = getString(R.string.counsel_dialog_delete_message, current.name)
         cbConfirm.visibility = View.GONE
 
         btnCancel.setOnClickListener {
@@ -220,7 +182,7 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
     private fun showStatusPopup() {
         if (statusList.isEmpty()) return
         val adapter = StatusDropdownAdapter(requireContext(), statusList, selectedStatusIndex)
-        statusPopup = spinnerStatusAnchor.showCustomDropdown(adapter) { position ->
+        statusPopup = binding.spinnerStatus.showCustomDropdown(adapter) { position ->
             val selected = statusList.getOrNull(position) ?: return@showCustomDropdown
             val current = currentDetail ?: return@showCustomDropdown
             if (selected.counselStat != current.counselStat) {
@@ -233,10 +195,10 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
     }
 
     private fun showManagerPopup() {
-        val labels = mutableListOf("미배정") + employeeList.map { it.empName }
+        val labels = mutableListOf(getString(R.string.counsel_label_unassigned)) + employeeList.map { it.empName }
         if (labels.isEmpty()) return
         val adapter = ManagerDropdownAdapter(requireContext(), labels, selectedManagerIndex)
-        managerPopup = spinnerManagerAnchor.showCustomDropdown(adapter) { position ->
+        managerPopup = binding.spinnerManager.showCustomDropdown(adapter) { position ->
             val empSeq = if (position == 0) null else employeeList.getOrNull(position - 1)?.empSeq
             val current = currentDetail ?: return@showCustomDropdown
             if (empSeq != current.empSeq) {
@@ -247,7 +209,7 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
                 )
             }
             selectedManagerIndex = position
-            tvManagerSelected.text = labels[position]
+            binding.tvManagerSelected.text = labels[position]
         }
     }
 
@@ -292,7 +254,7 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
                     viewModel.statusUpdateState.collect { state ->
                         when (state) {
                             is CounselUpdateState.Success -> {
-                                Toast.makeText(requireContext(), "상태가 변경되었습니다.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(requireContext(), getString(R.string.counsel_toast_status_changed), Toast.LENGTH_SHORT).show()
                                 viewModel.resetStatusUpdateState()
                             }
                             is CounselUpdateState.Error -> {
@@ -308,7 +270,7 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
                     viewModel.deleteState.collect { state ->
                         when (state) {
                             is CounselUpdateState.Success -> {
-                                Toast.makeText(requireContext(), "상담 정보가 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(requireContext(), getString(R.string.counsel_toast_deleted), Toast.LENGTH_SHORT).show()
                                 viewModel.resetDeleteState()
                                 findNavController().navigateUp()
                             }
@@ -327,14 +289,14 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
     // ── 상세 데이터 바인딩 ─────────────────────────────────────────────────────
 
     private fun bindDetail(detail: CounselDetail) {
-        tvName.text = detail.name
-        tvStatusTag.text = detail.statusName
-        tvPhone.text = detail.counselHp
-        tvWebsite.text = detail.webTitle
-        tvIp.text = detail.counselIp ?: "-"
-        tvManager.text = detail.empName ?: "미배정"
-        tvCreatedAt.text = "등록: ${formatDateTime(detail.regDtm)}"
-        tvUpdatedAt.text = "수정: ${formatDateTime(detail.editDtm)}"
+        binding.tvDetailName.text = detail.name
+        binding.tvDetailStatusTag.text = detail.statusName
+        binding.tvDetailPhone.text = detail.counselHp
+        binding.tvDetailWebsite.text = detail.webTitle
+        binding.tvDetailIp.text = detail.counselIp ?: "-"
+        binding.tvDetailManager.text = detail.empName ?: getString(R.string.counsel_label_unassigned)
+        binding.tvDetailCreatedAt.text = getString(R.string.counsel_label_registered_prefix, formatDateTime(detail.regDtm))
+        binding.tvDetailUpdatedAt.text = getString(R.string.counsel_label_updated_prefix, formatDateTime(detail.editDtm))
 
         syncStatusButton(detail.counselStat)
         syncManagerButton(detail.empSeq)
@@ -349,12 +311,12 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
     }
 
     private fun bindStatusButton(status: CounselStatusStat) {
-        tvStatusSelected.text = status.statusName
+        binding.tvStatusSelected.text = status.statusName
         try {
-            vStatusDot.visibility = View.VISIBLE
-            vStatusDot.setCardBackgroundColor(Color.parseColor(status.color))
+            binding.vStatusDot.visibility = View.VISIBLE
+            binding.vStatusDot.setCardBackgroundColor(Color.parseColor(status.color))
         } catch (e: Exception) {
-            vStatusDot.visibility = View.GONE
+            binding.vStatusDot.visibility = View.GONE
         }
 
         try {
@@ -364,12 +326,12 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
                 setColor(softBg)
                 cornerRadius = 4.dpToPx(requireContext()).toFloat()
             }
-            tvStatusTag.background = badgeBg
-            tvStatusTag.setTextColor(statusColor)
-            tvStatusTag.text = status.statusName
+            binding.tvDetailStatusTag.background = badgeBg
+            binding.tvDetailStatusTag.setTextColor(statusColor)
+            binding.tvDetailStatusTag.text = status.statusName
         } catch (e: Exception) {
-            tvStatusTag.text = status.statusName
-            tvStatusTag.setTextColor(Color.parseColor("#8B5CF6"))
+            binding.tvDetailStatusTag.text = status.statusName
+            binding.tvDetailStatusTag.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.counsel_detail_purple_badge))
         }
     }
 
@@ -381,8 +343,8 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
         val idx = if (empSeq == null) 0
         else employeeList.indexOfFirst { it.empSeq == empSeq }.let { if (it < 0) 0 else it + 1 }
         selectedManagerIndex = idx
-        val labels = mutableListOf("미배정") + employeeList.map { it.empName }
-        tvManagerSelected.text = labels.getOrNull(idx) ?: "미배정"
+        val labels = mutableListOf(getString(R.string.counsel_label_unassigned)) + employeeList.map { it.empName }
+        binding.tvManagerSelected.text = labels.getOrNull(idx) ?: getString(R.string.counsel_label_unassigned)
     }
 
     private fun formatDateTime(iso: String?): String {
@@ -424,10 +386,10 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
             val isSelected = position == selectedIndex
             layoutRoot.isSelected = isSelected
             if (isSelected) {
-                tvText.setTextColor(Color.parseColor("#1D4ED8"))
+                tvText.setTextColor(androidx.core.content.ContextCompat.getColor(context, R.color.counsel_dropdown_selected_text))
                 tvText.setTypeface(null, android.graphics.Typeface.BOLD)
             } else {
-                tvText.setTextColor(Color.parseColor("#475569"))
+                tvText.setTextColor(androidx.core.content.ContextCompat.getColor(context, R.color.counsel_dropdown_unselected_text))
                 tvText.setTypeface(null, android.graphics.Typeface.NORMAL)
             }
 
@@ -458,10 +420,10 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
             val isSelected = position == selectedIndex
             layoutRoot.isSelected = isSelected
             if (isSelected) {
-                tvText.setTextColor(Color.parseColor("#1D4ED8"))
+                tvText.setTextColor(androidx.core.content.ContextCompat.getColor(context, R.color.counsel_dropdown_selected_text))
                 tvText.setTypeface(null, android.graphics.Typeface.BOLD)
             } else {
-                tvText.setTextColor(Color.parseColor("#475569"))
+                tvText.setTextColor(androidx.core.content.ContextCompat.getColor(context, R.color.counsel_dropdown_unselected_text))
                 tvText.setTypeface(null, android.graphics.Typeface.NORMAL)
             }
 

@@ -194,4 +194,30 @@
     <string name="mypage_label_security_login">계정 로그인 보안 알림</string>
     <string name="mypage_desc_security_login">새로운 기기에서 로그인 시 알림을 받습니다.</string>
     <string name="mypage_msg_notification_updated">알림 설정이 저장되었습니다.</string>
+
+    <!-- Counsel Management -->
+    <string name="counsel_toast_phone_copied">전화번호가 복사되었습니다.</string>
+    <string name="counsel_menu_edit">수정</string>
+    <string name="counsel_menu_delete">삭제</string>
+    <string name="counsel_dialog_delete_title">상담 삭제</string>
+    <string name="counsel_dialog_delete_message">\'%1$s\' 고객의 상담 정보를 정말 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.</string>
+    <string name="counsel_toast_status_changed">상태가 변경되었습니다.</string>
+    <string name="counsel_toast_deleted">상담 정보가 삭제되었습니다.</string>
+    <string name="counsel_label_registered_prefix">등록: %1$s</string>
+    <string name="counsel_label_updated_prefix">수정: %1$s</string>
+    <string name="counsel_label_unassigned">미배정</string>
+    <string name="counsel_label_all_managers">모든 담당자</string>
+    <string name="counsel_label_monthly_reservation_count">이번 달 예약: %1$d건</string>
+    <string name="counsel_toast_enter_memo">메모 내용을 입력해 주세요.</string>
+    <string name="counsel_total_count">총 %1$d건</string>
+    <string name="counsel_label_reg_date_prefix">등록일: %1$s</string>
+    <string name="counsel_label_resv_date_prefix">예약일: %1$s</string>
+    <string name="counsel_manager_change_coming_soon">담당자 변경 (준비 중)</string>
+    <string name="counsel_filter_all">전체</string>
+    <string name="counsel_filter_all_period">전체 기간</string>
+    <string name="counsel_calendar_date_format">%1$d월 %2$d일 %3$s</string>
+    <string name="counsel_calendar_month_format">%1$d년 %2$d월</string>
+    <string name="counsel_count_suffix">%1$d건</string>
+    <string name="counsel_edit_error_required_fields">이름과 전화번호는 필수 입력 항목입니다.</string>
+    <string name="counsel_toast_info_updated">수정이 완료되었습니다.</string>
 </resources>

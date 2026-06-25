@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import com.example.flowdesk_android.R
+import com.example.flowdesk_android.databinding.DialogCounselFilterBinding
 import com.example.flowdesk_android.feature.counsel_management.domain.model.EmployeeStat
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -48,23 +49,18 @@ class CounselFilterBottomSheetFragment : BottomSheetDialogFragment() {
     // Date preset selected state
     private var selectedPreset: String? = null // "today", "7days", "30days", "custom", null
 
-    // Views
-    private lateinit var btnClose: ImageView
-    private lateinit var btnReset: TextView
-    private lateinit var tvPresetToday: TextView
-    private lateinit var tvPreset7days: TextView
-    private lateinit var tvPreset30days: TextView
-    private lateinit var tvPresetCustom: TextView
-    private lateinit var tvDateRangeDisplay: TextView
-    private lateinit var containerManager: LinearLayout
-    private lateinit var containerWebsite: LinearLayout
-    private lateinit var btnApply: View
+    // Binding
+    private var _binding: DialogCounselFilterBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.dialog_counsel_filter, container, false)
+    ): View {
+        _binding = DialogCounselFilterBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -78,22 +74,8 @@ class CounselFilterBottomSheetFragment : BottomSheetDialogFragment() {
             }
         }
 
-        bindViews(view)
         initStates()
         setupListeners()
-    }
-
-    private fun bindViews(view: View) {
-        btnClose = view.findViewById(R.id.btn_close)
-        btnReset = view.findViewById(R.id.btn_reset)
-        tvPresetToday = view.findViewById(R.id.tv_preset_today)
-        tvPreset7days = view.findViewById(R.id.tv_preset_7days)
-        tvPreset30days = view.findViewById(R.id.tv_preset_30days)
-        tvPresetCustom = view.findViewById(R.id.tv_preset_custom)
-        tvDateRangeDisplay = view.findViewById(R.id.tv_date_range_display)
-        containerManager = view.findViewById(R.id.container_manager)
-        containerWebsite = view.findViewById(R.id.container_website)
-        btnApply = view.findViewById(R.id.btn_apply)
     }
 
     private fun initStates() {
@@ -138,10 +120,10 @@ class CounselFilterBottomSheetFragment : BottomSheetDialogFragment() {
 
     private fun updateDatePresetUi() {
         val presetViews = mapOf(
-            "today" to tvPresetToday,
-            "7days" to tvPreset7days,
-            "30days" to tvPreset30days,
-            "custom" to tvPresetCustom
+            "today" to binding.tvPresetToday,
+            "7days" to binding.tvPreset7days,
+            "30days" to binding.tvPreset30days,
+            "custom" to binding.tvPresetCustom
         )
 
         presetViews.forEach { (key, view) ->
@@ -160,15 +142,15 @@ class CounselFilterBottomSheetFragment : BottomSheetDialogFragment() {
             try {
                 val start = LocalDate.parse(tempStartDate, dateFormatter).format(displayFormatter)
                 val end = LocalDate.parse(tempEndDate, dateFormatter).format(displayFormatter)
-                tvDateRangeDisplay.text = "$start ~ $end"
-                tvDateRangeDisplay.visibility = View.VISIBLE
+                binding.tvDateRangeDisplay.text = "$start ~ $end"
+                binding.tvDateRangeDisplay.visibility = View.VISIBLE
             } catch (e: Exception) {
-                tvDateRangeDisplay.text = ""
-                tvDateRangeDisplay.visibility = View.GONE
+                binding.tvDateRangeDisplay.text = ""
+                binding.tvDateRangeDisplay.visibility = View.GONE
             }
         } else {
-            tvDateRangeDisplay.text = "전체 기간"
-            tvDateRangeDisplay.visibility = View.VISIBLE
+            binding.tvDateRangeDisplay.text = getString(R.string.counsel_filter_all_period)
+            binding.tvDateRangeDisplay.visibility = View.VISIBLE
         }
     }
 
@@ -185,7 +167,7 @@ class CounselFilterBottomSheetFragment : BottomSheetDialogFragment() {
 
         // 1. "전체" 라디오 버튼 추가
         val totalRb = layoutInflater.inflate(R.layout.item_filter_radio, container, false) as RadioButton
-        totalRb.text = "전체"
+        totalRb.text = getString(R.string.counsel_filter_all)
         totalRb.tag = null
         totalRb.isChecked = (currentSelectedTag == null)
         allRadioButtons.add(totalRb)
@@ -253,12 +235,12 @@ class CounselFilterBottomSheetFragment : BottomSheetDialogFragment() {
 
         val list = mutableListOf<EmployeeStat>()
         if (!hasUnassigned) {
-            list.add(EmployeeStat(empSeq = 0, empName = "미배정", count = 0))
+            list.add(EmployeeStat(empSeq = 0, empName = getString(R.string.counsel_label_unassigned), count = 0))
         }
 
         list.addAll(rawList.map {
             if (it.empSeq == 0 || it.empName.isBlank()) {
-                it.copy(empName = "미배정")
+                it.copy(empName = getString(R.string.counsel_label_unassigned))
             } else {
                 it
             }
@@ -267,7 +249,7 @@ class CounselFilterBottomSheetFragment : BottomSheetDialogFragment() {
         val uniqueList = list.distinctBy { it.empSeq }
 
         populateGridOptions(
-            container = containerManager,
+            container = binding.containerManager,
             items = uniqueList,
             getItemText = { it.empName },
             getItemTag = { it.empSeq },
@@ -278,7 +260,7 @@ class CounselFilterBottomSheetFragment : BottomSheetDialogFragment() {
 
     private fun populateWebsiteOptions() {
         populateGridOptions(
-            container = containerWebsite,
+            container = binding.containerWebsite,
             items = viewModel.websiteList.value,
             getItemText = { it.webTitle },
             getItemTag = { it.webCode },
@@ -289,12 +271,12 @@ class CounselFilterBottomSheetFragment : BottomSheetDialogFragment() {
 
     private fun setupListeners() {
         // Close Button Click
-        btnClose.setOnClickListener {
+        binding.btnClose.setOnClickListener {
             dismiss()
         }
 
         // Reset Click
-        btnReset.setOnClickListener {
+        binding.btnReset.setOnClickListener {
             tempStartDate = null
             tempEndDate = null
             tempEmpSeq = null
@@ -308,7 +290,7 @@ class CounselFilterBottomSheetFragment : BottomSheetDialogFragment() {
         }
 
         // Today preset Click
-        tvPresetToday.setOnClickListener {
+        binding.tvPresetToday.setOnClickListener {
             val today = LocalDate.now().format(dateFormatter)
             tempStartDate = today
             tempEndDate = today
@@ -318,7 +300,7 @@ class CounselFilterBottomSheetFragment : BottomSheetDialogFragment() {
         }
 
         // 7 Days preset Click
-        tvPreset7days.setOnClickListener {
+        binding.tvPreset7days.setOnClickListener {
             val start = LocalDate.now().minusDays(7).format(dateFormatter)
             val end = LocalDate.now().format(dateFormatter)
             tempStartDate = start
@@ -329,7 +311,7 @@ class CounselFilterBottomSheetFragment : BottomSheetDialogFragment() {
         }
 
         // 30 Days preset Click
-        tvPreset30days.setOnClickListener {
+        binding.tvPreset30days.setOnClickListener {
             val start = LocalDate.now().minusDays(30).format(dateFormatter)
             val end = LocalDate.now().format(dateFormatter)
             tempStartDate = start
@@ -340,12 +322,12 @@ class CounselFilterBottomSheetFragment : BottomSheetDialogFragment() {
         }
 
         // Custom preset Click
-        tvPresetCustom.setOnClickListener {
+        binding.tvPresetCustom.setOnClickListener {
             showCustomDatePickerFlow()
         }
 
         // Apply Click
-        btnApply.setOnClickListener {
+        binding.btnApply.setOnClickListener {
             viewModel.updateDateFilter(tempStartDate, tempEndDate)
             viewModel.updateManagerFilter(tempEmpSeq)
             viewModel.updateWebsiteFilter(tempWebCode)
@@ -374,5 +356,10 @@ class CounselFilterBottomSheetFragment : BottomSheetDialogFragment() {
         }
         
         customCalendar.show(childFragmentManager, "custom_calendar_dialog")
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
