@@ -372,7 +372,7 @@ class StatusEditFragment : Fragment() {
                     binding.tvStatusColor.text = hex
                     binding.viewColorPreview.updateColorIndicator(hex)
                 }
-            ).show(parentFragmentManager, "ColorPickerBottomSheet")
+            ).show(parentFragmentManager, "ColorPickerDialog")
         }
     }
 

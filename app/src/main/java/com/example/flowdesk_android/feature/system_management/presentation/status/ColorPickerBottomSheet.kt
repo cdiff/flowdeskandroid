@@ -11,15 +11,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
+import androidx.fragment.app.DialogFragment
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.databinding.DialogColorPickerBottomSheetBinding
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 
 class ColorPickerBottomSheet(
     private val initialColor: String = "#3B82F6",
     private val onColorSelected: (String) -> Unit
-) : BottomSheetDialogFragment() {
+) : DialogFragment() {
 
     private var _binding: DialogColorPickerBottomSheetBinding? = null
     private val binding get() = _binding!!
@@ -27,6 +26,8 @@ class ColorPickerBottomSheet(
     private var currentHex = initialColor
     private var currentHue = 200f
     private var isProgrammaticChange = false
+
+    override fun getTheme(): Int = R.style.ColorPickerDialogTheme
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,29 +37,31 @@ class ColorPickerBottomSheet(
         return binding.root
     }
 
-    override fun getTheme(): Int {
-        return R.style.CustomBottomSheetDialogTheme
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Parse initial color
-        val parsedColor = runCatching { Color.parseColor(initialColor) }.getOrDefault(Color.parseColor("#3B82F6"))
+        // 초기 색상 파싱
+        val parsedColor = runCatching { Color.parseColor(initialColor) }
+            .getOrDefault(Color.parseColor("#3B82F6"))
         val hsv = FloatArray(3)
         Color.colorToHSV(parsedColor, hsv)
         currentHue = hsv[0]
         val initialSat = hsv[1]
         val initialVal = hsv[2]
 
-        // Set up SeekBar
+        // 7색 무지개 그라디언트를 코드로 직접 적용 (XML <item offset> 방식은 호환성 문제 있음)
+        applyRainbowGradient()
+
+        // SeekBar 설정
         binding.hueSeekBar.max = 360
         binding.hueSeekBar.progress = currentHue.toInt()
 
-        // Generate initial S-V palette and apply
-        binding.colorPickerView.setPaletteDrawable(BitmapDrawable(resources, generateSVPalette(currentHue)))
+        // 초기 S-V 팔레트 적용
+        binding.colorPickerView.setPaletteDrawable(
+            BitmapDrawable(resources, generateSVPalette(currentHue))
+        )
 
-        // Position selector at the initial color after layout pass
+        // 레이아웃 완료 후 셀렉터 초기 위치 지정
         binding.colorPickerView.post {
             val x = (initialSat * binding.colorPickerView.width).toInt()
             val y = ((1f - initialVal) * binding.colorPickerView.height).toInt()
@@ -66,40 +69,41 @@ class ColorPickerBottomSheet(
             updateColorUI(parsedColor)
         }
 
-        // ColorPicker selection listener
-        binding.colorPickerView.setColorListener(ColorEnvelopeListener { envelope, fromUser ->
-            if (fromUser) {
-                updateColorUI(envelope.color)
+        // 팔레트 터치 리스너
+        binding.colorPickerView.setColorListener(
+            com.skydoves.colorpickerview.listeners.ColorEnvelopeListener { envelope, fromUser ->
+                if (fromUser) updateColorUI(envelope.color)
             }
-        })
+        )
 
-        // Hue SeekBar change listener
+        // Hue SeekBar 리스너
         binding.hueSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if (fromUser) {
-                    val hue = progress.toFloat()
-                    currentHue = hue
+                if (!fromUser) return
+                val hue = progress.toFloat()
+                currentHue = hue
 
-                    // Calculate color at current selector coordinates
-                    val point = binding.colorPickerView.getSelectedPoint()
-                    val rx = if (binding.colorPickerView.width > 0) point.x.toFloat() / binding.colorPickerView.width else 0.5f
-                    val ry = if (binding.colorPickerView.height > 0) point.y.toFloat() / binding.colorPickerView.height else 0.5f
+                val point = binding.colorPickerView.getSelectedPoint()
+                val rx = if (binding.colorPickerView.width > 0)
+                    point.x.toFloat() / binding.colorPickerView.width else 0.5f
+                val ry = if (binding.colorPickerView.height > 0)
+                    point.y.toFloat() / binding.colorPickerView.height else 0.5f
 
-                    val s = rx.coerceIn(0f, 1f)
-                    val v = (1f - ry).coerceIn(0f, 1f)
-                    val color = Color.HSVToColor(floatArrayOf(hue, s, v))
+                val s = rx.coerceIn(0f, 1f)
+                val v = (1f - ry).coerceIn(0f, 1f)
+                val color = Color.HSVToColor(floatArrayOf(hue, s, v))
 
-                    binding.colorPickerView.setPaletteDrawable(BitmapDrawable(resources, generateSVPalette(hue)))
-                    binding.colorPickerView.setSelectorPoint(point.x, point.y)
-
-                    updateColorUI(color)
-                }
+                binding.colorPickerView.setPaletteDrawable(
+                    BitmapDrawable(resources, generateSVPalette(hue))
+                )
+                binding.colorPickerView.setSelectorPoint(point.x, point.y)
+                updateColorUI(color)
             }
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
 
-        // Manual HEX EditText entry listener
+        // HEX 직접 입력 리스너
         binding.etHexValue.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -114,23 +118,53 @@ class ColorPickerBottomSheet(
             override fun afterTextChanged(s: Editable?) {}
         })
 
+        binding.btnCancelColor.setOnClickListener {
+            dismiss()
+        }
+
         binding.btnConfirmColor.setOnClickListener {
             onColorSelected(currentHex)
             dismiss()
         }
     }
 
+    /**
+     * SeekBar 뒤 무지개 바를 GradientDrawable로 코드에서 직접 생성합니다.
+     * XML <item offset> 방식은 일부 API 버전에서 렌더링 오류가 있습니다.
+     */
+    private fun applyRainbowGradient() {
+        val colors = intArrayOf(
+            Color.parseColor("#FF0000"), // 빨
+            Color.parseColor("#FFFF00"), // 주/노
+            Color.parseColor("#00FF00"), // 초
+            Color.parseColor("#00FFFF"), // 청
+            Color.parseColor("#0000FF"), // 남
+            Color.parseColor("#FF00FF"), // 보
+            Color.parseColor("#FF0000")  // 빨 (순환)
+        )
+        val rainbowDrawable = GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, colors).apply {
+            cornerRadius = 7 * resources.displayMetrics.density
+        }
+        binding.root.post {
+            // FrameLayout 안 첫 번째 View(무지개 바)에 적용
+            val rainbowBar = binding.hueSeekBar.parent
+                .let { it as? android.view.ViewGroup }
+                ?.getChildAt(0)
+            rainbowBar?.background = rainbowDrawable
+        }
+    }
+
+    /** HSV 팔레트 Bitmap 생성 (Saturation X축, Value Y축) */
     private fun generateSVPalette(hue: Float): Bitmap {
-        val width = 100
-        val height = 100
+        val width = 200
+        val height = 200
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val pixels = IntArray(width * height)
         val hsv = floatArrayOf(hue, 0f, 0f)
         for (y in 0 until height) {
             val v = 1f - (y.toFloat() / (height - 1))
             for (x in 0 until width) {
-                val s = x.toFloat() / (width - 1)
-                hsv[1] = s
+                hsv[1] = x.toFloat() / (width - 1)
                 hsv[2] = v
                 pixels[y * width + x] = Color.HSVToColor(hsv)
             }
@@ -149,29 +183,24 @@ class ColorPickerBottomSheet(
             isProgrammaticChange = false
         }
 
+        // 컬러 미리보기 원 업데이트
         val previewDrawable = GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            cornerRadius = 8 * resources.displayMetrics.density
+            shape = GradientDrawable.OVAL
             setColor(selectedColor)
         }
         binding.viewColorPreviewPicker.background = previewDrawable
-        binding.btnConfirmColor.backgroundTintList = android.content.res.ColorStateList.valueOf(selectedColor)
 
         if (triggerSelector) {
             val hsv = FloatArray(3)
             Color.colorToHSV(selectedColor, hsv)
-            val hue = hsv[0]
-            val sat = hsv[1]
-            val valVal = hsv[2]
-
-            currentHue = hue
-            binding.hueSeekBar.progress = hue.toInt()
-
-            binding.colorPickerView.setPaletteDrawable(BitmapDrawable(resources, generateSVPalette(hue)))
-
+            currentHue = hsv[0]
+            binding.hueSeekBar.progress = hsv[0].toInt()
+            binding.colorPickerView.setPaletteDrawable(
+                BitmapDrawable(resources, generateSVPalette(hsv[0]))
+            )
             binding.colorPickerView.post {
-                val x = (sat * binding.colorPickerView.width).toInt()
-                val y = ((1f - valVal) * binding.colorPickerView.height).toInt()
+                val x = (hsv[1] * binding.colorPickerView.width).toInt()
+                val y = ((1f - hsv[2]) * binding.colorPickerView.height).toInt()
                 binding.colorPickerView.setSelectorPoint(x, y)
             }
         }
