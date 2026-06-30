@@ -15,6 +15,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+
 sealed class DashboardState {
     object Idle : DashboardState()
     object Loading : DashboardState()
@@ -33,26 +42,42 @@ class DashboardViewModel @Inject constructor(
     private val authSessionUseCase: AuthenticateSessionUseCase
 ) : ViewModel() {
 
-    private val _dashboardState = MutableStateFlow<DashboardState>(DashboardState.Idle)
-    val dashboardState: StateFlow<DashboardState> = _dashboardState.asStateFlow()
+    // 1. 수동 리프레시 트리거
+    private val _refreshTrigger = MutableStateFlow(0)
+
+    // 2. [핵심] 선언형 UI 상태 파이프라인
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val dashboardState: StateFlow<DashboardState> = _refreshTrigger
+        .flatMapLatest { trigger ->
+            flow {
+                if (trigger == 0) {
+                    emit(DashboardState.Idle)
+                    return@flow
+                }
+                emit(DashboardState.Loading)
+                authRepository.getMe().fold(
+                    onSuccess = { emit(DashboardState.Success(it)) },
+                    onFailure = { err ->
+                        emit(DashboardState.Error(err.message ?: "Unknown error"))
+                        _dashboardEffect.emit(DashboardEffect.ShowToast("Info Fetch Failed: ${err.message}"))
+                    }
+                )
+            }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), DashboardState.Idle)
 
     private val _dashboardEffect = MutableSharedFlow<DashboardEffect>()
     val dashboardEffect: SharedFlow<DashboardEffect> = _dashboardEffect.asSharedFlow()
 
     init {
-        loadDashboardData()
+        triggerRefresh()
+    }
+
+    fun triggerRefresh() {
+        _refreshTrigger.value = _refreshTrigger.value + 1
     }
 
     fun loadDashboardData() {
-        viewModelScope.launch {
-            _dashboardState.value = DashboardState.Loading
-            authRepository.getMe().onSuccess { response ->
-                _dashboardState.value = DashboardState.Success(response)
-            }.onFailure { exception ->
-                _dashboardState.value = DashboardState.Error(exception.message ?: "Unknown error")
-                _dashboardEffect.emit(DashboardEffect.ShowToast("Info Fetch Failed: ${exception.message}"))
-            }
-        }
+        triggerRefresh()
     }
 
     fun logout() {
