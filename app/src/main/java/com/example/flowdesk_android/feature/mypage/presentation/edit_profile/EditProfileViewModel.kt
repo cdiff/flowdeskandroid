@@ -12,6 +12,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
 sealed class EditProfileUiState {
@@ -30,21 +38,30 @@ class EditProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : BaseViewModel() {
 
-    private val _uiState = MutableStateFlow<EditProfileUiState>(EditProfileUiState.Loading)
-    val uiState: StateFlow<EditProfileUiState> = _uiState.asStateFlow()
+    // 1. 수동 리프레시 트리거
+    private val _refreshTrigger = MutableStateFlow(0)
+
+    // 2. [핵심] 선언형 UI 상태 파이프라인
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val uiState: StateFlow<EditProfileUiState> = _refreshTrigger
+        .flatMapLatest {
+            flow {
+                emit(EditProfileUiState.Loading)
+                authRepository.getMe()
+                    .onSuccess { emit(EditProfileUiState.Success(it)) }
+                    .onFailure { emit(EditProfileUiState.Error(it.message ?: "")) }
+            }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), EditProfileUiState.Loading)
 
     private val _event = Channel<EditProfileEvent>()
     val event: Flow<EditProfileEvent> = _event.receiveAsFlow()
 
-    init { loadProfile() }
+    init {
+        triggerRefresh()
+    }
 
-    fun loadProfile() {
-        viewModelScope.launch {
-            _uiState.value = EditProfileUiState.Loading
-            authRepository.getMe()
-                .onSuccess { _uiState.value = EditProfileUiState.Success(it) }
-                .onFailure { _uiState.value = EditProfileUiState.Error(it.message ?: "") }
-        }
+    fun triggerRefresh() {
+        _refreshTrigger.value = _refreshTrigger.value + 1
     }
 
     fun updateProfile(userName: String, userEmail: String, corpName: String?, userTel: String?, userHp: String?) {
@@ -52,7 +69,7 @@ class EditProfileViewModel @Inject constructor(
             authRepository.updateProfile(userName, userEmail, userTel, userHp)
                 .onSuccess {
                     _event.send(EditProfileEvent.Updated)
-                    loadProfile()
+                    triggerRefresh()
                 }
                 .onFailure { _event.send(EditProfileEvent.Error(it.message ?: "")) }
         }

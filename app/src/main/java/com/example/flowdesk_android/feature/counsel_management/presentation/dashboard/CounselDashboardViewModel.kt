@@ -11,6 +11,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+
 // ── UI State ──────────────────────────────────────────────
 sealed class CounselDashboardUiState {
     object Loading : CounselDashboardUiState()
@@ -23,15 +32,37 @@ class CounselDashboardViewModel @Inject constructor(
     private val counselRepository: CounselRepository
 ) : BaseViewModel() {
 
-    private val _uiState = MutableStateFlow<CounselDashboardUiState>(CounselDashboardUiState.Loading)
-    val uiState: StateFlow<CounselDashboardUiState> = _uiState.asStateFlow()
+    // 1. 수동 리프레시 트리거
+    private val _refreshTrigger = MutableStateFlow(0)
+
+    // 2. 검색 날짜 기간 필터
+    private val _dateRange = MutableStateFlow<Pair<String?, String?>>(null to null)
+
+    // 3. [핵심] 선언형 UI 상태 파이프라인
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val uiState: StateFlow<CounselDashboardUiState> = combine(
+        _dateRange,
+        _refreshTrigger
+    ) { range, _ ->
+        range
+    }.flatMapLatest { (startDate, endDate) ->
+        flow {
+            emit(CounselDashboardUiState.Loading)
+            counselRepository.getDashboard(startDate, endDate)
+                .onSuccess { emit(CounselDashboardUiState.Success(it)) }
+                .onFailure { emit(CounselDashboardUiState.Error(it.message ?: "오류 발생")) }
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), CounselDashboardUiState.Loading)
+
+    init {
+        triggerRefresh()
+    }
+
+    fun triggerRefresh() {
+        _refreshTrigger.value = _refreshTrigger.value + 1
+    }
 
     fun loadDashboard(startDate: String? = null, endDate: String? = null) {
-        viewModelScope.launch {
-            _uiState.value = CounselDashboardUiState.Loading
-            counselRepository.getDashboard(startDate, endDate)
-                .onSuccess { _uiState.value = CounselDashboardUiState.Success(it) }
-                .onFailure { _uiState.value = CounselDashboardUiState.Error(it.message ?: "오류 발생") }
-        }
+        _dateRange.value = startDate to endDate
     }
 }

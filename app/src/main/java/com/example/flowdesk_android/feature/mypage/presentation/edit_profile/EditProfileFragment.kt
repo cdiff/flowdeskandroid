@@ -39,7 +39,7 @@ class EditProfileFragment : Fragment(R.layout.fragment_mypage_edit_profile) {
         observeViewModel()
         
         // Initial Load
-        viewModel.loadProfile()
+        viewModel.triggerRefresh()
     }
 
     private fun setupListeners() {

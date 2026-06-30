@@ -14,7 +14,15 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
 // ── UI State ───────────────────────────────────────────────────────────────────
@@ -39,8 +47,85 @@ class CounselDetailViewModel @Inject constructor(
     private val counselRepository: CounselRepository
 ) : BaseViewModel() {
 
-    private val _uiState = MutableStateFlow<CounselDetailUiState>(CounselDetailUiState.Loading)
-    val uiState: StateFlow<CounselDetailUiState> = _uiState.asStateFlow()
+    // 1. 수동 리프레시 트리거
+    private val _refreshTrigger = MutableStateFlow(0)
+
+    // 2. 현재 로드할 상담 ID
+    private val _counselIdState = MutableStateFlow<Int>(-1)
+
+    // 3. [핵심] 선언형 UI 상태 파이프라인 (상세 정보 조회)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val uiState: StateFlow<CounselDetailUiState> = combine(_counselIdState, _refreshTrigger) { id, _ ->
+        id
+    }.flatMapLatest { id ->
+        flow {
+            if (id == -1) {
+                emit(CounselDetailUiState.Loading)
+                return@flow
+            }
+            emit(CounselDetailUiState.Loading)
+            counselRepository.getCounselDetail(id)
+                .onSuccess { detail -> emit(CounselDetailUiState.Success(detail)) }
+                .onFailure { err ->
+                    val msg = err.message ?: "상담 정보를 불러오지 못했습니다."
+                    emit(CounselDetailUiState.Error(msg))
+                    sendError(msg)
+                }
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), CounselDetailUiState.Loading)
+
+    // 4. 담당자 및 상태 목록 반응형 관찰 (대시보드 API 재활용)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val employeeList: StateFlow<List<EmployeeStat>> = _refreshTrigger
+        .flatMapLatest {
+            flow {
+                counselRepository.getDashboard()
+                    .onSuccess { emit(it.employeeStats) }
+                    .onFailure { emit(emptyList<EmployeeStat>()) }
+            }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val statusList: StateFlow<List<CounselStatusStat>> = _refreshTrigger
+        .flatMapLatest {
+            flow {
+                counselRepository.getDashboard()
+                    .onSuccess { emit(it.statusDistribution) }
+                    .onFailure { emit(emptyList<CounselStatusStat>()) }
+            }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // 5. 메모 목록 반응형 관찰
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val memoList: StateFlow<List<CounselMemo>> = combine(_counselIdState, _refreshTrigger) { id, _ ->
+        id
+    }.flatMapLatest { id ->
+        flow {
+            if (id == -1) {
+                emit(emptyList<CounselMemo>())
+                return@flow
+            }
+            counselRepository.getCounselMemos(id)
+                .onSuccess { emit(it) }
+                .onFailure { emit(emptyList<CounselMemo>()) }
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // 6. 이력 목록 반응형 관찰
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val logList: StateFlow<List<CounselLog>> = combine(_counselIdState, _refreshTrigger) { id, _ ->
+        id
+    }.flatMapLatest { id ->
+        flow {
+            if (id == -1) {
+                emit(emptyList<CounselLog>())
+                return@flow
+            }
+            counselRepository.getCounselLogs(id)
+                .onSuccess { emit(it) }
+                .onFailure { emit(emptyList<CounselLog>()) }
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _updateState = MutableStateFlow<CounselUpdateState>(CounselUpdateState.Idle)
     val updateState: StateFlow<CounselUpdateState> = _updateState.asStateFlow()
@@ -51,75 +136,29 @@ class CounselDetailViewModel @Inject constructor(
     private val _deleteState = MutableStateFlow<CounselUpdateState>(CounselUpdateState.Idle)
     val deleteState: StateFlow<CounselUpdateState> = _deleteState.asStateFlow()
 
-    // 담당자 목록 (대시보드 API에서 재활용)
-    private val _employeeList = MutableStateFlow<List<EmployeeStat>>(emptyList())
-    val employeeList: StateFlow<List<EmployeeStat>> = _employeeList.asStateFlow()
-
-    // 상태 목록 (대시보드 API에서 재활용)
-    private val _statusList = MutableStateFlow<List<CounselStatusStat>>(emptyList())
-    val statusList: StateFlow<List<CounselStatusStat>> = _statusList.asStateFlow()
-
-    // 메모 목록 (전용 API 연동)
-    private val _memoList = MutableStateFlow<List<CounselMemo>>(emptyList())
-    val memoList: StateFlow<List<CounselMemo>> = _memoList.asStateFlow()
-
     // 메모 등록 상태
     private val _memoAddState = MutableStateFlow<CounselUpdateState>(CounselUpdateState.Idle)
     val memoAddState: StateFlow<CounselUpdateState> = _memoAddState.asStateFlow()
 
-    // 이력 목록 (전용 API 연동)
-    private val _logList = MutableStateFlow<List<CounselLog>>(emptyList())
-    val logList: StateFlow<List<CounselLog>> = _logList.asStateFlow()
- 
-    private var counselId: Int = -1
-
     fun init(id: Int) {
-        if (counselId == id) return
-        counselId = id
-        loadDetail()
-        loadEmployeeAndStatusList()
-        loadMemos()
-        loadLogs()
+        if (_counselIdState.value == id) return
+        _counselIdState.value = id
+        triggerRefresh()
     }
 
-    fun loadDetail() {
-        if (counselId == -1) return
-        _uiState.value = CounselDetailUiState.Loading
-        viewModelScope.launch {
-            counselRepository.getCounselDetail(counselId)
-                .onSuccess { detail ->
-                    _uiState.value = CounselDetailUiState.Success(detail)
-                }
-                .onFailure { err ->
-                    val msg = err.message ?: "상담 정보를 불러오지 못했습니다."
-                    _uiState.value = CounselDetailUiState.Error(msg)
-                    sendError(msg)
-                }
-        }
-    }
-
-    /** 대시보드 API의 employeeStats / statusDistribution 재활용 */
-    fun loadEmployeeAndStatusList() {
-        viewModelScope.launch {
-            counselRepository.getDashboard()
-                .onSuccess { dashboard ->
-                    _employeeList.value = dashboard.employeeStats
-                    _statusList.value = dashboard.statusDistribution
-                }
-                .onFailure {
-                    // 실패해도 상세 화면 자체는 표시할 수 있으므로 silent fail
-                }
-        }
+    fun triggerRefresh() {
+        _refreshTrigger.value = _refreshTrigger.value + 1
     }
 
     fun updateCounsel(request: CounselUpdateRequest) {
-        if (counselId == -1) return
+        val currentId = _counselIdState.value
+        if (currentId == -1) return
         _updateState.value = CounselUpdateState.Loading
         viewModelScope.launch {
-            counselRepository.updateCounsel(counselId, request)
+            counselRepository.updateCounsel(currentId, request)
                 .onSuccess {
                     _updateState.value = CounselUpdateState.Success
-                    loadDetail() // 수정 후 최신 데이터 반영
+                    triggerRefresh() // 수정 후 최신 데이터 반응형 갱신
                 }
                 .onFailure { err ->
                     val msg = err.message ?: "상담 수정에 실패했습니다."
@@ -130,18 +169,18 @@ class CounselDetailViewModel @Inject constructor(
     }
 
     fun updateCounselStatus(counselStat: Int, counselResvDtm: String? = null) {
-        if (counselId == -1) return
+        val currentId = _counselIdState.value
+        if (currentId == -1) return
         _statusUpdateState.value = CounselUpdateState.Loading
         viewModelScope.launch {
             val request = CounselStatusUpdateRequest(
                 counselStat = counselStat,
                 counselResvDtm = counselResvDtm
             )
-            counselRepository.updateCounselStatus(counselId, request)
+            counselRepository.updateCounselStatus(currentId, request)
                 .onSuccess {
                     _statusUpdateState.value = CounselUpdateState.Success
-                    loadDetail() // 상태 변경 후 최신 데이터 반영
-                    loadLogs()   // 상태 변경 후 이력 정보 새로고침
+                    triggerRefresh() // 상태 변경 후 반응형 갱신
                 }
                 .onFailure { err ->
                     val msg = err.message ?: "상태 변경에 실패했습니다."
@@ -160,10 +199,11 @@ class CounselDetailViewModel @Inject constructor(
     }
 
     fun deleteCounsel() {
-        if (counselId == -1) return
+        val currentId = _counselIdState.value
+        if (currentId == -1) return
         _deleteState.value = CounselUpdateState.Loading
         viewModelScope.launch {
-            counselRepository.deleteCounsel(counselId)
+            counselRepository.deleteCounsel(currentId)
                 .onSuccess {
                     _deleteState.value = CounselUpdateState.Success
                 }
@@ -179,28 +219,15 @@ class CounselDetailViewModel @Inject constructor(
         _deleteState.value = CounselUpdateState.Idle
     }
 
-    fun loadMemos() {
-        if (counselId == -1) return
-        viewModelScope.launch {
-            counselRepository.getCounselMemos(counselId)
-                .onSuccess { list ->
-                    _memoList.value = list
-                }
-                .onFailure {
-                    // silent fail
-                }
-        }
-    }
-
     fun addCounselMemo(memoText: String) {
-        if (counselId == -1) return
+        val currentId = _counselIdState.value
+        if (currentId == -1) return
         _memoAddState.value = CounselUpdateState.Loading
         viewModelScope.launch {
-            counselRepository.addCounselMemo(counselId, memoText)
+            counselRepository.addCounselMemo(currentId, memoText)
                 .onSuccess {
                     _memoAddState.value = CounselUpdateState.Success
-                    loadMemos()
-                    loadDetail() // 메모 등록 후 로그 이력 갱신 등을 위해 상세 로드 병행
+                    triggerRefresh() // 메모 등록 후 반응형 갱신
                 }
                 .onFailure { err ->
                     val msg = err.message ?: "메모 작성에 실패했습니다."
@@ -212,18 +239,5 @@ class CounselDetailViewModel @Inject constructor(
 
     fun resetMemoAddState() {
         _memoAddState.value = CounselUpdateState.Idle
-    }
-
-    fun loadLogs() {
-        if (counselId == -1) return
-        viewModelScope.launch {
-            counselRepository.getCounselLogs(counselId)
-                .onSuccess { list ->
-                    _logList.value = list
-                }
-                .onFailure {
-                    // silent fail
-                }
-        }
     }
 }
