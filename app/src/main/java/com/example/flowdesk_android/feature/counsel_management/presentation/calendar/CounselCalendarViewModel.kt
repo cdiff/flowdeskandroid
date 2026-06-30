@@ -33,7 +33,6 @@ class CounselCalendarViewModel @Inject constructor(
     private val _selectedEmpSeq = MutableStateFlow<Int?>(null)
     val selectedEmpSeq: StateFlow<Int?> = _selectedEmpSeq.asStateFlow()
 
-    private val _employeeList = MutableStateFlow<List<EmployeeStat>>(emptyList())
     val employeeList: StateFlow<List<EmployeeStat>> = _employeeList.asStateFlow()
 
     private val _uiState = MutableStateFlow<CalendarUiState>(CalendarUiState.Loading)
