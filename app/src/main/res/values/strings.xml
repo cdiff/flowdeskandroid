@@ -34,4 +34,190 @@
     <string name="error_password_mismatch">비밀번호가 틀렸습니다.</string>
     <string name="btn_signup_action">가입하기</string>
     <string name="text_sns_easy_login">기존 아이디로 로그인하기</string>
+
+    <!-- User Management -->
+    <string name="error_required_fields">필수 항목을 모두 입력해주세요.</string>
+    <string name="error_password_mismatch_simple">비밀번호가 일치하지 않습니다.</string>
+    <string name="error_select_at_least_one_role">하나 이상의 역할을 선택해주세요.</string>
+    <string name="success_user_invited">팀원 초대가 완료되었습니다.</string>
+    <string name="error_no_changed_roles">변경된 역할이 없습니다.</string>
+    <string name="error_password_min_length">비밀번호는 6자 이상 입력해주세요.</string>
+    <string name="success_user_status_changed">사용자 상태가 변경되었습니다.</string>
+    <string name="success_info_updated">정보가 성공적으로 변경되었습니다.</string>
+    <string name="success_roles_changed">역할이 성공적으로 변경되었습니다.</string>
+    <string name="success_password_changed">비밀번호가 변경되었습니다.</string>
+    <string name="success_tokens_invalidated">모든 토큰이 무효화 되었습니다.</string>
+    <string name="dialog_role_delete_title">역할 삭제</string>
+    <string name="dialog_role_delete_message">\'%1$s\' 역할을 정말 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.</string>
+    <string name="toast_status_change_requested">상태 변경을 요청했습니다.</string>
+    <string name="toast_delete_requested">삭제 요청을 보냈습니다.</string>
+    <string name="success_role_created">새 역할이 생성되었습니다.</string>
+    <string name="error_fill_all_fields">모든 항목을 입력해주세요.</string>
+    <string name="toast_invalid_access">잘못된 접근입니다.</string>
+    <string name="toast_enter_name">이름을 입력해주세요.</string>
+    <string name="dialog_role_copy_message">\'%1$s\' 역할의 권한 설정을\n이 역할에 복사할까요?\n\n(기존 권한은 모두 제거됩니다)</string>
+    <string name="success_permissions_saved">권한이 저장되었습니다.</string>
+    <string name="success_permissions_copied">다른 역할의 권한을 성공적으로 가져왔습니다.</string>
+    <string name="success_role_info_updated">역할 정보가 수정되었습니다.</string>
+
+    <!-- System Management Status -->
+    <string name="status_msg_enter_group">업무 분류를 입력해주세요.</string>
+    <string name="status_msg_enter_name">상태 이름을 입력해주세요.</string>
+    <string name="status_msg_invalid_color_format">색상은 #RRGGBB 형식만 허용됩니다. (예: #3B82F6)</string>
+    <string name="status_msg_updated">상담 상태가 수정되었습니다.</string>
+    <string name="status_msg_enter_key">상태 고유 키(Key)를 입력해주세요.</string>
+    <string name="status_msg_invalid_key">상태 키는 영문 소문자, 숫자, 언더스코어(_)만 가능합니다.</string>
+    <string name="status_msg_duplicate_key">해당 그룹에 이미 동일한 상태 키가 존재합니다.</string>
+    <string name="status_msg_created">상담 상태가 추가되었습니다.</string>
+
+    <!-- System Management Block -->
+    <string name="block_msg_enter_reason">차단 사유를 입력해주세요.</string>
+    <string name="block_msg_reason_updated">차단 사유가 수정되었습니다.</string>
+    <string name="block_msg_reason_update_failed">수정에 실패했습니다.</string>
+    <string name="block_ip_msg_created">차단 IP가 성공적으로 등록되었습니다.</string>
+    <string name="block_ip_msg_deleted">IP 차단이 해제되었습니다.</string>
+    <string name="block_ip_msg_enter_ip">차단할 IP 주소를 입력해주세요.</string>
+    <string name="block_ip_msg_enter_ips">차단할 IP 주소 목록을 입력해주세요.</string>
+    <string name="block_ip_msg_bulk_success">대량 IP 등록 완료 (성공: %1$d건, 건너뜀: %2$d건)</string>
+    <string name="block_keyword_msg_created">금칙어가 성공적으로 등록되었습니다.</string>
+    <string name="block_keyword_msg_deleted">금칙어 차단이 해제되었습니다.</string>
+    <string name="block_keyword_msg_enter_keyword">금칙어를 입력해주세요.</string>
+    <string name="block_keyword_msg_enter_keywords">금칙어 목록을 입력해주세요.</string>
+    <string name="block_keyword_msg_bulk_success">대량 금칙어 등록 완료 (성공: %1$d건, 건너뜀: %2$d건)</string>
+    <string name="block_phone_msg_created">차단 번호가 성공적으로 등록되었습니다.</string>
+    <string name="block_phone_msg_deleted">휴대폰 차단이 해제되었습니다.</string>
+    <string name="block_phone_msg_enter_phone">차단할 휴대폰 번호를 입력해주세요.</string>
+    <string name="block_phone_msg_invalid_phone">유효한 휴대폰 번호를 입력해주세요.</string>
+    <string name="block_phone_msg_enter_phones">차단할 휴대폰 번호 목록을 입력해주세요.</string>
+    <string name="block_phone_msg_no_valid_phone">차단할 유효한 번호가 없습니다.</string>
+    <string name="block_phone_msg_bulk_success">대량 번호 등록 완료 (성공: %1$d건, 건너뜀: %2$d건)</string>
+    <string name="block_ip_msg_updated">IP 차단 정보가 수정되었습니다.</string>
+    <string name="block_keyword_msg_updated">금칙어 정보가 수정되었습니다.</string>
+    <string name="block_phone_msg_updated">휴대폰 차단 정보가 수정되었습니다.</string>
+
+    <!-- Super Admin -->
+    <string name="tenant_msg_enter_name">테넌트명을 입력해주세요.</string>
+    <string name="tenant_msg_enter_display_name">표시 이름을 입력해주세요.</string>
+    <string name="tenant_msg_enter_domain">도메인을 입력해주세요.</string>
+    <string name="tenant_msg_created">테넌트가 생성되었습니다.</string>
+    <string name="tenant_msg_deleted">테넌트가 삭제되었습니다.</string>
+    <string name="tenant_msg_status_changed">상태가 변경되었습니다.</string>
+    <string name="tenant_msg_status_change_requested">상태 변경을 요청했습니다.</string>
+    <string name="tenant_delete_title">테넌트 삭제</string>
+    <string name="tenant_delete_message">\'%1$s\' 테넌트를 정말 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.</string>
+    <string name="tenant_msg_updated">테넌트 정보가 수정되었습니다.</string>
+
+    <string name="page_msg_enter_name">페이지 이름을 입력해주세요.</string>
+    <string name="page_msg_enter_display_name">표시 이름을 입력해주세요.</string>
+    <string name="page_msg_enter_path">경로를 입력해주세요.</string>
+    <string name="page_msg_created">페이지가 생성되었습니다.</string>
+    <string name="page_msg_deleted">페이지가 삭제되었습니다.</string>
+    <string name="page_msg_status_changed">페이지 상태가 변경되었습니다.</string>
+    <string name="page_delete_title">페이지 삭제</string>
+    <string name="page_delete_message">\'%1$s\' 페이지를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.</string>
+
+    <string name="action_msg_enter_name">액션 이름을 입력해주세요.</string>
+    <string name="action_msg_enter_display_name">표시 이름을 입력해주세요.</string>
+    <string name="action_msg_created">액션이 생성되었습니다.</string>
+    <string name="action_msg_deleted">액션이 삭제되었습니다.</string>
+    <string name="action_msg_status_changed">액션 상태가 변경되었습니다.</string>
+    <string name="action_delete_title">액션 삭제</string>
+    <string name="action_delete_message">\'%1$s\' 액션을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.</string>
+
+    <string name="label_status_active">활성</string>
+    <string name="label_status_inactive">비활성</string>
+    <string name="label_status_active_short">활성 %1$s</string>
+    <string name="label_status_count_total">총 %1$d개</string>
+    <string name="label_status_count_active">활성 %1$d개</string>
+    <string name="label_status_count_inactive">비활성 %1$d개</string>
+    <string name="chart_label_user">사용자</string>
+    <string name="chart_label_counsel">상담</string>
+    <string name="chart_label_tenant">테넌트</string>
+    <string name="chart_label_month_suffix">%1$s월</string>
+    <string name="label_action_save">저장</string>
+    <string name="label_action_edit">수정</string>
+    <string name="label_action_saving">저장 중...</string>
+    <string name="label_action_cancel">취소</string>
+    <string name="label_action_confirm">확인</string>
+    <string name="label_action_delete">삭제</string>
+    <string name="page_status_toggle_confirm_message">\'%1$s\' 페이지를 %2$s하시겠습니까?</string>
+    <string name="action_status_toggle_confirm_message">\'%1$s\' 액션을 %2$s하시겠습니까?</string>
+
+    <!-- MyPage -->
+    <string name="mypage_label_company">소속 회사</string>
+    <string name="mypage_label_permissions">보유 권한</string>
+    <string name="mypage_banner_invite_title">팀원을 초대하고\n함께 업무를 시작해보세요!</string>
+    <string name="mypage_btn_invite">초대하기</string>
+    <string name="mypage_label_my_permissions">나의 권한</string>
+    <string name="mypage_label_permission_details">권한 상세 정보</string>
+    <string name="mypage_label_account_management">계정 관리</string>
+    <string name="mypage_btn_logout">로그아웃</string>
+    <string name="mypage_btn_logout_all">모든 기기 로그아웃</string>
+    <string name="mypage_label_name">이름</string>
+    <string name="mypage_hint_name">이름을 입력해주세요</string>
+    <string name="mypage_label_email">이메일</string>
+    <string name="mypage_label_tel">전화번호</string>
+    <string name="mypage_label_hp">휴대폰</string>
+    <string name="mypage_btn_edit">수정하기</string>
+    <string name="mypage_btn_change_password">비밀번호 변경</string>
+    <string name="mypage_label_current_password">현재 비밀번호</string>
+    <string name="mypage_hint_current_password">현재 비밀번호를 입력해주세요</string>
+    <string name="mypage_label_new_password">새 비밀번호</string>
+    <string name="mypage_hint_new_password">영문, 숫자, 특수문자 포함 8자리 이상</string>
+    <string name="mypage_label_confirm_password">새 비밀번호 확인</string>
+    <string name="mypage_hint_confirm_password">새 비밀번호를 한번 더 입력해주세요</string>
+    <string name="mypage_btn_change">변경하기</string>
+    <string name="mypage_msg_name_email_required">이름과 이메일은 필수입니다.</string>
+    <string name="mypage_msg_profile_updated">정보가 수정되었습니다.</string>
+    <string name="mypage_msg_enter_all_fields">모든 필드를 입력해주세요.</string>
+    <string name="mypage_msg_passwords_do_not_match">새 비밀번호가 일치하지 않습니다.</string>
+    <string name="mypage_msg_password_changed">비밀번호가 변경되었습니다.</string>
+    <string name="mypage_msg_user_suffix">%1$s님</string>
+    <string name="mypage_msg_count_suffix">%1$d개</string>
+    <string name="mypage_permission_all">전체 권한</string>
+    <string name="mypage_permission_read">목록 조회</string>
+    <string name="mypage_permission_create">팀원 추가</string>
+    <string name="mypage_permission_update">정보 수정</string>
+    <string name="mypage_permission_delete">삭제</string>
+    <string name="mypage_dialog_change_password_title">비밀번호 변경</string>
+    <string name="mypage_dialog_change_password_message">비밀번호를 변경하시겠습니까?\n변경 후에는 다시 로그인해야 합니다.</string>
+    <string name="mypage_error_load_failed">정보 조회에 실패했습니다.</string>
+    <string name="mypage_error_update_failed">정보 수정에 실패했습니다.</string>
+    <string name="mypage_error_change_password_failed">비밀번호 변경에 실패했습니다.</string>
+
+    <!-- 알림 설정 -->
+    <string name="mypage_label_notification_settings">알림 설정</string>
+    <string name="mypage_label_new_counsel">신규 상담 등록 알림</string>
+    <string name="mypage_desc_new_counsel">새로운 상담이나 예약이 등록되었을 때 알림을 받습니다.</string>
+    <string name="mypage_label_team_invite">팀원 초대 완료 알림</string>
+    <string name="mypage_desc_team_invite">초대한 팀원이 가입을 완료했을 때 알림을 받습니다.</string>
+    <string name="mypage_label_security_login">계정 로그인 보안 알림</string>
+    <string name="mypage_desc_security_login">새로운 기기에서 로그인 시 알림을 받습니다.</string>
+    <string name="mypage_msg_notification_updated">알림 설정이 저장되었습니다.</string>
+
+    <!-- Counsel Management -->
+    <string name="counsel_toast_phone_copied">전화번호가 복사되었습니다.</string>
+    <string name="counsel_menu_edit">수정</string>
+    <string name="counsel_menu_delete">삭제</string>
+    <string name="counsel_dialog_delete_title">상담 삭제</string>
+    <string name="counsel_dialog_delete_message">\'%1$s\' 고객의 상담 정보를 정말 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.</string>
+    <string name="counsel_toast_status_changed">상태가 변경되었습니다.</string>
+    <string name="counsel_toast_deleted">상담 정보가 삭제되었습니다.</string>
+    <string name="counsel_label_registered_prefix">등록: %1$s</string>
+    <string name="counsel_label_updated_prefix">수정: %1$s</string>
+    <string name="counsel_label_unassigned">미배정</string>
+    <string name="counsel_label_all_managers">모든 담당자</string>
+    <string name="counsel_label_monthly_reservation_count">이번 달 예약: %1$d건</string>
+    <string name="counsel_toast_enter_memo">메모 내용을 입력해 주세요.</string>
+    <string name="counsel_total_count">총 %1$d건</string>
+    <string name="counsel_label_reg_date_prefix">등록일: %1$s</string>
+    <string name="counsel_label_resv_date_prefix">예약일: %1$s</string>
+    <string name="counsel_manager_change_coming_soon">담당자 변경 (준비 중)</string>
+    <string name="counsel_filter_all">전체</string>
+    <string name="counsel_filter_all_period">전체 기간</string>
+    <string name="counsel_calendar_date_format">%1$d월 %2$d일 %3$s</string>
+    <string name="counsel_calendar_month_format">%1$d년 %2$d월</string>
+    <string name="counsel_count_suffix">%1$d건</string>
+    <string name="counsel_edit_error_required_fields">이름과 전화번호는 필수 입력 항목입니다.</string>
+    <string name="counsel_toast_info_updated">수정이 완료되었습니다.</string>
 </resources>

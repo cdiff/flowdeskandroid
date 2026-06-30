@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="5dp"
+    android:background="@drawable/bg_white_rounded_12dp"
+    android:clipToOutline="true"
+    android:outlineProvider="background"
+    android:baselineAligned="false"
+    android:clickable="true"
+    android:focusable="true">
+
+    <!-- ─── 좌측 액센트 바 (카드 전체 높이, 프로그래밍 방식으로 색상 조절) ─── -->
+    <View
+        android:id="@+id/v_accent_bar"
+        android:layout_width="4dp"
+        android:layout_height="match_parent"
+        android:background="@color/color_error" />
+
+    <!-- ─── 콘텐츠 영역 ─── -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="14dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp">
+
+        <!-- 차단 대상 값 (IP, 번호, 금칙어) -->
+        <TextView
+            android:id="@+id/tv_target_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            tools:text="192.168.100.100"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.02"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tv_blocked_at"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- 날짜 (우측, baseline 맞춤) -->
+        <TextView
+            android:id="@+id/tv_blocked_at"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="03.23"
+            android:textColor="@color/text_disabled"
+            android:textSize="11sp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBaseline_toBaselineOf="@id/tv_target_value" />
+
+        <!-- 매칭 타입 뱃지 (금칙어용 우측 뱃지, 기본값 gone) -->
+        <TextView
+            android:id="@+id/tv_matching_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="CONTAINS"
+            android:textColor="@color/brand_primary"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="3dp"
+            android:background="@drawable/bg_badge_rounded_blue_border"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- 차단 사유 -->
+        <TextView
+            android:id="@+id/tv_block_reason"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            tools:text="무단 접근 시도 탐지"
+            android:textColor="@color/text_hint"
+            android:textSize="12sp"
+            android:lineSpacingMultiplier="1.3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_target_value" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

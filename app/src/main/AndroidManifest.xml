@@ -16,7 +16,7 @@
         android:theme="@style/Theme.Flowdeskandroid">
         
         <activity
-            android:name=".presentation.ui.AuthActivity"
+            android:name=".feature.main.AuthActivity"
             android:exported="true"
             android:theme="@style/Theme.Flowdeskandroid">
             <intent-filter>
@@ -26,9 +26,10 @@
         </activity>
 
         <activity
-            android:name=".presentation.ui.MainActivity"
+            android:name=".feature.main.MainActivity"
             android:exported="false"
-            android:theme="@style/Theme.Flowdeskandroid" />
+            android:theme="@style/Theme.Flowdeskandroid"
+            android:windowSoftInputMode="adjustPan" />
     </application>
 
 </manifest>

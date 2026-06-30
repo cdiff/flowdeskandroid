@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginBottom="16dp">
+
+    <!-- 아코디언 헤더 클릭 영역 -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_accordion_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_card_rounded_border"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="14dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:backgroundTint="#FFFFFF"
+        android:foreground="?attr/selectableItemBackground">
+
+        <!-- 확장 화살표 -->
+        <ImageView
+            android:id="@+id/iv_arrow_indicator"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_chevron_right"
+            app:tint="#64748B"
+            android:rotation="90"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- 상태 그룹 이름 -->
+        <TextView
+            android:id="@+id/tv_accordion_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="counsel"
+            android:textColor="#0F172A"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@id/iv_arrow_indicator"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- 상태 개수 배지 (백그라운드 없음) -->
+        <TextView
+            android:id="@+id/tv_accordion_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0개 상태"
+            android:textColor="#3B82F6"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@id/tv_accordion_title"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- 개별 RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_tenant_statuses"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false"
+        android:overScrollMode="never"
+        android:visibility="visible"
+        android:layout_marginTop="8dp"
+        tools:listitem="@layout/item_system_tenant_status" />
+
+</LinearLayout>

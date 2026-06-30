@@ -1,21 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- ══════════════════════════════════════
+         ① Palette — 원시 색상 정의
+    ══════════════════════════════════════ -->
+
+    <!-- Slate (메인 그레이 계열) -->
+    <color name="slate_900">#0F172A</color>
+    <color name="slate_800">#1E293B</color>
+    <color name="slate_700">#334155</color>
+    <color name="slate_600">#475569</color>
+    <color name="slate_500">#64748B</color>
+    <color name="slate_400">#94A3B8</color>
+    <color name="slate_300">#CBD5E1</color>
+    <color name="slate_200">#E2E8F0</color>
+    <color name="slate_100">#F1F5F9</color>
+    <color name="slate_50">#F8FAFC</color>
+
+    <!-- Blue (Primary 액션) -->
+    <color name="blue_700">#1D4ED8</color>
+    <color name="blue_600">#3B82F6</color>
+    <color name="blue_500">#4285F4</color>
+    <color name="blue_800">#1E40AF</color>
+    <color name="blue_50">#E8F0FE</color>
+
+    <!-- Red (에러/삭제/차단) -->
+    <color name="red_600">#DC2626</color>
+    <color name="red_500">#EF4444</color>
+    <color name="red_50">#FEE2E2</color>
+
+    <!-- Green (성공/활성) -->
+    <color name="green_700">#008236</color>
+    <color name="green_500">#22C55E</color>
+    <color name="green_50">#E6F4EA</color>
+
+    <!-- Orange (금칙어) -->
+    <color name="orange_500">#F97316</color>
+
+    <!-- Purple (캘린더) -->
+    <color name="purple_700">#7C3AED</color>
+    <color name="purple_50">#F3E8FF</color>
+
+    <!-- Neutral -->
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+    <color name="transparent">#00000000</color>
+
+    <!-- ══════════════════════════════════════
+         ② Semantic — 역할 기반 색상
+    ══════════════════════════════════════ -->
+
+    <!-- Text -->
+    <color name="text_primary">@color/slate_900</color>
+    <color name="text_strong">@color/slate_800</color>
+    <color name="text_secondary">@color/slate_600</color>
+    <color name="text_tertiary">@color/slate_500</color>
+    <color name="text_hint">@color/slate_400</color>
+    <color name="text_disabled">@color/slate_300</color>
+
+    <!-- Background -->
+    <color name="bg_page">@color/slate_50</color>
+    <color name="bg_card">@color/white</color>
+    <color name="bg_divider">@color/slate_200</color>
+    <color name="bg_divider_light">@color/slate_100</color>
+
+    <!-- Brand / Action -->
+    <color name="brand_primary">@color/blue_600</color>
+    <color name="brand_primary_dark">@color/blue_700</color>
+    <color name="brand_primary_light">@color/blue_50</color>
+
+    <!-- Status -->
+    <color name="color_error">@color/red_500</color>
+    <color name="color_error_bg">@color/red_50</color>
+    <color name="color_success">@color/green_700</color>
+    <color name="color_success_active">@color/green_500</color>
+    <color name="color_success_bg">@color/green_50</color>
+    <color name="color_warning">@color/orange_500</color>
+
+    <!-- Navigation -->
+    <color name="nav_icon">@color/slate_400</color>
+
+    <!-- ══════════════════════════════════════
+         ③ Badge Colors (Action Log)
+    ══════════════════════════════════════ -->
+    <color name="badge_read_bg">#E1F0FF</color>
+    <color name="badge_read_text">#0052CC</color>
+    <color name="badge_create_bg">#E3FCEF</color>
+    <color name="badge_create_text">#006644</color>
+    <color name="badge_update_bg">#FFF0B3</color>
+    <color name="badge_update_text">#FF8B00</color>
+    <color name="badge_delete_bg">#FFEBE6</color>
+    <color name="badge_delete_text">#DE350B</color>
+    <color name="badge_default_bg">#F3F4F6</color>
+    <color name="badge_default_text">@color/slate_500</color>
+
+    <!-- ══════════════════════════════════════
+         ④ Legacy (하위호환 — 점진적 제거 예정)
+    ══════════════════════════════════════ -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
+    <color name="login_blue">@color/blue_500</color>
+    <color name="login_blue_light">@color/blue_50</color>
+    <color name="green_light">@color/green_50</color>
+    <color name="green_accent">@color/green_700</color>
+    <color name="red">@color/red_500</color>
+    <color name="gray_text">@color/slate_500</color>
+    <color name="gray_border">@color/slate_200</color>
     <color name="dack_gray">#585858</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="login_blue">#4285F4</color>
     <color name="dack_gray_text">#626264</color>
-    <color name="gray_text">#757575</color>
-    <color name="gray_border">#D1D1D1</color>
-    <color name="nav">#9AA9BF</color>
-    <color name="login_blue_light">#E8F0FE</color>
-    <color name="green_light">#E6F4EA</color>
-    <color name="green_accent">#008236</color>
+    <color name="nav">@color/slate_400</color>
 
+    <color name="tab_unselected_stroke">@color/slate_200</color>
+    <color name="bg_card_selected">#EFF6FF</color>
+    <color name="bg_card_unselected">@color/bg_card</color>
 
+    <!-- Counsel Specific Colors -->
+    <color name="counsel_tab_selected_bg">@color/slate_800</color>
+    <color name="counsel_tab_unselected_bg">@color/white</color>
+    <color name="counsel_tab_unselected_stroke">@color/slate_200</color>
+    <color name="counsel_tab_unselected_text">#374151</color>
+    <color name="counsel_dropdown_selected_text">#1D4ED8</color>
+    <color name="counsel_dropdown_unselected_text">#475569</color>
+    <color name="counsel_calendar_selected_day">#7C3AED</color>
+    <color name="counsel_calendar_today">#1D4ED8</color>
+    <color name="counsel_calendar_sunday">#EF4444</color>
+    <color name="counsel_calendar_saturday">#3B82F6</color>
+    <color name="counsel_calendar_day_normal">#374151</color>
+    <color name="counsel_calendar_day_disabled">#C7D2E2</color>
+    <color name="counsel_detail_purple_badge">#8B5CF6</color>
 </resources>

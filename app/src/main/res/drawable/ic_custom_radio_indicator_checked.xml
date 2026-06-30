@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="20"
+    android:viewportHeight="20">
+    <!-- 외곽 원형 테두리 (파란색) -->
+    <path
+        android:strokeColor="#3B82F6"
+        android:strokeWidth="2"
+        android:pathData="M10,10m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0" />
+    <!-- 내부 채워진 원형 (파란색) -->
+    <path
+        android:fillColor="#3B82F6"
+        android:pathData="M10,10m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0" />
+</vector>

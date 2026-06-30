@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingVertical="8dp">
+
+    <!-- 1. 유입 정보 (UTM) 카드 -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@android:color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="유입 정보 (UTM)"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#0F172A"
+                android:layout_marginBottom="16dp" />
+
+            <!-- 소스 (Source) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="소스 (Source)"
+                android:textSize="13sp"
+                android:textColor="#334155"
+                android:textStyle="bold"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="6dp" />
+
+            <EditText
+                android:id="@+id/et_utm_source"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_edit_text"
+                android:paddingHorizontal="12dp"
+                android:textSize="14sp"
+                android:textColor="#1E293B"
+                android:inputType="text"
+                android:layout_marginBottom="16dp"
+                tools:text="naver" />
+
+            <!-- 매체 (Medium) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="매체 (Medium)"
+                android:textSize="13sp"
+                android:textColor="#334155"
+                android:textStyle="bold"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="6dp" />
+
+            <EditText
+                android:id="@+id/et_utm_medium"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_edit_text"
+                android:paddingHorizontal="12dp"
+                android:textSize="14sp"
+                android:textColor="#1E293B"
+                android:inputType="text"
+                android:layout_marginBottom="16dp"
+                tools:text="cpc" />
+
+            <!-- 캠페인 (Campaign) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="캠페인 (Campaign)"
+                android:textSize="13sp"
+                android:textColor="#334155"
+                android:textStyle="bold"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="6dp" />
+
+            <EditText
+                android:id="@+id/et_utm_campaign"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_edit_text"
+                android:paddingHorizontal="12dp"
+                android:textSize="14sp"
+                android:textColor="#1E293B"
+                android:inputType="text"
+                tools:text="march_ad" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- 2. 예약 정보 카드 -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@android:color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="예약 정보"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#0F172A"
+                android:layout_marginBottom="16dp" />
+
+            <!-- 예약 일시 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="예약 일시"
+                android:textSize="13sp"
+                android:textColor="#334155"
+                android:textStyle="bold"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="6dp" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/et_reserve_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_edit_text"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="40dp"
+                    android:textSize="14sp"
+                    android:textColor="#1E293B"
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="true"
+                    tools:text="2026-04-14 23:00:00" />
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/ic_calendar"
+                    app:tint="#94A3B8"
+                    android:clickable="false"
+                    android:focusable="false" />
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- 2-1. 상담 요약 메모 카드 -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@android:color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="상담 요약 메모"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#0F172A"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="요약 메모"
+                android:textSize="13sp"
+                android:textColor="#334155"
+                android:textStyle="bold"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="6dp" />
+
+            <EditText
+                android:id="@+id/et_counsel_memo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="80dp"
+                android:background="@drawable/bg_edit_text"
+                android:padding="12dp"
+                android:textSize="14sp"
+                android:textColor="#1E293B"
+                android:inputType="textMultiLine"
+                android:gravity="top|start"
+                android:minLines="3" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- 2-2. 추가 정보 (동적 필드) 카드 -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_dynamic_fields"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@android:color/white"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="추가 정보"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#0F172A"
+                android:layout_marginBottom="16dp" />
+
+            <LinearLayout
+                android:id="@+id/ll_dynamic_fields_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- 3. 수정 완료 버튼 -->
+    <TextView
+        android:id="@+id/btn_save_info"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_rect_rounded_blue"
+        android:gravity="center"
+        android:text="수정 완료"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:clickable="true"
+        android:focusable="true" />
+
+</LinearLayout>

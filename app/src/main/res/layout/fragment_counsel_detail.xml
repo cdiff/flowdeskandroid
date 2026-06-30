@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8FAFC">
+
+    <!-- 1. 상단 타이틀 바 -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="56dp"
+        android:background="@android:color/white"
+        android:elevation="1dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_chevron_left"
+            android:contentDescription="뒤로가기"
+            app:tint="#1E293B"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="상담 상세 정보"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#1E293B"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- 2. 전체 스크롤 영역 -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/layout_toolbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:clipToPadding="false"
+        android:clipChildren="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:clipToPadding="false"
+            android:clipChildren="false">
+
+            <!-- 2-1.  카드 -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="1dp"
+                app:cardUseCompatPadding="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:background="@android:color/white">
+
+                    <!-- 이름 + 상태 뱃지 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/tv_detail_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:textColor="#0F172A"
+                            tools:text="노은서" />
+
+                        <TextView
+                            android:id="@+id/tv_detail_status_tag"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="4dp"
+                            android:background="@drawable/bg_chip_filter"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:textColor="#8B5CF6"
+                            tools:text="상담예약" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#F1F5F9"
+                        android:layout_marginVertical="12dp" />
+
+                    <!-- 메타 정보 리스트 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <!-- 전화번호 & 담당자 (1열 2개 그리드 형태) -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="2">
+
+                            <!-- 전화번호 -->
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:paddingVertical="6dp">
+                                <ImageView
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    android:src="@android:drawable/ic_menu_call"
+                                    app:tint="#64748B" />
+                                <TextView
+                                    android:id="@+id/tv_detail_phone"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:textSize="13sp"
+                                    android:textColor="#334155"
+                                    tools:text="010-5050-7070" />
+                            </LinearLayout>
+
+                            <!-- 담당자 -->
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="16dp"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:paddingVertical="6dp">
+                                <ImageView
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    android:src="@android:drawable/ic_menu_myplaces"
+                                    app:tint="#64748B" />
+                                <TextView
+                                    android:id="@+id/tv_detail_manager"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:textSize="13sp"
+                                    android:textColor="#334155"
+                                    tools:text="슈퍼 관리자" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <!-- 웹사이트 -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingVertical="6dp">
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@android:drawable/ic_menu_compass"
+                                app:tint="#64748B" />
+                            <TextView
+                                android:id="@+id/tv_detail_website"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:textSize="13sp"
+                                android:textColor="#334155"
+                                tools:text="SYS002" />
+                        </LinearLayout>
+
+                        <!-- IP 주소 -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingVertical="6dp">
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@android:drawable/ic_menu_mylocation"
+                                app:tint="#64748B" />
+                            <TextView
+                                android:id="@+id/tv_detail_ip"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:textSize="13sp"
+                                android:textColor="#334155"
+                                tools:text="175.100.20.30" />
+                        </LinearLayout>
+
+                        <!-- 등록일 -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingVertical="6dp">
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_calendar"
+                                app:tint="#64748B" />
+                            <TextView
+                                android:id="@+id/tv_detail_created_at"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:textSize="12sp"
+                                android:textColor="#64748B"
+                                tools:text="등록: 2026-03-08 14:00:00" />
+                        </LinearLayout>
+
+                        <!-- 수정일 -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingVertical="6dp">
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_calendar"
+                                app:tint="#64748B" />
+                            <TextView
+                                android:id="@+id/tv_detail_updated_at"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:textSize="12sp"
+                                android:textColor="#64748B"
+                                tools:text="수정: 2026-06-07 14:48:53" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- 2-2. 퀵 액션 카드 (상태/담당자 변경, 삭제, 차단) -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="1dp"
+                app:cardUseCompatPadding="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:background="@android:color/white">
+
+                    <!-- 드롭다운 영역 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginEnd="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="상태 변경"
+                                android:textSize="12sp"
+                                android:textColor="#64748B"
+                                android:layout_marginStart="4dp"
+                                android:layout_marginBottom="4dp" />
+
+                            <LinearLayout
+                                android:id="@+id/spinner_status"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:paddingStart="12dp"
+                                android:paddingEnd="36dp"
+                                android:background="@drawable/bg_spinner"
+                                android:clickable="true"
+                                android:focusable="true">
+
+                                <androidx.cardview.widget.CardView
+                                    android:id="@+id/v_status_dot"
+                                    android:layout_width="8dp"
+                                    android:layout_height="8dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:visibility="gone"
+                                    app:cardCornerRadius="4dp"
+                                    app:cardElevation="0dp"
+                                    app:cardBackgroundColor="#4285F4" />
+
+                                <TextView
+                                    android:id="@+id/tv_status_selected"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:singleLine="true"
+                                    android:ellipsize="end"
+                                    android:textColor="#1E293B"
+                                    android:textSize="14sp" />
+
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginStart="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="담당자 변경"
+                                android:textSize="12sp"
+                                android:textColor="#64748B"
+                                android:layout_marginStart="4dp"
+                                android:layout_marginBottom="4dp" />
+
+                            <LinearLayout
+                                android:id="@+id/spinner_manager"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:paddingStart="12dp"
+                                android:paddingEnd="36dp"
+                                android:background="@drawable/bg_spinner"
+                                android:clickable="true"
+                                android:focusable="true">
+
+                                <TextView
+                                    android:id="@+id/tv_manager_selected"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:singleLine="true"
+                                    android:ellipsize="end"
+                                    android:textColor="#1E293B"
+                                    android:textSize="14sp" />
+
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#F1F5F9"
+                        android:layout_marginVertical="16dp" />
+
+                    <!-- 관리 및 차단 버튼들 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginEnd="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="관리"
+                                android:textSize="12sp"
+                                android:textColor="#64748B"
+                                android:layout_marginStart="4dp"
+                                android:layout_marginBottom="6dp" />
+
+                            <TextView
+                                android:id="@+id/btn_delete"
+                                android:layout_width="wrap_content"
+                                android:layout_height="36dp"
+                                android:paddingHorizontal="16dp"
+                                android:gravity="center"
+                                android:background="@drawable/bg_chip_filter"
+                                android:text="삭제"
+                                android:textColor="#EF4444"
+                                android:textSize="12sp"
+                                android:clickable="true"
+                                android:focusable="true" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="차단 설정"
+                                android:textSize="12sp"
+                                android:textColor="#64748B"
+                                android:layout_marginStart="4dp"
+                                android:layout_marginBottom="6dp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/btn_block_phone"
+                                    android:layout_width="0dp"
+                                    android:layout_height="36dp"
+                                    android:layout_weight="1"
+                                    android:layout_marginEnd="4dp"
+                                    android:gravity="center"
+                                    android:background="@drawable/bg_chip_filter"
+                                    android:text="전화번호"
+                                    android:textColor="#475569"
+                                    android:textSize="12sp"
+                                    android:clickable="true"
+                                    android:focusable="true" />
+
+                                <TextView
+                                    android:id="@+id/btn_block_ip"
+                                    android:layout_width="0dp"
+                                    android:layout_height="36dp"
+                                    android:layout_weight="1"
+                                    android:layout_marginHorizontal="2dp"
+                                    android:gravity="center"
+                                    android:background="@drawable/bg_chip_filter"
+                                    android:text="IP"
+                                    android:textColor="#475569"
+                                    android:textSize="12sp"
+                                    android:clickable="true"
+                                    android:focusable="true" />
+
+                                <TextView
+                                    android:id="@+id/btn_block_keyword"
+                                    android:layout_width="0dp"
+                                    android:layout_height="36dp"
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="4dp"
+                                    android:gravity="center"
+                                    android:background="@drawable/bg_chip_filter"
+                                    android:text="금칙어"
+                                    android:textColor="#475569"
+                                    android:textSize="12sp"
+                                    android:clickable="true"
+                                    android:focusable="true" />
+
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- 2-3. 서브 정보 탭 레이아웃 영역 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp">
+
+                <com.google.android.material.tabs.TabLayout
+                    android:id="@+id/tab_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@android:color/transparent"
+                    app:tabSelectedTextColor="#4285F4"
+                    app:tabTextColor="#64748B"
+                    app:tabIndicatorColor="#4285F4"
+                    app:tabRippleColor="@android:color/transparent"
+                    app:tabMode="fixed"
+                    app:tabGravity="fill">
+
+                    <com.google.android.material.tabs.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="기본 정보" />
+
+                    <com.google.android.material.tabs.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="메모/코멘트" />
+
+                    <com.google.android.material.tabs.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="변경 이력" />
+
+                </com.google.android.material.tabs.TabLayout>
+
+                <!-- 탭 컨텐츠가 로드될 컨테이너 (ViewPager2 등을 활용할 수 있습니다) -->
+                <FrameLayout
+                    android:id="@+id/tab_content_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:minHeight="300dp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
