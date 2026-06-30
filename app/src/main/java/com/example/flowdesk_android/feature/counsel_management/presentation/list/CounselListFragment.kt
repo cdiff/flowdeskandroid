@@ -29,8 +29,6 @@ import com.example.flowdesk_android.feature.counsel_management.domain.model.Coun
 import com.example.flowdesk_android.feature.counsel_management.domain.model.EmployeeStat
 import com.example.flowdesk_android.feature.counsel_management.domain.model.TopWebsite
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -52,9 +50,6 @@ class CounselListFragment : Fragment() {
     private var _binding: FragmentCounselListBinding? = null
     private val binding get() = _binding!!
 
-    // Search Job
-    private var searchJob: Job? = null
-
     // Date formatting
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault())
     private val displayFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd", Locale.getDefault())
@@ -74,7 +69,7 @@ class CounselListFragment : Fragment() {
         observeState()
         
         // 상세화면 등에서 상태 변경 후 목록으로 복귀할 때 데이터를 갱신하기 위해 새로고침 수행
-        viewModel.refreshAll()
+        viewModel.triggerRefresh()
     }
 
     private fun setupAdapters() {
@@ -120,15 +115,11 @@ class CounselListFragment : Fragment() {
             viewModel.updateStatusFilter(null)
         }
 
-        // Search text change listener (Debounced)
+        // Search text change listener (ViewModel 내부에서 300ms 디바운스 및 자동 호출 처리)
         binding.etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                searchJob?.cancel()
-                searchJob = viewLifecycleOwner.lifecycleScope.launch {
-                    delay(300)
-                    viewModel.updateSearchQuery(s?.toString())
-                }
+                viewModel.updateSearchQuery(s?.toString())
             }
             override fun afterTextChanged(s: Editable?) {}
         })

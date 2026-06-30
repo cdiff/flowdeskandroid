@@ -13,7 +13,17 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
 sealed class CounselListUiState {
@@ -39,9 +49,6 @@ class CounselListViewModel @Inject constructor(
     private val counselRepository: CounselRepository
 ) : BaseViewModel() {
 
-    private val _uiState = MutableStateFlow<CounselListUiState>(CounselListUiState.Loading)
-    val uiState: StateFlow<CounselListUiState> = _uiState.asStateFlow()
-
     private val _statusCounts = MutableStateFlow<List<CounselStatusStat>>(emptyList())
     val statusCounts: StateFlow<List<CounselStatusStat>> = _statusCounts.asStateFlow()
 
@@ -51,44 +58,50 @@ class CounselListViewModel @Inject constructor(
     private val _websiteList = MutableStateFlow<List<TopWebsite>>(emptyList())
     val websiteList: StateFlow<List<TopWebsite>> = _websiteList.asStateFlow()
 
-    private val _filterState = MutableStateFlow(CounselFilterState())
-    val filterState: StateFlow<CounselFilterState> = _filterState.asStateFlow()
+    // 디바운스 적용을 위해 순수 검색어와 나머지 필터를 나눔
+    private val _searchQuery = MutableStateFlow<String?>(null)
+    private val _filtersWithoutQuery = MutableStateFlow(CounselFilterState())
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val debouncedQuery = _searchQuery
+        .debounce(300)
+        .distinctUntilChanged()
+
+    // 최종 결합된 필터 상태
+    val filterState: StateFlow<CounselFilterState> = combine(
+        debouncedQuery,
+        _filtersWithoutQuery
+    ) { query, filters ->
+        filters.copy(q = query)
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, CounselFilterState())
+
+    // 페이징 처리를 위한 StateFlow
+    private val _currentPage = MutableStateFlow(1)
+    val currentPage: StateFlow<Int> = _currentPage.asStateFlow()
 
     private val allLoadedItems = mutableListOf<CounselItem>()
-    private var currentPage = 1
     private var totalPages = 1
     private var isPagingLoading = false
 
-    init {
-        // refreshAll()은 Fragment의 onViewCreated에서 호출하여 뷰가 그려질 때마다 최신화합니다.
-    }
-
-    fun refreshAll() {
-        fetchStatusCounts()
-        loadCounsels(isRefresh = true)
-    }
-
-    fun loadCounsels(isRefresh: Boolean = false) {
-        if (isPagingLoading) return
-
-        if (isRefresh) {
-            currentPage = 1
-            totalPages = 1
-            allLoadedItems.clear()
-            _uiState.value = CounselListUiState.Loading
-        } else {
-            if (currentPage >= totalPages) return
-            isPagingLoading = true
-        }
-
-        viewModelScope.launch {
-            val filter = _filterState.value
+    // 선언형 UI 상태 파이프라인
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val uiState: StateFlow<CounselListUiState> = combine(
+        filterState,
+        _currentPage
+    ) { filter, page ->
+        filter to page
+    }.flatMapLatest { (filter, page) ->
+        flow {
+            if (page == 1) {
+                emit(CounselListUiState.Loading)
+            }
+            
             val isUnassignedQuery = filter.q?.trim() == "미배정"
             val queryParam = if (isUnassignedQuery) null else filter.q
             val empSeqParam = if (isUnassignedQuery) 0 else filter.empSeq
 
             counselRepository.getCounsels(
-                page = currentPage,
+                page = page,
                 limit = 20,
                 query = queryParam,
                 counselStat = filter.counselStat,
@@ -99,35 +112,133 @@ class CounselListViewModel @Inject constructor(
                 duplicateState = filter.duplicateState,
                 resvStartDate = filter.resvStartDate,
                 resvEndDate = filter.resvEndDate
-            ).onSuccess { list ->
-                totalPages = list.pageInfo?.totalPages ?: 1
-                val items = list.items
-                allLoadedItems.addAll(items)
-                
-                _uiState.value = CounselListUiState.Success(
-                    items = allLoadedItems.toList(),
-                    totalCount = list.pageInfo?.totalItems ?: allLoadedItems.size
-                )
-                
-                isPagingLoading = false
-            }.onFailure { err ->
-                _uiState.value = CounselListUiState.Error(err.message ?: "상담 목록 조회에 실패했습니다.")
-                isPagingLoading = false
-                sendError(err.message ?: "상담 목록 로딩 실패")
+            ).fold(
+                onSuccess = { list ->
+                    totalPages = list.pageInfo?.totalPages ?: 1
+                    if (page == 1) {
+                        allLoadedItems.clear()
+                    }
+                    allLoadedItems.addAll(list.items)
+                    emit(
+                        CounselListUiState.Success(
+                            items = allLoadedItems.toList(),
+                            totalCount = list.pageInfo?.totalItems ?: allLoadedItems.size
+                        )
+                    )
+                    isPagingLoading = false
+                },
+                onFailure = { err ->
+                    emit(CounselListUiState.Error(err.message ?: "상담 목록 조회에 실패했습니다."))
+                    isPagingLoading = false
+                    sendError(err.message ?: "상담 목록 로딩 실패")
+                }
+            )
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = CounselListUiState.Loading
+    )
+
+    init {
+        // 필터가 바뀌면 자동으로 페이지를 1로 리셋하고 대시보드 통계를 업데이트합니다.
+        viewModelScope.launch {
+            filterState.collectLatest { filter ->
+                _currentPage.value = 1
+                fetchStatusCounts(filter)
             }
         }
     }
 
     fun loadMore() {
-        if (currentPage < totalPages && !isPagingLoading) {
-            currentPage++
-            loadCounsels(isRefresh = false)
+        val page = _currentPage.value
+        if (page < totalPages && !isPagingLoading) {
+            isPagingLoading = true
+            _currentPage.value = page + 1
         }
     }
 
-    fun fetchStatusCounts() {
+    // 수동 리프레시 트리거용 Flow
+    private val _refreshTrigger = MutableStateFlow(0)
+
+    // 선언형 UI 상태 파이프라인
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val uiState: StateFlow<CounselListUiState> = combine(
+        filterState,
+        _currentPage,
+        _refreshTrigger
+    ) { filter, page, _ ->
+        filter to page
+    }.flatMapLatest { (filter, page) ->
+        flow {
+            if (page == 1) {
+                emit(CounselListUiState.Loading)
+            }
+            
+            val isUnassignedQuery = filter.q?.trim() == "미배정"
+            val queryParam = if (isUnassignedQuery) null else filter.q
+            val empSeqParam = if (isUnassignedQuery) 0 else filter.empSeq
+
+            counselRepository.getCounsels(
+                page = page,
+                limit = 20,
+                query = queryParam,
+                counselStat = filter.counselStat,
+                empSeq = empSeqParam,
+                webCode = filter.webCode,
+                startDate = filter.startDate,
+                endDate = filter.endDate,
+                duplicateState = filter.duplicateState,
+                resvStartDate = filter.resvStartDate,
+                resvEndDate = filter.resvEndDate
+            ).fold(
+                onSuccess = { list ->
+                    totalPages = list.pageInfo?.totalPages ?: 1
+                    if (page == 1) {
+                        allLoadedItems.clear()
+                    }
+                    allLoadedItems.addAll(list.items)
+                    emit(
+                        CounselListUiState.Success(
+                            items = allLoadedItems.toList(),
+                            totalCount = list.pageInfo?.totalItems ?: allLoadedItems.size
+                        )
+                    )
+                    isPagingLoading = false
+                },
+                onFailure = { err ->
+                    emit(CounselListUiState.Error(err.message ?: "상담 목록 조회에 실패했습니다."))
+                    isPagingLoading = false
+                    sendError(err.message ?: "상담 목록 로딩 실패")
+                }
+            )
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = CounselListUiState.Loading
+    )
+
+    init {
+        // 필터가 바뀌면 자동으로 페이지를 1로 리셋하고 대시보드 통계를 업데이트합니다.
         viewModelScope.launch {
-            val filter = _filterState.value
+            filterState.collectLatest { filter ->
+                _currentPage.value = 1
+                fetchStatusCounts(filter)
+            }
+        }
+    }
+
+    fun loadMore() {
+        val page = _currentPage.value
+        if (page < totalPages && !isPagingLoading) {
+            isPagingLoading = true
+            _currentPage.value = page + 1
+        }
+    }
+
+    fun fetchStatusCounts(filter: CounselFilterState = filterState.value) {
+        viewModelScope.launch {
             counselRepository.getDashboard(filter.startDate, filter.endDate)
                 .onSuccess { dashboard ->
                     _statusCounts.value = dashboard.statusDistribution
@@ -141,61 +252,40 @@ class CounselListViewModel @Inject constructor(
     }
 
     fun updateStatusFilter(counselStat: Int?) {
-        val current = _filterState.value
-        if (current.counselStat != counselStat) {
-            _filterState.value = current.copy(counselStat = counselStat)
-            loadCounsels(isRefresh = true)
-        }
+        _filtersWithoutQuery.update { it.copy(counselStat = counselStat) }
     }
 
     fun updateSearchQuery(q: String?) {
-        val current = _filterState.value
         val queryText = if (q.isNullOrBlank()) null else q.trim()
-        if (current.q != queryText) {
-            _filterState.value = current.copy(q = queryText)
-            loadCounsels(isRefresh = true)
-        }
+        _searchQuery.value = queryText
     }
 
     fun updateDateFilter(start: String?, end: String?) {
-        val current = _filterState.value
-        if (current.startDate != start || current.endDate != end) {
-            _filterState.value = current.copy(startDate = start, endDate = end)
-            refreshAll()
-        }
+        _filtersWithoutQuery.update { it.copy(startDate = start, endDate = end) }
     }
 
     fun updateManagerFilter(empSeq: Int?) {
-        val current = _filterState.value
-        if (current.empSeq != empSeq) {
-            _filterState.value = current.copy(empSeq = empSeq)
-            loadCounsels(isRefresh = true)
-        }
+        _filtersWithoutQuery.update { it.copy(empSeq = empSeq) }
     }
 
     fun updateWebsiteFilter(webCode: String?) {
-        val current = _filterState.value
-        if (current.webCode != webCode) {
-            _filterState.value = current.copy(webCode = webCode)
-            loadCounsels(isRefresh = true)
-        }
+        _filtersWithoutQuery.update { it.copy(webCode = webCode) }
     }
 
     fun updateDuplicateFilter(duplicateState: String?) {
-        val current = _filterState.value
-        if (current.duplicateState != duplicateState) {
-            _filterState.value = current.copy(duplicateState = duplicateState)
-            loadCounsels(isRefresh = true)
-        }
+        _filtersWithoutQuery.update { it.copy(duplicateState = duplicateState) }
     }
 
     fun clearFilters() {
-        _filterState.value = CounselFilterState()
-        refreshAll()
+        _searchQuery.value = null
+        _filtersWithoutQuery.value = CounselFilterState()
+    }
+
+    fun triggerRefresh() {
+        _refreshTrigger.value = _refreshTrigger.value + 1
     }
 
     fun updateCounselInfo(id: Int, name: String, counselHp: String, counselMemo: String?) {
-        _uiState.value = CounselListUiState.Loading
         viewModelScope.launch {
             val request = CounselUpdateRequest(
                 name = name,
@@ -204,24 +294,21 @@ class CounselListViewModel @Inject constructor(
             )
             counselRepository.updateCounsel(id, request)
                 .onSuccess {
-                    refreshAll()
+                    triggerRefresh()
                 }
                 .onFailure { err ->
-                    _uiState.value = CounselListUiState.Error(err.message ?: "상담 수정에 실패했습니다.")
                     sendError(err.message ?: "상담 수정 실패")
                 }
         }
     }
 
     fun deleteCounsel(id: Int) {
-        _uiState.value = CounselListUiState.Loading
         viewModelScope.launch {
             counselRepository.deleteCounsel(id)
                 .onSuccess {
-                    refreshAll()
+                    triggerRefresh()
                 }
                 .onFailure { err ->
-                    _uiState.value = CounselListUiState.Error(err.message ?: "상담 삭제에 실패했습니다.")
                     sendError(err.message ?: "상담 삭제 실패")
                 }
         }

@@ -180,7 +180,74 @@ Fragment나 BottomSheetDialogFragment는 뷰의 수명 주기가 객체 자체�
       }
 ```
 
-### 3) 리소스 추출 및 시맨틱 바인딩 규칙
+### 3) 상태 기반 반응형 비동기 파이프라인 (Declarative Pipeline)
+여러 필터 조건 및 페이지 정보가 실시간으로 상호작용하며 데이터를 불러와야 하는 복잡한 목록 화면에서는, **상태를 업데이트한 후 직접 비동기 함수를 호출하는 명령형(Imperative) 구조를 금지**합니다. 
+
+필터 상태(`filterState`), 페이지(`currentPage`), 리프레시 트리거(`refreshTrigger`) 등의 스트림을 하나로 결합하고, **`flatMapLatest`** 연산자를 활용하여 **상태 변경 시 비동기 API가 자동으로 트리거되는 반응형 파이프라인**을 표준 모델로 구축합니다.
+
+* **반응형 아키텍처 흐름**:
+```
+ [사용자 이벤트] ──> 상태 변경 (State Update)
+                          │
+                          ▼
+             [ combine(Filter, Page, Trigger) ]
+                          │
+                          ▼
+            [ flatMapLatest { (filter, page) -> ... } ]
+             - 최신 요청 자동 실행 / 이전 비동기 작업 자동 취소(Cancel)
+             - Loading ➡️ Success/Error 상태 자동 emit
+                          │
+                          ▼
+                [ uiState (StateFlow) ]
+                          │
+                          ▼
+                 [ View (render) ]
+```
+
+* **표준 ViewModel 구현 예시**:
+  ```kotlin
+  class ExampleListViewModel(private val repository: ExampleRepository) : ViewModel() {
+      // 1. 상태 변수 정의 (검색 디바운스 분리 구조)
+      private val _searchQuery = MutableStateFlow<String?>(null)
+      private val _filtersWithoutQuery = MutableStateFlow(FilterState())
+      private val _currentPage = MutableStateFlow(1)
+      private val _refreshTrigger = MutableStateFlow(0)
+
+      val filterState = combine(
+          _searchQuery.debounce(300).distinctUntilChanged(),
+          _filtersWithoutQuery
+      ) { query, filters -> filters.copy(q = query) }
+      .stateIn(viewModelScope, SharingStarted.Eagerly, FilterState())
+
+      // 2. [핵심] 선언형 UI 상태 파이프라인
+      val uiState: StateFlow<ListUiState> = combine(
+          filterState,
+          _currentPage,
+          _refreshTrigger
+      ) { filter, page, _ -> filter to page }
+      .flatMapLatest { (filter, page) ->
+          flow {
+              if (page == 1) emit(ListUiState.Loading)
+              repository.getItems(page = page, query = filter.q)
+                  .fold(
+                      onSuccess = { list -> emit(ListUiState.Success(list)) },
+                      onFailure = { err -> emit(ListUiState.Error(err.message)) }
+                  )
+          }
+      }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ListUiState.Loading)
+
+      // 3. UI 액션 함수 (비동기 함수를 직접 호출하지 않고 오직 "상태만 변경")
+      fun updateSearchQuery(query: String?) {
+          _searchQuery.value = query
+      }
+      
+      fun triggerRefresh() {
+          _refreshTrigger.value += 1
+      }
+  }
+  ```
+
+### 4) 리소스 추출 및 시맨틱 바인딩 규칙
 * **한국어 문자열**: Kotlin/XML 상의 모든 한글 문자열은 `strings.xml`에 자원으로 선언하고 `context.getString(R.string.key)` 또는 XML `@string/key`로 연동하여 하드코딩을 원천 배제합니다.
 * **색상(Color)**: 소스 내 `Color.parseColor("#3B82F6")` 형태의 하드코딩 HEX 지정을 금지하고, `colors.xml`에 정의된 시맨틱 자원(예: `R.color.brand_primary`)을 `ContextCompat.getColor(context, id)`를 통해 획득하여 디자인 일관성을 준수합니다.
 

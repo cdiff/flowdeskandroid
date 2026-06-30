@@ -44,7 +44,7 @@ class RolesFragment : Fragment() {
         setupListeners()
         observeViewModel()
 
-        viewModel.fetchRoles()
+        viewModel.triggerRefresh()
     }
 
     private fun setupRecyclerView() {
@@ -98,7 +98,7 @@ class RolesFragment : Fragment() {
         binding.btnCreateRole.setOnClickListener {
             val bottomSheet = CreateRoleBottomSheetFragment().apply {
                 onSuccess = {
-                    viewModel.fetchRoles()
+                    viewModel.triggerRefresh()
                 }
             }
             bottomSheet.show(childFragmentManager, CreateRoleBottomSheetFragment.TAG)

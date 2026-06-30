@@ -30,14 +30,14 @@ class UserListFragment : Fragment(R.layout.fragment_user_list) {
         _binding = FragmentUserListBinding.bind(view)
 
         parentFragmentManager.setFragmentResultListener("invite_success", viewLifecycleOwner) { _, _ ->
-            viewModel.fetchUsers()
+            viewModel.triggerRefresh()
         }
 
         setupRecyclerView()
         setupListeners()
         observeViewModel()
 
-        viewModel.fetchUsers()
+        viewModel.triggerRefresh()
     }
 
     private fun setupRecyclerView() {
