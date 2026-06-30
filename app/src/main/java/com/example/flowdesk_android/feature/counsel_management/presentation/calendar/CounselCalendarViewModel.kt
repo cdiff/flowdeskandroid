@@ -10,11 +10,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
+
+import com.example.flowdesk_android.feature.counsel_management.domain.usecase.GetCalendarReservationsUseCase
 
 sealed class CalendarUiState {
     object Loading : CalendarUiState()
@@ -24,7 +31,8 @@ sealed class CalendarUiState {
 
 @HiltViewModel
 class CounselCalendarViewModel @Inject constructor(
-    private val counselRepository: CounselRepository
+    private val counselRepository: CounselRepository,
+    private val getCalendarReservationsUseCase: GetCalendarReservationsUseCase
 ) : ViewModel() {
 
     private val _selectedMonth = MutableStateFlow<YearMonth>(YearMonth.now())
@@ -33,41 +41,59 @@ class CounselCalendarViewModel @Inject constructor(
     private val _selectedEmpSeq = MutableStateFlow<Int?>(null)
     val selectedEmpSeq: StateFlow<Int?> = _selectedEmpSeq.asStateFlow()
 
-    val employeeList: StateFlow<List<EmployeeStat>> = _employeeList.asStateFlow()
-
-    private val _uiState = MutableStateFlow<CalendarUiState>(CalendarUiState.Loading)
-    val uiState: StateFlow<CalendarUiState> = _uiState.asStateFlow()
-
     private val _monthlyReservationCount = MutableStateFlow(0)
     val monthlyReservationCount: StateFlow<Int> = _monthlyReservationCount.asStateFlow()
 
     private val _lastRefreshTime = MutableStateFlow<String>("")
     val lastRefreshTime: StateFlow<String> = _lastRefreshTime.asStateFlow()
 
-    init {
-        // Load the manager list from dashboard statistics (which contains employeeStats)
-        fetchManagers()
+    // 1. 수동 리프레시 트리거
+    private val _refreshTrigger = MutableStateFlow(0)
 
-        // Automatically reload reservations when selectedMonth or selectedEmpSeq changes
-        viewModelScope.launch {
-            combine(selectedMonth, selectedEmpSeq) { month, empSeq ->
-                Pair(month, empSeq)
-            }.collect {
-                loadReservations()
+    // 2. 관리자(상담 매니저) 목록 반응형 로드
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val employeeList: StateFlow<List<EmployeeStat>> = _refreshTrigger
+        .flatMapLatest {
+            flow {
+                counselRepository.getDashboard(null, null)
+                    .onSuccess { emit(it.employeeStats) }
+                    .onFailure { emit(emptyList<EmployeeStat>()) }
             }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // 3. [핵심] 선언형 UI 상태 파이프라인
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val uiState: StateFlow<CalendarUiState> = combine(
+        selectedMonth,
+        selectedEmpSeq,
+        _refreshTrigger
+    ) { month, empSeq, _ ->
+        Triple(month, empSeq, _refreshTrigger.value)
+    }.flatMapLatest { (month, empSeq, triggerVal) ->
+        flow {
+            emit(CalendarUiState.Loading)
+            getCalendarReservationsUseCase(month, empSeq).fold(
+                onSuccess = { data ->
+                    _monthlyReservationCount.value = data.monthlyCount
+
+                    val formatter = java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")
+                    _lastRefreshTime.value = java.time.LocalTime.now().format(formatter) + " 기준"
+
+                    emit(CalendarUiState.Success(data.reservations))
+                },
+                onFailure = { err ->
+                    emit(CalendarUiState.Error(err.message ?: "데이터 조회 오류"))
+                }
+            )
         }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), CalendarUiState.Loading)
+
+    init {
+        triggerRefresh()
     }
 
-    fun fetchManagers() {
-        viewModelScope.launch {
-            counselRepository.getDashboard(null, null)
-                .onSuccess { dashboard ->
-                    _employeeList.value = dashboard.employeeStats
-                }
-                .onFailure {
-                    // Silently fail or keep empty
-                }
-        }
+    fun triggerRefresh() {
+        _refreshTrigger.value = _refreshTrigger.value + 1
     }
 
     fun selectPrevMonth() {
@@ -91,62 +117,6 @@ class CounselCalendarViewModel @Inject constructor(
     }
 
     fun refreshReservations() {
-        fetchManagers()
-        loadReservations()
-    }
-
-    private fun loadReservations() {
-        val month = _selectedMonth.value
-        val empSeq = _selectedEmpSeq.value
-
-        // Calculate grid range: include Sunday overflow of 1st week and Saturday overflow of last week
-        val firstDay = month.atDay(1)
-        val firstDayOfWeek = firstDay.dayOfWeek.value % 7 // 0=Sunday, 1=Monday ... 6=Saturday
-        val gridStartDate = firstDay.minusDays(firstDayOfWeek.toLong())
-
-        val lastDay = month.atEndOfMonth()
-        val lastDayOfWeek = lastDay.dayOfWeek.value % 7
-        val gridEndDate = lastDay.plusDays((6 - lastDayOfWeek).toLong())
-
-        _uiState.value = CalendarUiState.Loading
-
-        viewModelScope.launch {
-            counselRepository.getCounsels(
-                limit = 1000,
-                resvStartDate = gridStartDate.toString(),
-                resvEndDate = gridEndDate.toString(),
-                empSeq = empSeq
-            ).onSuccess { counselList ->
-                // Map reservations by LocalDate
-                val mapped = counselList.items
-                    .filter { !it.counselResvDtm.isNullOrBlank() }
-                    .groupBy { parseLocalDate(it.counselResvDtm)!! }
-
-                // Count reservations purely inside the selected month
-                val thisMonthCount = counselList.items.count { item ->
-                    val date = parseLocalDate(item.counselResvDtm)
-                    date != null && date.year == month.year && date.monthValue == month.monthValue
-                }
-
-                _monthlyReservationCount.value = thisMonthCount
-                _uiState.value = CalendarUiState.Success(mapped)
-
-                // Update refresh timestamp
-                val formatter = java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")
-                _lastRefreshTime.value = java.time.LocalTime.now().format(formatter) + " 기준"
-            }.onFailure { exception ->
-                _uiState.value = CalendarUiState.Error(exception.message ?: "데이터 조회 오류")
-            }
-        }
-    }
-
-    private fun parseLocalDate(dtm: String?): LocalDate? {
-        if (dtm.isNullOrBlank()) return null
-        return try {
-            val dateStr = if (dtm.contains("T")) dtm.substringBefore("T") else dtm.substringBefore(" ")
-            LocalDate.parse(dateStr)
-        } catch (e: Exception) {
-            null
-        }
+        triggerRefresh()
     }
 }
