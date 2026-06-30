@@ -62,7 +62,7 @@ class CounselListViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow<String?>(null)
     private val _filtersWithoutQuery = MutableStateFlow(CounselFilterState())
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    @OptIn(ExperimentalCoroutinesApi::class, kotlinx.coroutines.FlowPreview::class)
     private val debouncedQuery = _searchQuery
         .debounce(300)
         .distinctUntilChanged()
@@ -83,80 +83,7 @@ class CounselListViewModel @Inject constructor(
     private var totalPages = 1
     private var isPagingLoading = false
 
-    // 선언형 UI 상태 파이프라인
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<CounselListUiState> = combine(
-        filterState,
-        _currentPage
-    ) { filter, page ->
-        filter to page
-    }.flatMapLatest { (filter, page) ->
-        flow {
-            if (page == 1) {
-                emit(CounselListUiState.Loading)
-            }
-            
-            val isUnassignedQuery = filter.q?.trim() == "미배정"
-            val queryParam = if (isUnassignedQuery) null else filter.q
-            val empSeqParam = if (isUnassignedQuery) 0 else filter.empSeq
 
-            counselRepository.getCounsels(
-                page = page,
-                limit = 20,
-                query = queryParam,
-                counselStat = filter.counselStat,
-                empSeq = empSeqParam,
-                webCode = filter.webCode,
-                startDate = filter.startDate,
-                endDate = filter.endDate,
-                duplicateState = filter.duplicateState,
-                resvStartDate = filter.resvStartDate,
-                resvEndDate = filter.resvEndDate
-            ).fold(
-                onSuccess = { list ->
-                    totalPages = list.pageInfo?.totalPages ?: 1
-                    if (page == 1) {
-                        allLoadedItems.clear()
-                    }
-                    allLoadedItems.addAll(list.items)
-                    emit(
-                        CounselListUiState.Success(
-                            items = allLoadedItems.toList(),
-                            totalCount = list.pageInfo?.totalItems ?: allLoadedItems.size
-                        )
-                    )
-                    isPagingLoading = false
-                },
-                onFailure = { err ->
-                    emit(CounselListUiState.Error(err.message ?: "상담 목록 조회에 실패했습니다."))
-                    isPagingLoading = false
-                    sendError(err.message ?: "상담 목록 로딩 실패")
-                }
-            )
-        }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = CounselListUiState.Loading
-    )
-
-    init {
-        // 필터가 바뀌면 자동으로 페이지를 1로 리셋하고 대시보드 통계를 업데이트합니다.
-        viewModelScope.launch {
-            filterState.collectLatest { filter ->
-                _currentPage.value = 1
-                fetchStatusCounts(filter)
-            }
-        }
-    }
-
-    fun loadMore() {
-        val page = _currentPage.value
-        if (page < totalPages && !isPagingLoading) {
-            isPagingLoading = true
-            _currentPage.value = page + 1
-        }
-    }
 
     // 수동 리프레시 트리거용 Flow
     private val _refreshTrigger = MutableStateFlow(0)

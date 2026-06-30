@@ -89,6 +89,6 @@ class BlockKeywordFragment : BaseBlockListFragment<BlockWordItem>() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.loadBlockWords(isRefresh = true)
+        viewModel.triggerRefresh()
     }
 }

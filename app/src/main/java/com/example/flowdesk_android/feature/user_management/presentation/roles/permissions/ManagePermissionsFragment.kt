@@ -60,7 +60,7 @@ class ManagePermissionsFragment : BaseFragment(R.layout.fragment_role_manage_per
         setupToolbar()
         if (roleId != -1) {
             viewModel.load(roleId)
-            rolesViewModel.fetchRoles()
+            rolesViewModel.triggerRefresh()
         }
     }
 
@@ -172,7 +172,7 @@ class ManagePermissionsFragment : BaseFragment(R.layout.fragment_role_manage_per
     private fun showRoleSelectionBottomSheet() {
         val roles = rolesViewModel.filteredRoles.value
         if (roles.isEmpty()) {
-            rolesViewModel.fetchRoles()
+            rolesViewModel.triggerRefresh()
         }
         
         // availableRoles가 업데이트될 때까지 기다리기는 어렵고, 보통 UI 흐름상 이미 로드되어 있거나 금방 로드됨.

@@ -7,6 +7,7 @@ import com.example.flowdesk_android.feature.system_management.domain.repository.
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,7 +37,11 @@ class TenantStatusViewModel @Inject constructor(
     private val _selectedStatusDetail = MutableStateFlow<TenantStatus?>(null)
     val selectedStatusDetail = _selectedStatusDetail.asStateFlow()
 
+    // 수동 리프레시 트리거용 Flow
+    private val _refreshTrigger = MutableStateFlow(0)
+
     // 단일 UI 상태 흐름 (combine 적용 및 통계 수치 실시간 유도)
+    @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<TenantStatusUiState> = combine(
         _isLoading,
         _selectedGroup,
@@ -61,13 +66,37 @@ class TenantStatusViewModel @Inject constructor(
          initialValue = TenantStatusUiState()
      )
 
+    @OptIn(ExperimentalCoroutinesApi::class, kotlinx.coroutines.FlowPreview::class)
+    private val debouncedQuery = _searchQuery
+        .debounce(300)
+        .distinctUntilChanged()
+
     init {
-        // searchQuery 또는 selectedGroup이 바뀔 때마다 자동으로 목록 리프레시
+        // searchQuery, selectedGroup, refreshTrigger가 바뀔 때마다 자동으로 목록 리프레시
         viewModelScope.launch {
-            combine(searchQuery, selectedGroup) { query, group ->
-                Pair(query, group)
-            }.collect { (query, group) ->
-                fetchStatuses(query, group)
+            combine(debouncedQuery, _selectedGroup, _refreshTrigger) { query, group, _ ->
+                query to group
+            }.collectLatest { (query, group) ->
+                _isLoading.value = true
+                val apiGroupParam = if (group == "all") null else group
+
+                repository.getTenantStatuses(
+                    statusGroup = apiGroupParam,
+                    isActive = null, // 전체 활성/비활성 통합 수집하여 하단 카운트 분배
+                    q = query.ifEmpty { null }
+                ).onSuccess { response ->
+                    // 그룹 단위 데이터 그대로 발행
+                    _filteredGroups.value = response.groups
+
+                    // 전체("all") 조회를 성공했을 때만 서버에서 리턴한 statusGroup 목록을 동적으로 업데이트
+                    if (group == "all") {
+                        val groupsFromApi = response.groups.map { it.statusGroup }.distinct()
+                        _statusGroups.value = groupsFromApi
+                    }
+                }.onFailure { error ->
+                    _errorMessage.emit(error.message ?: "목록 로딩 중 오류가 발생했습니다.")
+                }
+                _isLoading.value = false
             }
         }
     }
@@ -80,36 +109,12 @@ class TenantStatusViewModel @Inject constructor(
         _selectedGroup.value = group
     }
 
-    fun refresh() {
-        viewModelScope.launch {
-            fetchStatuses(searchQuery.value, selectedGroup.value)
-        }
+    fun triggerRefresh() {
+        _refreshTrigger.value = _refreshTrigger.value + 1
     }
 
-    private suspend fun fetchStatuses(query: String, group: String) {
-        _isLoading.value = true
-        // 탭 상태 그룹을 API 쿼리 문자열로 변환 (전체는 null, 나머지는 동적 매핑값 그대로 전달)
-        val apiGroupParam = if (group == "all") null else group
-
-        repository.getTenantStatuses(
-            statusGroup = apiGroupParam,
-            isActive = null, // 전체 활성/비활성 통합 수집하여 하단 카운트 분배
-            q = query.ifEmpty { null }
-        ).onSuccess { response ->
-            // 그룹 단위 데이터 그대로 발행
-            _filteredGroups.value = response.groups
-
-            // 전체("all") 조회를 성공했을 때만 서버에서 리턴한 statusGroup 목록을 동적으로 업데이트
-            if (group == "all") {
-                val groupsFromApi = response.groups.map { it.statusGroup }.distinct()
-                _statusGroups.value = groupsFromApi
-            }
-
-            // 통계 수치는 combine 연산 내에서 filteredGroups를 소스로 실시간 자동 계산되므로 수동 업데이트 제거
-        }.onFailure { error ->
-            _errorMessage.emit(error.message ?: "목록 로딩 중 오류가 발생했습니다.")
-        }
-        _isLoading.value = false
+    fun refresh() {
+        triggerRefresh()
     }
 
     // 1. 상태 추가 (POST)
@@ -133,7 +138,7 @@ class TenantStatusViewModel @Inject constructor(
                 sortOrder = sort,
                 isActive = if (isActive) 1 else 0
             ).onSuccess {
-                fetchStatuses(searchQuery.value, selectedGroup.value)
+                triggerRefresh()
             }.onFailure { error ->
                 _errorMessage.emit(error.message ?: "상태 추가 중 오류가 발생했습니다.")
             }
@@ -160,7 +165,7 @@ class TenantStatusViewModel @Inject constructor(
                 sortOrder = sort,
                 isActive = if (isActive) 1 else 0
             ).onSuccess {
-                fetchStatuses(searchQuery.value, selectedGroup.value)
+                triggerRefresh()
             }.onFailure { error ->
                 _errorMessage.emit(error.message ?: "상태 수정 중 오류가 발생했습니다.")
             }
@@ -174,7 +179,7 @@ class TenantStatusViewModel @Inject constructor(
             _isLoading.value = true
             repository.deleteTenantStatus(id)
                 .onSuccess {
-                    fetchStatuses(searchQuery.value, selectedGroup.value)
+                    triggerRefresh()
                 }.onFailure { error ->
                     _errorMessage.emit(error.message ?: "상태 삭제 중 오류가 발생했습니다.")
                 }
@@ -189,7 +194,7 @@ class TenantStatusViewModel @Inject constructor(
             val targetActiveInt = if (currentActive) 0 else 1
             repository.updateTenantStatusActive(id, targetActiveInt)
                 .onSuccess {
-                    fetchStatuses(searchQuery.value, selectedGroup.value)
+                    triggerRefresh()
                 }.onFailure { error ->
                     _errorMessage.emit(error.message ?: "활성 상태 변경 중 오류가 발생했습니다.")
                 }

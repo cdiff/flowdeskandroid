@@ -118,7 +118,7 @@ class SuperAdminPagesFragment : Fragment() {
 
     private fun setupListeners() {
         binding.btnCreatePage.setOnClickListener {
-            CreatePageBottomSheet { viewModel.fetchPages() }
+            CreatePageBottomSheet { viewModel.triggerRefresh() }
                 .show(childFragmentManager, CreatePageBottomSheet.TAG)
         }
 

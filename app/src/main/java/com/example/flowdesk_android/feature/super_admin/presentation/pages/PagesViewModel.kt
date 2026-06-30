@@ -5,16 +5,23 @@ import com.example.flowdesk_android.core.base.BaseViewModel
 import com.example.flowdesk_android.feature.super_admin.domain.model.Page
 import com.example.flowdesk_android.feature.super_admin.domain.repository.SuperRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
 // ── UI State ─────────────────────────────────────────────
@@ -38,16 +45,57 @@ class PagesViewModel @Inject constructor(
     private val superRepository: SuperRepository
 ) : BaseViewModel() {
 
-    private val _uiState = MutableStateFlow<PageListUiState>(PageListUiState.Loading)
-    val uiState: StateFlow<PageListUiState> = _uiState.asStateFlow()
+    // 1. 수동 리프레시 트리거
+    private val _refreshTrigger = MutableStateFlow(0)
 
-    private val _allPages = MutableStateFlow<List<Page>>(emptyList())
+    // 2. 전체 페이지 가져오는 흐름
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val pagesFlow: Flow<Result<List<Page>>> = _refreshTrigger
+        .flatMapLatest {
+            flow {
+                emit(Result.success(emptyList())) // 로딩 상태 전이를 위해 발행
+                val res = superRepository.getPages()
+                emit(res)
+            }
+        }
+
+    // 3. UI 로딩/에러/성공 상태 uiState
+    val uiState: StateFlow<PageListUiState> = pagesFlow.map { result ->
+        if (_refreshTrigger.value > 0 && result.getOrNull() == null) {
+            PageListUiState.Error(result.exceptionOrNull()?.message ?: "조회 실패")
+        } else {
+            result.fold(
+                onSuccess = { pages ->
+                    if (pages.isEmpty() && _refreshTrigger.value == 0) PageListUiState.Loading
+                    else if (pages.isEmpty()) PageListUiState.Empty
+                    else PageListUiState.Success(pages)
+                },
+                onFailure = { e ->
+                    PageListUiState.Error(e.message ?: "조회 실패")
+                }
+            )
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), PageListUiState.Loading)
+
+    // 4. 전체 페이지 캐시 StateFlow
+    private val allPages: StateFlow<List<Page>> = pagesFlow.map { result ->
+        result.getOrDefault(emptyList())
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    // 5. 검색 쿼리 상태
     private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
+    @OptIn(ExperimentalCoroutinesApi::class, kotlinx.coroutines.FlowPreview::class)
+    private val debouncedQuery = _searchQuery
+        .debounce(300)
+        .distinctUntilChanged()
     
     private val _expandedParents = MutableStateFlow<Set<Int>>(emptySet())
     val expandedParents: StateFlow<Set<Int>> = _expandedParents.asStateFlow()
 
-    val filteredPages: StateFlow<List<Page>> = combine(_allPages, _searchQuery, _expandedParents) { pages, query, expanded ->
+    // 6. 실시간 필터링된 페이지 목록
+    val filteredPages: StateFlow<List<Page>> = combine(allPages, debouncedQuery, _expandedParents) { pages, query, expanded ->
         if (query.isNotBlank()) {
             pages.filter {
                 it.pageName.contains(query, ignoreCase = true) ||
@@ -69,28 +117,17 @@ class PagesViewModel @Inject constructor(
             }
             result
         }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _event = Channel<PageListEvent>()
     val event: Flow<PageListEvent> = _event.receiveAsFlow()
 
-    init { fetchPages() }
+    init {
+        triggerRefresh()
+    }
 
-    fun fetchPages() {
-        viewModelScope.launch {
-            _uiState.value = PageListUiState.Loading
-            superRepository.getPages()
-                .onSuccess { pages ->
-                    _allPages.value = pages
-                    _uiState.value = if (pages.isEmpty()) PageListUiState.Empty
-                                     else PageListUiState.Success(pages)
-                }
-                .onFailure { _uiState.value = PageListUiState.Error(it.message ?: "조회 실패") }
-        }
+    fun triggerRefresh() {
+        _refreshTrigger.value = _refreshTrigger.value + 1
     }
 
     fun search(query: String) {
@@ -119,7 +156,7 @@ class PagesViewModel @Inject constructor(
             superRepository.createPage(pageName, path, displayName, description, parentId, sortOrder)
                 .onSuccess {
                     _event.send(PageListEvent.PageCreated)
-                    fetchPages()
+                    triggerRefresh()
                 }
                 .onFailure { _event.send(PageListEvent.Error(it.message ?: "생성 실패")) }
         }
@@ -139,7 +176,7 @@ class PagesViewModel @Inject constructor(
             )
                 .onSuccess {
                     _event.send(PageListEvent.PageUpdated)
-                    fetchPages()
+                    triggerRefresh()
                 }
                 .onFailure { _event.send(PageListEvent.Error(it.message ?: "상태 변경 실패")) }
         }
@@ -150,7 +187,7 @@ class PagesViewModel @Inject constructor(
             superRepository.deletePage(pageId)
                 .onSuccess {
                     _event.send(PageListEvent.PageDeleted)
-                    fetchPages()
+                    triggerRefresh()
                 }
                 .onFailure { _event.send(PageListEvent.Error(it.message ?: "삭제 실패")) }
         }

@@ -73,7 +73,7 @@ class TenantsFragment : Fragment() {
 
         binding.btnCreateTenant.setOnClickListener {
             val bottomSheet = CreateTenantBottomSheet {
-                viewModel.fetchTenants()
+                viewModel.triggerRefresh()
             }
             bottomSheet.show(childFragmentManager, CreateTenantBottomSheet.TAG)
         }

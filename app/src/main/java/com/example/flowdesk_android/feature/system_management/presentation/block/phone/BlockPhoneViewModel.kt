@@ -7,8 +7,25 @@ import com.example.flowdesk_android.feature.system_management.domain.model.BulkB
 import com.example.flowdesk_android.feature.system_management.domain.repository.SecurityBlockRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
 sealed class BlockPhoneUiState {
@@ -23,14 +40,10 @@ sealed class BlockPhoneDetailUiState {
     data class Error(val message: String) : BlockPhoneDetailUiState()
 }
 
-@OptIn(FlowPreview::class)
 @HiltViewModel
 class BlockPhoneViewModel @Inject constructor(
     private val repository: SecurityBlockRepository
 ) : ViewModel() {
-
-    private val _uiState = MutableStateFlow<BlockPhoneUiState>(BlockPhoneUiState.Loading)
-    val uiState: StateFlow<BlockPhoneUiState> = _uiState.asStateFlow()
 
     private val _detailState = MutableStateFlow<BlockPhoneDetailUiState>(BlockPhoneDetailUiState.Loading)
     val detailState: StateFlow<BlockPhoneDetailUiState> = _detailState.asStateFlow()
@@ -38,21 +51,73 @@ class BlockPhoneViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
+    @OptIn(ExperimentalCoroutinesApi::class, kotlinx.coroutines.FlowPreview::class)
+    private val debouncedQuery = _searchQuery
+        .debounce(300)
+        .distinctUntilChanged()
+
+    private val _currentPage = MutableStateFlow(1)
+    val currentPage: StateFlow<Int> = _currentPage.asStateFlow()
+
+    private val _refreshTrigger = MutableStateFlow(0)
     private val allLoadedItems = mutableListOf<BlockPhoneItem>()
-    private var currentPage = 1
     private var totalPages = 1
     private var isPagingLoading = false
 
     private val _errorMessage = MutableSharedFlow<String>()
     val errorMessage = _errorMessage.asSharedFlow()
 
-    init {
-        viewModelScope.launch {
-            searchQuery
-                .debounce(300)
-                .collect { _ ->
-                    loadBlockPhones(isRefresh = true)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val uiState: StateFlow<BlockPhoneUiState> = combine(
+        debouncedQuery,
+        _currentPage,
+        _refreshTrigger
+    ) { query, page, _ ->
+        query to page
+    }.flatMapLatest { (query, page) ->
+        flow {
+            if (page == 1) {
+                emit(BlockPhoneUiState.Loading)
+            }
+            val queryParam = query.ifBlank { null }
+            repository.getBlockPhones(
+                page = page,
+                limit = 20,
+                q = queryParam
+            ).fold(
+                onSuccess = { response ->
+                    totalPages = response.pageInfo.totalPages
+                    if (page == 1) {
+                        allLoadedItems.clear()
+                    }
+                    allLoadedItems.addAll(response.items)
+                    emit(
+                        BlockPhoneUiState.Success(
+                            items = allLoadedItems.toList(),
+                            totalCount = response.pageInfo.totalItems
+                        )
+                    )
+                    isPagingLoading = false
+                },
+                onFailure = { err ->
+                    emit(BlockPhoneUiState.Error(err.message ?: "휴대폰 차단 목록을 가져오는데 실패했습니다."))
+                    isPagingLoading = false
+                    _errorMessage.emit(err.message ?: "휴대폰 차단 목록 로드 실패")
                 }
+            )
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = BlockPhoneUiState.Loading
+    )
+
+    init {
+        // 검색어나 리프레시 트리거 발생 시 자동으로 첫 페이지로 리셋
+        viewModelScope.launch {
+            combine(debouncedQuery, _refreshTrigger) { _, _ -> }.collect {
+                _currentPage.value = 1
+            }
         }
     }
 
@@ -60,49 +125,15 @@ class BlockPhoneViewModel @Inject constructor(
         _searchQuery.value = query
     }
 
-    private var fetchJob: kotlinx.coroutines.Job? = null
-
-    fun loadBlockPhones(isRefresh: Boolean = false) {
-        if (isRefresh) {
-            fetchJob?.cancel()
-            isPagingLoading = false
-            currentPage = 1
-            totalPages = 1
-            allLoadedItems.clear()
-            _uiState.value = BlockPhoneUiState.Loading
-        } else {
-            if (isPagingLoading || currentPage >= totalPages) return
-            isPagingLoading = true
-        }
-
-        fetchJob = viewModelScope.launch {
-            val queryParam = _searchQuery.value.ifBlank { null }
-            repository.getBlockPhones(
-                page = currentPage,
-                limit = 20,
-                q = queryParam
-            ).onSuccess { response ->
-                totalPages = response.pageInfo.totalPages
-                allLoadedItems.addAll(response.items)
-
-                _uiState.value = BlockPhoneUiState.Success(
-                    items = allLoadedItems.toList(),
-                    totalCount = response.pageInfo.totalItems
-                )
-                isPagingLoading = false
-            }.onFailure { err ->
-                if (err is kotlinx.coroutines.CancellationException) return@onFailure
-                _uiState.value = BlockPhoneUiState.Error(err.message ?: "휴대폰 차단 목록을 가져오는데 실패했습니다.")
-                isPagingLoading = false
-                _errorMessage.emit(err.message ?: "휴대폰 차단 목록 로드 실패")
-            }
-        }
+    fun triggerRefresh() {
+        _refreshTrigger.value = _refreshTrigger.value + 1
     }
 
     fun loadMore() {
-        if (currentPage < totalPages && !isPagingLoading) {
-            currentPage++
-            loadBlockPhones(isRefresh = false)
+        val page = _currentPage.value
+        if (page < totalPages && !isPagingLoading) {
+            isPagingLoading = true
+            _currentPage.value = page + 1
         }
     }
 
@@ -110,7 +141,7 @@ class BlockPhoneViewModel @Inject constructor(
         viewModelScope.launch {
             repository.createBlockPhone(blockHp, reason, isActive)
                 .onSuccess { item ->
-                    loadBlockPhones(isRefresh = true)
+                    triggerRefresh()
                     onResult(Result.success(item))
                 }
                 .onFailure { err ->
@@ -124,7 +155,7 @@ class BlockPhoneViewModel @Inject constructor(
         viewModelScope.launch {
             repository.createBulkBlockPhone(phones, reason, isActive)
                 .onSuccess { result ->
-                    loadBlockPhones(isRefresh = true)
+                    triggerRefresh()
                     onResult(Result.success(result))
                 }
                 .onFailure { err ->
@@ -138,7 +169,7 @@ class BlockPhoneViewModel @Inject constructor(
         viewModelScope.launch {
             repository.updateBlockPhone(id, reason, isActive)
                 .onSuccess { item ->
-                    loadBlockPhones(isRefresh = true)
+                    triggerRefresh()
                     onResult(Result.success(item))
                 }
                 .onFailure { err ->
@@ -165,7 +196,7 @@ class BlockPhoneViewModel @Inject constructor(
         viewModelScope.launch {
             repository.deleteBlockPhone(id)
                 .onSuccess {
-                    loadBlockPhones(isRefresh = true)
+                    triggerRefresh()
                     onResult(Result.success(Unit))
                 }
                 .onFailure { err ->

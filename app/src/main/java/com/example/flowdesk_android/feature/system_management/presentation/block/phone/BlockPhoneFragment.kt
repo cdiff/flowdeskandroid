@@ -89,6 +89,6 @@ class BlockPhoneFragment : BaseBlockListFragment<BlockPhoneItem>() {
     override fun onResume() {
         super.onResume()
         // 리스트 새로고침
-        viewModel.loadBlockPhones(isRefresh = true)
+        viewModel.triggerRefresh()
     }
 }

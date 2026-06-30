@@ -114,7 +114,7 @@ class SuperAdminActionsFragment : Fragment() {
 
     private fun setupListeners() {
         binding.btnCreateAction.setOnClickListener {
-            CreateActionBottomSheet { viewModel.fetchActions() }
+            CreateActionBottomSheet { viewModel.triggerRefresh() }
                 .show(childFragmentManager, CreateActionBottomSheet.TAG)
         }
 

@@ -89,6 +89,6 @@ class BlockIpFragment : BaseBlockListFragment<BlockIpItem>() {
     override fun onResume() {
         super.onResume()
         // 리스트 새로고침
-        viewModel.loadBlockIps(isRefresh = true)
+        viewModel.triggerRefresh()
     }
 }
