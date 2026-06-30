@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Blue rounded background -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/login_blue" />
+            <corners android:radius="6dp" />
+        </shape>
+    </item>
+    <!-- White checkmark in the center -->
+    <item 
+        android:drawable="@drawable/ic_check_white"
+        android:top="4dp"
+        android:left="4dp"
+        android:right="4dp"
+        android:bottom="4dp" />
+</layer-list>

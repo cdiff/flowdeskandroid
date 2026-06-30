@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingStart="10dp"
+    android:paddingEnd="10dp"
+    android:paddingTop="12dp"
+    android:paddingBottom="0dp"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="@android:color/transparent">
+
+    <!-- 1. 상단 상태 레이블 -->
+    <TextView
+        android:id="@+id/tv_status_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:textColor="#6B7280"
+        tools:text="신규접수"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="@id/card_circle_container"
+        app:layout_constraintEnd_toEndOf="@id/card_circle_container" />
+
+    <!-- 2. 중앙 써클 컨테이너 -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_circle_container"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="8dp"
+        app:cardCornerRadius="28dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="1.5dp"
+        app:strokeColor="#E2E8F0"
+        app:cardBackgroundColor="@color/white"
+        android:clipToOutline="true"
+        android:clipChildren="true"
+        app:layout_constraintTop_toBottomOf="@id/tv_status_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- 3. 중앙 써클 내부 프레임 (숫자 및 컬러 필터 - 카드 내부로 이동) -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- 상태별 칼라 탑 바 (선택 시 height를 56dp로 애니메이션 확장) -->
+            <View
+                android:id="@+id/view_status_color_fill"
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:layout_gravity="top"
+                android:background="#4285F4"
+                tools:layout_height="6dp" />
+
+            <!-- 수치 (건수) -->
+            <TextView
+                android:id="@+id/tv_status_count"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#374151"
+                tools:text="3" />
+        </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- 4. 하단 뾰족한 삼각형 지시자 (아래 본문 배경색 #FAFCFD 와 일치시켜 자연스럽게 위로 솟아오른 뾰족한 홈처럼 보이게 만듭니다) -->
+    <ImageView
+        android:id="@+id/iv_status_indicator"
+        android:layout_width="18dp"
+        android:layout_height="8dp"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/ic_triangle_up"
+        android:scaleType="fitXY"
+        android:visibility="invisible"
+        app:tint="#FAFCFD"
+        app:layout_constraintTop_toBottomOf="@id/card_circle_container"
+        app:layout_constraintStart_toStartOf="@id/card_circle_container"
+        app:layout_constraintEnd_toEndOf="@id/card_circle_container"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

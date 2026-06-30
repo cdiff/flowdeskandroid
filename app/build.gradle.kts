@@ -32,13 +32,16 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         viewBinding = true
     }
 }
+
 
 dependencies {
     implementation(libs.androidx.core.ktx)
@@ -69,9 +72,13 @@ dependencies {
     implementation(libs.androidx.fragment.ktx)
 
     implementation("com.google.android.flexbox:flexbox:3.0.0")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation("com.github.skydoves:colorpickerview:2.2.4")
 
 
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

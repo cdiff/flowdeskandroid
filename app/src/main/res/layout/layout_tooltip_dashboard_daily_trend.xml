@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="6dp"
+    app:strokeWidth="0dp"
+    app:cardBackgroundColor="#1E293B">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="💡 일별 상담 추이 안내"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="• 마지막 상담일을 기준으로\n선택한 기간 동안의 상담 건수 추이를 보여줍니다."
+            android:textColor="#E2E8F0"
+            android:textSize="11sp"
+            android:layout_marginBottom="6dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="• 기간 옵션: 1주(6일) / 2주(14일) / 한달(30일)"
+            android:textColor="#E2E8F0"
+            android:textSize="11sp"/>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

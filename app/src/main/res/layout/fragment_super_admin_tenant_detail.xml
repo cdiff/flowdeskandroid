@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8FAFC">
+
+    <!-- ═══════════════════════════════════════
+         Header / Toolbar
+    ═══════════════════════════════════════ -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="60dp"
+        android:background="@color/white"
+        android:elevation="4dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_chevron_left"
+            android:padding="12dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_header_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="테넌트 상세"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- 수정 / 저장 버튼 -->
+        <TextView
+            android:id="@+id/btn_action"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="수정"
+            android:textColor="@color/login_blue"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp"
+            android:layout_marginEnd="4dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- ═══════════════════════════════════════
+         Scrollable Body
+    ═══════════════════════════════════════ -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        app:layout_constraintTop_toBottomOf="@id/cl_header"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="32dp">
+
+            <!-- 로딩 -->
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="48dp"
+                android:visibility="gone" />
+
+            <!-- ───────────────────────────────
+                 메인 정보 영역 (풀 너비)
+            ___________________________________ -->
+            <LinearLayout
+                android:id="@+id/ll_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/white"
+                android:padding="20dp"
+                android:visibility="gone">
+
+                <!-- ── 테넌트 ID (읽기 전용) ── -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="테넌트 ID"
+                    android:textColor="@color/gray_text"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.05" />
+
+                <TextView
+                    android:id="@+id/tv_tenant_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="#1"
+                    android:textColor="#374151"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="20dp" />
+
+                <!-- ── 구분선 ── -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#F0F0F0"
+                    android:layout_marginBottom="20dp" />
+
+                <!-- ── 상태 ── -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="상태"
+                    android:textColor="@color/gray_text"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.05"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- 보기 모드 -->
+                <TextView
+                    android:id="@+id/tv_status_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="활성"
+                    android:textColor="@color/green_accent"
+                    android:background="@drawable/bg_tag_light_green"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="5dp"
+                    android:layout_marginBottom="20dp"
+                    android:visibility="visible" />
+
+
+
+                <!-- ── 구분선 ── -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#F0F0F0"
+                    android:layout_marginBottom="20dp" />
+
+                <!-- ── 테넌트 이름 (식별자) ── -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="테넌트 이름 (식별자)"
+                    android:textColor="@color/gray_text"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.05"
+                    android:layout_marginBottom="6dp" />
+
+                <!-- 보기 모드 -->
+                <TextView
+                    android:id="@+id/tv_name_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="samsung"
+                    android:textColor="#111827"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="20dp"
+                    android:visibility="visible" />
+
+                <!-- 편집 모드 -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_name"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:hint="영문 식별자"
+                    android:visibility="gone"
+                    app:boxCornerRadiusTopStart="10dp"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusBottomStart="10dp"
+                    app:boxCornerRadiusBottomEnd="10dp"
+                    app:boxStrokeColor="@color/login_blue">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_name_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#111827"
+                        android:textSize="14sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- ── 표시 이름 ── -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="표시 이름"
+                    android:textColor="@color/gray_text"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.05"
+                    android:layout_marginBottom="6dp" />
+
+                <!-- 보기 모드 -->
+                <TextView
+                    android:id="@+id/tv_display_name_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="삼성전자"
+                    android:textColor="#111827"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="20dp"
+                    android:visibility="visible" />
+
+                <!-- 편집 모드 -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_display_name"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:hint="화면 표시 이름"
+                    android:visibility="gone"
+                    app:boxCornerRadiusTopStart="10dp"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusBottomStart="10dp"
+                    app:boxCornerRadiusBottomEnd="10dp"
+                    app:boxStrokeColor="@color/login_blue">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_display_name_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#111827"
+                        android:textSize="14sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- ── 연결 도메인 ── -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="연결 도메인"
+                    android:textColor="@color/gray_text"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.05"
+                    android:layout_marginBottom="6dp" />
+
+                <!-- 보기 모드 -->
+                <TextView
+                    android:id="@+id/tv_domain_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="samsung.flowdesk.com"
+                    android:textColor="#111827"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="20dp"
+                    android:visibility="visible" />
+
+                <!-- 편집 모드 -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_domain"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:hint="example.com"
+                    android:visibility="gone"
+                    app:boxCornerRadiusTopStart="10dp"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusBottomStart="10dp"
+                    app:boxCornerRadiusBottomEnd="10dp"
+                    app:boxStrokeColor="@color/login_blue">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_domain_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textUri"
+                        android:textColor="#111827"
+                        android:textSize="14sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- ── 구분선 ── -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#F0F0F0"
+                    android:layout_marginBottom="20dp" />
+
+                <!-- ── 생성 일자 ── -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="생성 일자"
+                    android:textColor="@color/gray_text"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.05"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/tv_created_at"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="2026-03-23 01:43:39"
+                    android:textColor="#6B7280"
+                    android:textSize="13sp"
+                    android:layout_marginBottom="12dp" />
+
+                <!-- ── 수정 일자 ── -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="마지막 수정"
+                    android:textColor="@color/gray_text"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.05"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/tv_updated_at"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="2026-03-23 01:43:39"
+                    android:textColor="#6B7280"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
+
+            <!-- ───────────────────────────────
+                 에러 상태
+            ___________________________________ -->
+            <LinearLayout
+                android:id="@+id/ll_error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="40dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tv_error_message"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="데이터를 불러올 수 없습니다."
+                    android:textColor="@color/gray_text"
+                    android:textSize="14sp"
+                    android:gravity="center" />
+
+                <TextView
+                    android:id="@+id/btn_retry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="다시 시도"
+                    android:textColor="@color/login_blue"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:paddingHorizontal="24dp"
+                    android:paddingVertical="12dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_badge_rounded_blue_border"
+                    android:clickable="true"
+                    android:focusable="true" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

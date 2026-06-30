@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8FAFC"
+    android:fillViewport="true"
+    android:clipToPadding="false"
+    android:clipChildren="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:clipToPadding="false"
+        android:clipChildren="false"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="24dp">
+
+        <!-- ① 전체 현황 통계 카드 -->
+        <include
+            android:id="@+id/layout_overview"
+            layout="@layout/view_super_admin_dashboard_overview" />
+
+        <!-- ② 오늘의 현황 -->
+        <include
+            android:id="@+id/layout_today"
+            layout="@layout/view_super_admin_dashboard_today" />
+
+        <!-- ③ 월별 증가 추이 차트 -->
+        <include
+            android:id="@+id/layout_chart"
+            layout="@layout/view_super_admin_dashboard_chart" />
+
+        <!-- ④ 보안 현황 -->
+        <include
+            android:id="@+id/layout_security"
+            layout="@layout/view_super_admin_dashboard_security" />
+
+        <!-- ⑤ 테넌트별 현황 (동적 목록 - ViewModel에서 추가) -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="테넌트별 현황"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#111827"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:id="@+id/ll_tenant_stats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp"
+            android:clipToPadding="false"
+            android:clipChildren="false" />
+
+        <!-- 로딩 인디케이터 -->
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:layout_marginBottom="16dp" />
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

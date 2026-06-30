@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 담당자 / 웹사이트 순위 행 레이아웃 -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginBottom="10dp">
+
+    <!-- 레이블 행 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="4dp">
+
+        <!-- 순위 뱃지 -->
+        <TextView
+            android:id="@+id/tv_rank"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:gravity="center"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:background="@drawable/bg_badge_chart_blue"
+            android:layout_marginEnd="8dp"
+            tools:text="1" />
+
+        <!-- 이름 -->
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="12sp"
+            android:textColor="#374151"
+            android:maxLines="1"
+            android:ellipsize="end"
+            tools:text="김직원" />
+
+        <!-- 건수 -->
+        <TextView
+            android:id="@+id/tv_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="#3B82F6"
+            android:textStyle="bold"
+            tools:text="20건" />
+    </LinearLayout>
+
+    <!-- 막대 배경 -->
+    <FrameLayout
+        android:id="@+id/v_rank_bar_bg"
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:background="#E2E8F0">
+
+        <View
+            android:id="@+id/v_rank_bar"
+            android:layout_width="0dp"
+            android:layout_height="6dp"
+            android:background="@drawable/bg_badge_chart_blue" />
+
+    </FrameLayout>
+
+</LinearLayout>

@@ -7,20 +7,148 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.example.flowdesk_android.presentation.ui.home.HomeFragment"
+        android:name="com.example.flowdesk_android.feature.main.home.HomeFragment"
         android:label="Home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_main_home" />
 
     <fragment
         android:id="@+id/myPageFragment"
-        android:name="com.example.flowdesk_android.presentation.ui.mypage.MyPageFragment"
+        android:name="com.example.flowdesk_android.feature.mypage.presentation.main.MyPageFragment"
         android:label="MyPage"
-        tools:layout="@layout/fragment_mypage" />
+        tools:layout="@layout/fragment_mypage_main" />
 
     <fragment
         android:id="@+id/editProfileFragment"
-        android:name="com.example.flowdesk_android.presentation.ui.mypage.EditProfileFragment"
+        android:name="com.example.flowdesk_android.feature.mypage.presentation.edit_profile.EditProfileFragment"
         android:label="EditProfile"
-        tools:layout="@layout/fragment_edit_profile" />
+        tools:layout="@layout/fragment_mypage_edit_profile" />
+
+    <fragment
+        android:id="@+id/changePasswordFragment"
+        android:name="com.example.flowdesk_android.feature.mypage.presentation.change_password.ChangePasswordFragment"
+        android:label="ChangePassword"
+        tools:layout="@layout/fragment_mypage_change_password" />
+
+    <fragment
+        android:id="@+id/usersFragment"
+        android:name="com.example.flowdesk_android.feature.main.common.DynamicTabHostFragment"
+        android:label="Users"
+        tools:layout="@layout/fragment_main_dynamic_tab_host" />
+
+    <fragment
+        android:id="@+id/userDetailFragment"
+        android:name="com.example.flowdesk_android.feature.user_management.presentation.users.detail.UserDetailFragment"
+        android:label="UserDetail"
+        tools:layout="@layout/fragment_user_detail" />
+
+    <fragment
+        android:id="@+id/rolesFragment"
+        android:name="com.example.flowdesk_android.feature.user_management.presentation.roles.list.RolesFragment"
+        android:label="Roles"
+        tools:layout="@layout/fragment_roles" />
+
+    <fragment
+        android:id="@+id/roleDetailFragment"
+        android:name="com.example.flowdesk_android.feature.user_management.presentation.roles.detail.RoleDetailFragment"
+        android:label="RoleDetail"
+        tools:layout="@layout/fragment_role_detail">
+        <argument
+            android:name="roleId"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/tenantDetailFragment"
+        android:name="com.example.flowdesk_android.feature.super_admin.presentation.tenants.TenantDetailFragment"
+        android:label="TenantDetail"
+        tools:layout="@layout/fragment_super_admin_tenant_detail">
+        <argument
+            android:name="tenant_id"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/managePermissionsFragment"
+        android:name="com.example.flowdesk_android.feature.user_management.presentation.roles.permissions.ManagePermissionsFragment"
+        android:label="ManagePermissions"
+        tools:layout="@layout/fragment_role_manage_permissions">
+        <argument
+            android:name="role_id"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/superAdminActionsFragment"
+        android:name="com.example.flowdesk_android.feature.super_admin.presentation.actions.SuperAdminActionsFragment"
+        android:label="Actions"
+        tools:layout="@layout/fragment_super_admin_actions" />
+
+    <fragment
+        android:id="@+id/counselDashboardFragment"
+        android:name="com.example.flowdesk_android.feature.counsel_management.presentation.dashboard.CounselDashboardFragment"
+        android:label="CounselDashboard"
+        tools:layout="@layout/fragment_counsel_dashboard" />
+
+    <fragment
+        android:id="@+id/counselDetailFragment"
+        android:name="com.example.flowdesk_android.feature.counsel_management.presentation.detail.CounselDetailFragment"
+        android:label="CounselDetail"
+        tools:layout="@layout/fragment_counsel_detail">
+        <argument
+            android:name="counselSeq"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/statusEditFragment"
+        android:name="com.example.flowdesk_android.feature.system_management.presentation.status.StatusEditFragment"
+        android:label="StatusEdit"
+        tools:layout="@layout/fragment_status_edit">
+        <argument
+            android:name="tenantStatusId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+        <argument
+            android:name="defaultGroup"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/blockIpDetailFragment"
+        android:name="com.example.flowdesk_android.feature.system_management.presentation.block.ip.BlockIpDetailFragment"
+        android:label="BlockIpDetail"
+        tools:layout="@layout/fragment_block_ip_detail">
+        <argument
+            android:name="blockIpId"
+            app:argType="long" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/blockPhoneDetailFragment"
+        android:name="com.example.flowdesk_android.feature.system_management.presentation.block.phone.BlockPhoneDetailFragment"
+        android:label="BlockPhoneDetail"
+        tools:layout="@layout/fragment_block_phone_detail">
+        <argument
+            android:name="blockHpId"
+            app:argType="long" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/blockKeywordDetailFragment"
+        android:name="com.example.flowdesk_android.feature.system_management.presentation.block.keyword.BlockKeywordDetailFragment"
+        android:label="BlockKeywordDetail"
+        tools:layout="@layout/fragment_block_keyword_detail">
+        <argument
+            android:name="blockWordId"
+            app:argType="long" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/inviteTeamFragment"
+        android:name="com.example.flowdesk_android.feature.user_management.presentation.users.invite.InviteTeamFragment"
+        android:label="InviteTeam"
+        tools:layout="@layout/fragment_user_invite" />
 
 </navigation>

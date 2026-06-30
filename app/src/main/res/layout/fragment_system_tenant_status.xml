@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_page">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:fillViewport="true"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+
+            <!-- 그룹 선택 안내 타이틀 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="그룹 선택"
+                android:textColor="@color/text_strong"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="원하는 그룹을 선택하세요"
+                android:textColor="@color/text_tertiary"
+                android:textSize="14sp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="12dp" />
+
+            <!-- ─── Toss-style 가로 그룹 카드 리스트 (슬림 칩 탭) ─── -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:overScrollMode="never"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:id="@+id/layout_group_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:rippleColor="@color/transparent"
+                    android:clipToPadding="false"
+                    android:clipChildren="false"
+                    android:paddingHorizontal="2dp"
+                    android:paddingVertical="4dp" />
+            </HorizontalScrollView>
+
+            <!-- ─── Toss-style 수평 통계 라인 ─── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@android:color/transparent"
+                android:paddingVertical="8dp"
+                android:paddingHorizontal="4dp"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="20dp">
+
+                <!-- 1. 전체 그룹 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="전체 그룹"
+                        android:textColor="@color/text_tertiary"
+                        android:textSize="11sp" />
+                    <TextView
+                        android:id="@+id/tv_stat_total_groups"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1"
+                        android:textColor="@color/text_strong"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+
+                <!-- 수직 구분선 1 -->
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="20dp"
+                    android:background="@color/bg_divider" />
+
+                <!-- 2. 전체 상태 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="전체 상태"
+                        android:textColor="@color/text_tertiary"
+                        android:textSize="11sp" />
+                    <TextView
+                        android:id="@+id/tv_stat_total_statuses"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="11"
+                        android:textColor="@color/text_strong"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+
+                <!-- 수직 구분선 2 -->
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="20dp"
+                    android:background="@color/bg_divider" />
+
+                <!-- 3. 활성 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="활성"
+                        android:textColor="@color/text_tertiary"
+                        android:textSize="11sp" />
+                    <TextView
+                        android:id="@+id/tv_stat_active_statuses"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="11"
+                        android:textColor="@color/color_success_active"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+
+                <!-- 수직 구분선 3 -->
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="20dp"
+                    android:background="@color/bg_divider" />
+
+                <!-- 4. 비활성 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="비활성"
+                        android:textColor="@color/text_tertiary"
+                        android:textSize="11sp" />
+                    <TextView
+                        android:id="@+id/tv_stat_inactive_statuses"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="@color/text_hint"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ─── 검색창 ─── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_card_rounded"
+                android:paddingHorizontal="12dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginBottom="24dp">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@android:drawable/ic_menu_search"
+                    app:tint="@color/text_hint"
+                    android:layout_marginEnd="8dp" />
+
+                <EditText
+                    android:id="@+id/et_status_search"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:hint="상담 상태를 입력 하세요."
+                    android:textColorHint="@color/text_hint"
+                    android:textSize="15sp"
+                    android:textColor="@color/text_primary"
+                    android:maxLines="1"
+                    android:inputType="text"
+                    android:gravity="center_vertical" />
+            </LinearLayout>
+
+            <!-- ─── 리스트 헤더 ─── -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="4dp"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="업무 분류"
+                    android:textColor="@color/text_strong"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="4dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <!-- + 상태 추가 버튼 -->
+                <ImageView
+                    android:id="@+id/btn_add_status"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_add_thin"
+                    app:tint="@color/text_primary"
+                    android:padding="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- ─── 아코디언 그룹 리스트 동적 컨테이너 ─── -->
+            <LinearLayout
+                android:id="@+id/layout_accordion_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="24dp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

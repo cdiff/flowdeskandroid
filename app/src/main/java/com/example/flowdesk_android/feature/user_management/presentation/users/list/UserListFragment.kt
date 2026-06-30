@@ -1,0 +1,137 @@
+package com.example.flowdesk_android.feature.user_management.presentation.users.list
+
+import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
+import android.widget.Toast
+import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.flowdesk_android.R
+import com.example.flowdesk_android.databinding.FragmentUserListBinding
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import androidx.navigation.fragment.findNavController
+
+@AndroidEntryPoint
+class UserListFragment : Fragment(R.layout.fragment_user_list) {
+    private var _binding: FragmentUserListBinding? = null
+    private val binding get() = _binding!!
+    private val viewModel: UserListViewModel by viewModels()
+    private lateinit var userAdapter: UserAdapter
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentUserListBinding.bind(view)
+
+        parentFragmentManager.setFragmentResultListener("invite_success", viewLifecycleOwner) { _, _ ->
+            viewModel.triggerRefresh()
+        }
+
+        setupRecyclerView()
+        setupListeners()
+        observeViewModel()
+
+        viewModel.triggerRefresh()
+    }
+
+    private fun setupRecyclerView() {
+        userAdapter = UserAdapter(
+            onItemClick = { user ->
+                val bundle = Bundle().apply { putInt("user_id", user.userSeq) }
+                findNavController().navigate(R.id.userDetailFragment, bundle)
+            },
+            onToggleStatusClick = { user ->
+                viewModel.toggleUserStatus(user.userSeq, user.isActive)
+            },
+            onDeleteUserClick = { user ->
+                viewModel.invalidateTokens(user.userSeq)
+            }
+        )
+        binding.rvUsers.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = userAdapter
+        }
+    }
+
+    private fun setupListeners() {
+        binding.btnCloseBanner.setOnClickListener {
+            binding.bannerInfo.visibility = View.GONE
+        }
+
+        binding.btnInviteTeam.setOnClickListener {
+            findNavController().navigate(R.id.inviteTeamFragment)
+        }
+
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                viewModel.search(s.toString())
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
+    private fun observeViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+                launch {
+                    viewModel.uiState.collect { state ->
+                        binding.progressBar.isVisible = state is UserListUiState.Loading
+                        if (state is UserListUiState.Error) {
+                            binding.tvTotalTitle.text = "Error: ${state.message}"
+                            binding.tvTotalTitle.setTextColor(
+                                androidx.core.content.ContextCompat.getColor(requireContext(), R.color.red)
+                            )
+                        } else {
+                            binding.tvTotalTitle.text = "전체 사용자"
+                            binding.tvTotalTitle.setTextColor(
+                                androidx.core.content.ContextCompat.getColor(requireContext(), R.color.gray_text)
+                            )
+                        }
+                    }
+                }
+
+                launch {
+                    viewModel.filteredUsers.collect { users ->
+                        userAdapter.submitList(users)
+                        binding.tvTotalCount.text = "${users.size}명"
+
+                        val activeCount = users.count { it.isActive }
+                        val inactiveCount = users.size - activeCount
+
+                        binding.tvActiveCount.text = activeCount.toString()
+                        binding.tvInactiveCount.text = inactiveCount.toString()
+                    }
+                }
+
+                launch {
+                    viewModel.errorFlow.collect { message ->
+                        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+                    }
+                }
+
+                launch {
+                    viewModel.event.collect { event ->
+                        when (event) {
+                            is UserListEvent.TokensInvalidated -> {
+                                Toast.makeText(requireContext(), getString(R.string.success_tokens_invalidated), Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}

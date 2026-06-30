@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 예정된 예약 아이템 -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_rect_rounded_light_gray"
+    android:padding="12dp"
+    android:layout_marginBottom="8dp">
+
+    <!-- 1행: 이름 + 상태 뱃지 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="4dp">
+
+        <TextView
+            android:id="@+id/tv_res_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="#111827"
+            tools:text="박지민" />
+
+        <TextView
+            android:id="@+id/tv_res_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="11sp"
+            android:textColor="@color/login_blue"
+            android:background="@drawable/bg_oval_light_blue"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            tools:text="예약" />
+    </LinearLayout>
+
+    <!-- 2행: 전화번호 + 일시 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tv_res_phone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="12sp"
+            android:textColor="@color/gray_text"
+            tools:text="010-4567-8901" />
+
+        <TextView
+            android:id="@+id/tv_res_datetime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="#374151"
+            android:textStyle="bold"
+            tools:text="03/25 10:00" />
+    </LinearLayout>
+
+    <!-- 3행: 담당자 -->
+    <TextView
+        android:id="@+id/tv_res_emp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="11sp"
+        android:textColor="@color/gray_text"
+        android:layout_marginTop="2dp"
+        tools:text="담당: 홍길동" />
+
+</LinearLayout>

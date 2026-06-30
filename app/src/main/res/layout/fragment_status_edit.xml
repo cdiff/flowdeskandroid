@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <!-- 뒤로가기 버튼 -->
+    <ImageView
+        android:id="@+id/btn_back"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_chevron_left"
+        android:padding="12dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/black" />
+
+    <!-- 상단 헤더 타이틀 (상세페이지 진입 시 노출) -->
+    <TextView
+        android:id="@+id/tv_header_title"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:text="상태 상세페이지"
+        android:textColor="#0F172A"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 스크롤 영역 -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/btn_back"
+        app:layout_constraintBottom_toTopOf="@id/btn_save">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="24dp"
+            android:paddingTop="24dp"
+            android:paddingEnd="24dp"
+            android:paddingBottom="24dp">
+
+            <!-- 대형 굵은 타이틀 (26sp, bold, 2줄) -->
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="새로운 진행 단계를\n추가할 수 있어요."
+                android:textColor="#0F172A"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:lineSpacingMultiplier="1.2"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="28dp" />
+
+            <!-- ===== 1. 상태 그룹 (필수 *) ===== -->
+            <LinearLayout
+                android:id="@+id/layout_status_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- 레이블 행: 텍스트 + 빨간 * -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="2dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="업무 분류"
+                        android:textColor="#94A3B8"
+                        android:textSize="12sp"
+                        android:letterSpacing="0.02" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" *"
+                        android:textColor="#EF4444"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- 입력 행: 1) 선택 모드 (기본값) -->
+                <RelativeLayout
+                    android:id="@+id/layout_group_selector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:visibility="visible">
+
+                    <ImageView
+                        android:id="@+id/btn_group_dropdown"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_chevron_right"
+                        android:rotation="90"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        app:tint="#94A3B8" />
+
+                    <TextView
+                        android:id="@+id/tv_status_group_selected"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="업무 분류 선택"
+                        android:textColor="#CBD5E1"
+                        android:textColorHint="#CBD5E1"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:paddingTop="6dp"
+                        android:paddingBottom="10dp"
+                        android:layout_toStartOf="@id/btn_group_dropdown"
+                        android:layout_marginEnd="8dp" />
+                </RelativeLayout>
+
+                <!-- 입력 행: 2) 직접 입력 모드 (기본 GONE) -->
+                <RelativeLayout
+                    android:id="@+id/layout_group_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
+
+                    <!-- 스피너로 복귀하기 위한 리셋/이전 버튼 -->
+                    <ImageView
+                        android:id="@+id/btn_group_input_reset"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_close"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        app:tint="#94A3B8" />
+
+                    <EditText
+                        android:id="@+id/et_status_group"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:hint="업무 분류명 직접 입력"
+                        android:textColorHint="#CBD5E1"
+                        android:textColor="#0F172A"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:paddingTop="6dp"
+                        android:paddingBottom="10dp"
+                        android:layout_toStartOf="@id/btn_group_input_reset"
+                        android:layout_marginEnd="8dp"
+                        android:inputType="text"
+                        android:maxLines="1" />
+                </RelativeLayout>
+
+                <View
+                    android:id="@+id/line_status_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#E2E8F0"
+                    android:layout_marginBottom="28dp" />
+            </LinearLayout>
+
+            <!-- ===== 2. 상태 고유 키 (필수 *) ===== -->
+            <LinearLayout
+                android:id="@+id/layout_status_key"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="28dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="2dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="상태 고유 키"
+                        android:textColor="#94A3B8"
+                        android:textSize="12sp"
+                        android:letterSpacing="0.02" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" *"
+                        android:textColor="#EF4444"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/ic_valid_key"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:src="@drawable/ic_check"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        app:tint="#E2E8F0" />
+
+                    <EditText
+                        android:id="@+id/et_status_key"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:hint="예: counsel_pending"
+                        android:textColorHint="#CBD5E1"
+                        android:textColor="#0F172A"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:paddingTop="6dp"
+                        android:paddingBottom="4dp"
+                        android:layout_toStartOf="@id/ic_valid_key"
+                        android:layout_marginEnd="8dp"
+                        android:inputType="text"
+                        android:maxLines="1" />
+                </RelativeLayout>
+
+                <View
+                    android:id="@+id/line_status_key"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#E2E8F0"
+                    android:layout_marginTop="4dp" />
+
+                <TextView
+                    android:id="@+id/tv_hint_key"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="영문 소문자, 숫자, 언더스코어(_)만 사용 가능"
+                    android:textColor="#94A3B8"
+                    android:textSize="11sp"
+                    android:layout_marginTop="6dp" />
+            </LinearLayout>
+
+            <!-- ===== 3. 상태 이름 (필수 *) ===== -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="2dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="상태 이름"
+                    android:textColor="#94A3B8"
+                    android:textSize="12sp"
+                    android:letterSpacing="0.02" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" *"
+                    android:textColor="#EF4444"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/et_status_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:hint="예: 접수대기"
+                android:textColorHint="#CBD5E1"
+                android:textColor="#0F172A"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:paddingTop="6dp"
+                android:paddingBottom="10dp"
+                android:inputType="text"
+                android:maxLines="1" />
+
+            <View
+                android:id="@+id/line_status_name"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E2E8F0"
+                android:layout_marginBottom="28dp" />
+
+            <!-- ===== 4. 상태 설명 (선택) ===== -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="상태 설명"
+                android:textColor="#94A3B8"
+                android:textSize="12sp"
+                android:letterSpacing="0.02"
+                android:layout_marginBottom="2dp" />
+
+            <EditText
+                android:id="@+id/et_status_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:hint="상담 접수 대기 중"
+                android:textColorHint="#CBD5E1"
+                android:textColor="#0F172A"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:paddingTop="6dp"
+                android:paddingBottom="10dp"
+                android:inputType="text"
+                android:maxLines="1" />
+
+            <View
+                android:id="@+id/line_status_desc"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E2E8F0"
+                android:layout_marginBottom="28dp" />
+
+            <!-- ===== 5. 색상 (필수 *) ===== -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="색상"
+                    android:textColor="#94A3B8"
+                    android:textSize="12sp"
+                    android:letterSpacing="0.02" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" *"
+                    android:textColor="#EF4444"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 클릭하여 색상 선택하는 레이아웃 -->
+            <LinearLayout
+                android:id="@+id/layout_color_selector"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_card_rounded_border"
+                android:paddingHorizontal="10dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_marginBottom="28dp">
+
+                <!-- 컬러 프리뷰 사각형 -->
+                <View
+                    android:id="@+id/view_color_preview"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="12dp" />
+
+                <!-- 색상 코드 텍스트 -->
+                <TextView
+                    android:id="@+id/tv_status_color"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="#3B82F6"
+                    android:textColor="#0F172A"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:fontFamily="monospace"
+                    android:layout_marginEnd="12dp" />
+            </LinearLayout>
+
+            <!-- ===== 6. 정렬 순서 (선택) ===== -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="정렬 순서"
+                android:textColor="#94A3B8"
+                android:textSize="12sp"
+                android:letterSpacing="0.02"
+                android:layout_marginBottom="2dp" />
+
+            <EditText
+                android:id="@+id/et_status_sort"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:hint="예: 10"
+                android:textColorHint="#CBD5E1"
+                android:textColor="#0F172A"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:paddingTop="6dp"
+                android:paddingBottom="10dp"
+                android:inputType="number"
+                android:maxLines="1" />
+
+            <View
+                android:id="@+id/line_status_sort"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E2E8F0"
+                android:layout_marginBottom="28dp" />
+
+            <!-- ===== 7. 활성화 여부 ===== -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="4dp"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="바로 활성화 할까요?"
+                    android:textColor="#0F172A"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <CheckBox
+                    android:id="@+id/cb_status_active"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:button="@null"
+                    android:background="@drawable/selector_custom_checkbox"
+                    android:checked="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- 등록일 / 수정일 정보 (수정 모드에서만 노출) -->
+            <TextView
+                android:id="@+id/tv_status_dates"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#94A3B8"
+                android:textSize="11sp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="center_horizontal"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Loading ProgressBar -->
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 하단 파란 둥근 버튼 -->
+    <Button
+        android:id="@+id/btn_save"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:text="추가하기"
+        android:textColor="#FFFFFF"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.01"
+        android:backgroundTint="#3B82F6"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:insetLeft="0dp"
+        android:insetRight="0dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="28dp"
+        app:cornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
