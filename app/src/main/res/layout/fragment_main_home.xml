@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.ui.home.HomeFragment">
+    tools:context="com.example.flowdesk_android.feature.main.home.HomeFragment">
 
     <!-- Simple layout for home content area -->
     <TextView
