@@ -30,8 +30,8 @@ import com.example.flowdesk_android.core.extension.showTopToast
 import com.example.flowdesk_android.core.extension.showCustomDropdown
 import com.example.flowdesk_android.core.extension.setReadOnly
 import com.example.flowdesk_android.core.extension.setupFocusHighlight
+import com.example.flowdesk_android.core.extension.toFormattedDateString
 import com.example.flowdesk_android.core.extension.updateColorIndicator
-import com.example.flowdesk_android.core.util.DateUtils
 import androidx.core.content.ContextCompat
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -262,8 +262,8 @@ class StatusEditFragment : Fragment() {
             binding.cbStatusActive.isChecked = detail.isActive
             binding.viewColorPreview.updateColorIndicator(detail.color ?: "#3B82F6")
 
-            val created = DateUtils.formatIsoDate(detail.createdAt)
-            val updated = DateUtils.formatIsoDate(detail.updatedAt)
+            val created = detail.createdAt?.toFormattedDateString() ?: "-"
+            val updated = detail.updatedAt?.toFormattedDateString() ?: "-"
             binding.tvStatusDates.text = "등록일: $created   /   수정일: $updated"
             binding.tvStatusDates.visibility = View.VISIBLE
         } else {

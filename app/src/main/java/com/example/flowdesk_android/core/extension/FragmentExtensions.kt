@@ -1,25 +1,19 @@
 package com.example.flowdesk_android.core.extension
 
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.flowdesk_android.R
+import com.example.flowdesk_android.core.ui.toast.ToastType
+import com.example.flowdesk_android.core.ui.toast.TopToast
 
 /**
- * Fragment에서 상단에 커스텀 디자인 토스트 메시지를 표시하는 공통 확장 함수
+ * Fragment에서 상단에 고품질 커스텀 디자인 애니메이션 토스트 메시지를 표시하는 확장 함수
+ * (기존 showTopToast 호출처를 일절 수정하지 않고도 커스텀 팝업 UI를 노출합니다)
  */
-@Suppress("DEPRECATION")
 fun Fragment.showTopToast(message: String) {
-    val inflater = LayoutInflater.from(requireContext())
-    val layout = inflater.inflate(R.layout.view_common_toast_top, null)
-    layout.findViewById<TextView>(R.id.tv_toast_message).text = message
-
-    Toast(requireContext()).apply {
-        setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, 100)
-        duration = Toast.LENGTH_SHORT
-        view = layout
-        show()
+    activity?.let { activeActivity ->
+        TopToast.show(
+            activity = activeActivity,
+            message = message,
+            type = ToastType.INFO
+        )
     }
 }
