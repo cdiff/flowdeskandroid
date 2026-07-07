@@ -151,4 +151,26 @@
         android:label="InviteTeam"
         tools:layout="@layout/fragment_user_invite" />
 
+    <fragment
+        android:id="@+id/websiteListFragment"
+        android:name="com.example.flowdesk_android.feature.system_management.presentation.website.WebsiteListFragment"
+        android:label="WebsiteList"
+        tools:layout="@layout/fragment_system_website_list" />
+
+    <fragment
+        android:id="@+id/websiteDetailFragment"
+        android:name="com.example.flowdesk_android.feature.system_management.presentation.website.WebsiteDetailFragment"
+        android:label="WebsiteDetail"
+        tools:layout="@layout/fragment_system_website_detail">
+        <argument
+            android:name="webCode"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/websiteCreateFragment"
+        android:name="com.example.flowdesk_android.feature.system_management.presentation.website.WebsiteCreateFragment"
+        android:label="WebsiteCreate"
+        tools:layout="@layout/fragment_system_website_create" />
+
 </navigation>

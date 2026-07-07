@@ -220,4 +220,11 @@
     <string name="counsel_count_suffix">%1$d건</string>
     <string name="counsel_edit_error_required_fields">이름과 전화번호는 필수 입력 항목입니다.</string>
     <string name="counsel_toast_info_updated">수정이 완료되었습니다.</string>
+
+    <!-- 웹사이트 관리 -->
+    <string name="website_label_duplicate_days">중복 허용 %1$d일</string>
+    <string name="website_toast_created">웹사이트가 등록되었습니다.</string>
+    <string name="website_toast_updated">웹사이트가 수정되었습니다.</string>
+    <string name="website_toast_deleted">웹사이트가 삭제되었습니다.</string>
+    <string name="website_error_load_failed">웹사이트 목록을 불러오지 못했습니다.</string>
 </resources>

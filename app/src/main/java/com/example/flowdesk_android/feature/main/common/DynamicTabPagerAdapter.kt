@@ -15,6 +15,7 @@ import com.example.flowdesk_android.feature.counsel_management.presentation.list
 import com.example.flowdesk_android.feature.counsel_management.presentation.calendar.CounselCalendarFragment
 import com.example.flowdesk_android.feature.system_management.presentation.status.TenantStatusFragment
 import com.example.flowdesk_android.feature.system_management.presentation.block.SystemBlockFragment
+import com.example.flowdesk_android.feature.system_management.presentation.website.WebsiteListFragment
 
 class DynamicTabPagerAdapter(
     fragment: Fragment,
@@ -44,6 +45,9 @@ class DynamicTabPagerAdapter(
 
             // 차단 관리 (IP, 휴대폰, 금칙어)
             "super.block", "super.blocks", "system.block", "system.blocks", "security.block", "security.blocks", "security" -> SystemBlockFragment()
+
+            // 웹사이트 관리
+            "websites" -> WebsiteListFragment()
 
             else -> Fragment() // 준비 중인 페이지 Placeholder
         }
