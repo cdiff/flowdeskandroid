@@ -12,6 +12,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.core.extension.showTopToast
+import com.example.flowdesk_android.core.extension.toFormattedDateString
 import com.example.flowdesk_android.databinding.FragmentSystemWebsiteDetailBinding
 import com.example.flowdesk_android.feature.system_management.domain.model.Website
 import dagger.hilt.android.AndroidEntryPoint
@@ -91,10 +92,14 @@ class WebsiteDetailFragment : Fragment() {
                         when (state) {
                             is WebsiteDetailUiState.Loading -> {
                                 binding.progressBar.visibility = View.VISIBLE
+                                binding.scrollView.visibility = View.INVISIBLE
+                                binding.layoutButtons.visibility = View.INVISIBLE
                                 binding.btnSave.isEnabled = false
                             }
                             is WebsiteDetailUiState.Success -> {
                                 binding.progressBar.visibility = View.GONE
+                                binding.scrollView.visibility = View.VISIBLE
+                                binding.layoutButtons.visibility = View.VISIBLE
                                 binding.btnSave.isEnabled = true
                                 bindWebsiteData(state.website)
                             }
@@ -103,8 +108,7 @@ class WebsiteDetailFragment : Fragment() {
                                 showTopToast(getString(R.string.website_toast_updated))
                                 // 이전 화면으로 리프레시 시그널 전달
                                 findNavController().previousBackStackEntry?.savedStateHandle?.set("refresh", true)
-                                setEditMode(true) // 성공 후에도 계속 수정 가능 모드 유지
-                                webCode?.let { viewModel.loadWebsiteDetail(it) } // 데이터 새로고침
+                                findNavController().popBackStack() // 수정 성공 시 목록으로 복귀
                             }
                             is WebsiteDetailUiState.DeleteSuccess -> {
                                 binding.progressBar.visibility = View.GONE
@@ -143,7 +147,9 @@ class WebsiteDetailFragment : Fragment() {
         binding.switchActive.isChecked = website.isActive
         
         // 날짜 텍스트 셋팅
-        binding.tvDates.text = "등록일: ${website.createdAt?.take(10) ?: "-"}   /   수정일: ${website.updatedAt?.take(10) ?: "-"}"
+        val created = website.createdAt?.toFormattedDateString() ?: "-"
+        val updated = website.updatedAt?.toFormattedDateString() ?: "-"
+        binding.tvDates.text = "등록일: $created   /   수정일: $updated"
         
         // 데이터 바인딩 직후 항상 편집 모드로 설정
         setEditMode(true)

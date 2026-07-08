@@ -6,12 +6,8 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.lifecycle.Lifecycle
@@ -19,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.flowdesk_android.R
+import com.example.flowdesk_android.databinding.DialogCommonConfirmBinding
 import com.example.flowdesk_android.databinding.FragmentSystemTenantStatusBinding
 import com.example.flowdesk_android.databinding.ItemStatusGroupAccordionBinding
 import com.example.flowdesk_android.databinding.ItemStatusGroupChipBinding
@@ -140,8 +137,11 @@ class TenantStatusFragment : Fragment() {
                         val bundle = Bundle().apply { putLong("tenantStatusId", item.tenantStatusId) }
                         findNavController().navigate(R.id.statusEditFragment, bundle)
                     },
-                    onMoreClicked = { item, anchorView ->
-                        showStatusItemMenu(item, anchorView)
+                    onToggleStatusClicked = { item ->
+                        viewModel.toggleStatusActive(item.tenantStatusId, item.isActive)
+                    },
+                    onDeleteClicked = { item ->
+                        showDeleteConfirmDialog(item)
                     }
                 )
             }
@@ -182,34 +182,29 @@ class TenantStatusFragment : Fragment() {
         }
     }
 
-    // ─── 팝업 메뉴 ──────────────────────────────────────────────────────────
-    private fun showStatusItemMenu(item: TenantStatus, anchorView: View) {
-        val popup = PopupMenu(requireContext(), anchorView)
-        popup.menu.add("상태 수정")
-        popup.menu.add(if (item.isActive) "상태 비활성화" else "상태 활성화")
-        popup.menu.add("상태 삭제")
+    // ─── 커스텀 삭제 확인 다이얼로그 ────────────────────────────────────────
+    private fun showDeleteConfirmDialog(item: TenantStatus) {
+        val dialogBinding = DialogCommonConfirmBinding.inflate(layoutInflater)
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogBinding.root)
+            .create()
 
-        popup.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.title) {
-                "상태 수정" -> {
-                    val bundle = Bundle().apply { putLong("tenantStatusId", item.tenantStatusId) }
-                    findNavController().navigate(R.id.statusEditFragment, bundle)
-                }
-                "상태 비활성화", "상태 활성화" -> {
-                    viewModel.toggleStatusActive(item.tenantStatusId, item.isActive)
-                }
-                "상태 삭제" -> {
-                    AlertDialog.Builder(requireContext())
-                        .setTitle("상태 삭제")
-                        .setMessage("정말로 이 상태를 삭제하시겠습니까?\n삭제된 상태는 복구할 수 없습니다.")
-                        .setPositiveButton("삭제") { _, _ -> viewModel.deleteStatus(item.tenantStatusId) }
-                        .setNegativeButton("취소", null)
-                        .show()
-                }
-            }
-            true
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        dialogBinding.tvTitle.text = "상태 삭제"
+        dialogBinding.tvMessage.text = "'${item.statusName}' 상태를 삭제하시겠습니까?\n삭제된 상태는 복구할 수 없습니다."
+        dialogBinding.cbConfirm.visibility = View.GONE
+
+        dialogBinding.btnCancel.setOnClickListener {
+            dialog.dismiss()
         }
-        popup.show()
+
+        dialogBinding.btnConfirm.setOnClickListener {
+            dialog.dismiss()
+            viewModel.deleteStatus(item.tenantStatusId)
+        }
+
+        dialog.show()
     }
 
     // ─── 상태 관찰 ──────────────────────────────────────────────────────────

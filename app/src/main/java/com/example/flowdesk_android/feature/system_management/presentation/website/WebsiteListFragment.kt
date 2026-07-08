@@ -17,10 +17,12 @@ import androidx.navigation.fragment.findNavController
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.core.extension.showTopToast
 import com.example.flowdesk_android.databinding.FragmentSystemWebsiteListBinding
+import com.example.flowdesk_android.databinding.DialogCommonConfirmBinding
 import com.example.flowdesk_android.feature.system_management.domain.model.Website
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import androidx.appcompat.app.AlertDialog
 
 @AndroidEntryPoint
 class WebsiteListFragment : Fragment() {
@@ -69,15 +71,7 @@ class WebsiteListFragment : Fragment() {
                 viewModel.updateWebsiteStatus(website.webCode, !website.isActive)
             },
             onDeleteClicked = { website ->
-                // 삭제 확인 대화상자
-                androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                    .setTitle("웹사이트 삭제")
-                    .setMessage("정말로 이 웹사이트를 삭제하시겠습니까?")
-                    .setPositiveButton("삭제") { _, _ ->
-                        viewModel.deleteWebsite(website.webCode)
-                    }
-                    .setNegativeButton("취소", null)
-                    .show()
+                showDeleteConfirmDialog(website)
             }
         )
         binding.rvWebsites.adapter = adapter
@@ -180,6 +174,30 @@ class WebsiteListFragment : Fragment() {
     }
 
 
+
+    private fun showDeleteConfirmDialog(website: Website) {
+        val dialogBinding = DialogCommonConfirmBinding.inflate(layoutInflater)
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogBinding.root)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        dialogBinding.tvTitle.text = "웹사이트 삭제"
+        dialogBinding.tvMessage.text = "'${website.webTitle}' 웹사이트를 삭제하시겠습니까?\n삭제된 웹사이트는 복구할 수 없습니다."
+        dialogBinding.cbConfirm.visibility = View.GONE
+
+        dialogBinding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialogBinding.btnConfirm.setOnClickListener {
+            dialog.dismiss()
+            viewModel.deleteWebsite(website.webCode)
+        }
+
+        dialog.show()
+    }
 
     override fun onDestroyView() {
         binding.rvWebsites.adapter = null

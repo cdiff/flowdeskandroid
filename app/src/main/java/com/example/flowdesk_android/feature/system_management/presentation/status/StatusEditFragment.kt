@@ -198,7 +198,7 @@ class StatusEditFragment : Fragment() {
             binding.tvTitle.visibility = View.GONE
             binding.btnSave.text = "저장하기"
             binding.tvHeaderTitle.visibility = View.VISIBLE
-            binding.tvHeaderTitle.text = "상태 상세페이지"
+            binding.tvHeaderTitle.text = "상태 상세 정보"
             binding.scrollView.visibility = View.INVISIBLE
         } else {
             binding.tvTitle.text = "새로운 진행 단계를\n추가할 수 있어요."
@@ -242,7 +242,7 @@ class StatusEditFragment : Fragment() {
             binding.tvTitle.visibility = View.GONE
             binding.btnSave.text = "저장하기"
             binding.tvHeaderTitle.visibility = View.VISIBLE
-            binding.tvHeaderTitle.text = "상태 상세페이지"
+            binding.tvHeaderTitle.text = "상태 상세 정보"
 
             binding.layoutStatusGroup.visibility = View.VISIBLE
             binding.layoutGroupSelector.setReadOnly(true, binding.btnGroupDropdown)
