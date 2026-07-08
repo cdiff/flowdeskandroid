@@ -17,6 +17,9 @@ import com.example.flowdesk_android.feature.system_management.presentation.statu
 import com.example.flowdesk_android.feature.system_management.presentation.block.SystemBlockFragment
 import com.example.flowdesk_android.feature.system_management.presentation.website.WebsiteListFragment
 
+import com.example.flowdesk_android.feature.system_management.presentation.board_type.BoardTypeListFragment
+import com.example.flowdesk_android.feature.content_management.presentation.board_post.BoardPostListFragment
+
 class DynamicTabPagerAdapter(
     fragment: Fragment,
     private val tabs: List<Menu>
@@ -48,6 +51,12 @@ class DynamicTabPagerAdapter(
 
             // 웹사이트 관리
             "websites" -> WebsiteListFragment()
+
+            // 게시판 타입 관리
+            "board_types" -> BoardTypeListFragment()
+
+            // 게시글 관리
+            "boards.posts" -> BoardPostListFragment()
 
             else -> Fragment() // 준비 중인 페이지 Placeholder
         }

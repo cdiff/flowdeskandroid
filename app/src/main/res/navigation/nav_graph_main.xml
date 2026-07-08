@@ -173,4 +173,41 @@
         android:label="WebsiteCreate"
         tools:layout="@layout/fragment_system_website_create" />
 
+    <!-- 게시판 타입 관리 -->
+    <fragment
+        android:id="@+id/boardTypeListFragment"
+        android:name="com.example.flowdesk_android.feature.system_management.presentation.board_type.BoardTypeListFragment"
+        android:label="BoardTypeList"
+        tools:layout="@layout/fragment_system_board_type_list" />
+
+    <fragment
+        android:id="@+id/boardTypeDetailFragment"
+        android:name="com.example.flowdesk_android.feature.system_management.presentation.board_type.BoardTypeDetailFragment"
+        android:label="BoardTypeDetail"
+        tools:layout="@layout/fragment_system_board_type_detail">
+        <argument
+            android:name="boardId"
+            app:argType="long" />
+    </fragment>
+
+    <!-- 게시글 관리 -->
+    <fragment
+        android:id="@+id/boardPostListFragment"
+        android:name="com.example.flowdesk_android.feature.content_management.presentation.board_post.BoardPostListFragment"
+        android:label="BoardPostList"
+        tools:layout="@layout/fragment_content_board_post_list" />
+
+    <fragment
+        android:id="@+id/boardPostDetailFragment"
+        android:name="com.example.flowdesk_android.feature.content_management.presentation.board_post.BoardPostDetailFragment"
+        android:label="BoardPostDetail"
+        tools:layout="@layout/fragment_content_board_post_detail">
+        <argument
+            android:name="boardId"
+            app:argType="long" />
+        <argument
+            android:name="postId"
+            app:argType="long" />
+    </fragment>
+
 </navigation>

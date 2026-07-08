@@ -227,4 +227,71 @@
     <string name="website_toast_updated">웹사이트가 수정되었습니다.</string>
     <string name="website_toast_deleted">웹사이트가 삭제되었습니다.</string>
     <string name="website_error_load_failed">웹사이트 목록을 불러오지 못했습니다.</string>
+
+    <!-- 게시판 및 게시글 관리 -->
+    <string name="board_title_management">게시판 타입 관리</string>
+    <string name="board_desc_management">시스템 내에 연동되는 게시판 종류와 순서를 설정합니다.</string>
+    <string name="board_label_total">전체 게시판</string>
+    <string name="board_label_active">활성</string>
+    <string name="board_label_inactive">비활성</string>
+    <string name="board_hint_search_type">게시판 이름 또는 설명 검색...</string>
+    <string name="board_label_type">게시판 유형</string>
+    <string name="board_empty_types">등록된 게시판 타입이 없습니다</string>
+    <string name="board_empty_types_desc">우측 상단 + 버튼으로 등록하세요</string>
+    <string name="board_title_detail">게시판 상세 정보</string>
+    <string name="board_title_create">새로운 게시판 타입을\n추가할 수 있어요.</string>
+    <string name="board_label_name">게시판 명칭</string>
+    <string name="board_hint_name">예: 공지사항, 자유게시판</string>
+    <string name="board_label_key">게시판 키 (boardKey)</string>
+    <string name="board_hint_key">예: notice, free_board</string>
+    <string name="board_label_desc">게시판 설명</string>
+    <string name="board_hint_desc">게시판 설명을 입력하세요</string>
+    <string name="board_label_sort_order">정렬 순서</string>
+    <string name="board_hint_sort_order">예: 1</string>
+    <string name="board_label_switch_active">게시판 활성화</string>
+    <string name="board_btn_save">저장하기</string>
+    <string name="board_btn_edit">수정하기</string>
+    
+    <string name="post_title_management">게시글 관리</string>
+    <string name="post_desc_management">각 게시판의 게시물 목록을 조회하고 공지글을 관리합니다.</string>
+    <string name="post_hint_search">제목 또는 내용 검색...</string>
+    <string name="post_label_title">게시글</string>
+    <string name="post_empty_list">등록된 게시글이 없습니다</string>
+    <string name="post_empty_list_desc">아래 연필 버튼을 눌러 첫 글을 작성해보세요</string>
+    <string name="post_title_detail">게시글 상세 정보</string>
+    <string name="post_title_create">새로운 게시글을\n작성할 수 있어요.</string>
+    <string name="post_label_subject">제목</string>
+    <string name="post_hint_subject">게시글 제목을 입력하세요</string>
+    <string name="post_label_switch_notice">중요 공지사항 지정</string>
+    <string name="post_label_notice_period">공지 노출 기간 설정</string>
+    <string name="post_hint_start_date">시작일 선택</string>
+    <string name="post_hint_end_date">종료일 선택(선택)</string>
+    <string name="post_label_content">본문 내용</string>
+    <string name="post_hint_content">내용을 작성해 주세요.</string>
+    <string name="post_btn_delete">삭제하기</string>
+    
+    <string name="board_toast_load_failed">게시판 타입을 불러오지 못했습니다.</string>
+    <string name="board_toast_activated">게시판이 활성화되었습니다.</string>
+    <string name="board_toast_deactivated">게시판이 비활성화되었습니다.</string>
+    <string name="board_toast_toggle_failed">상태 변경에 실패했습니다.</string>
+    <string name="board_toast_load_detail_failed">상세 정보를 조회하는 데 실패했습니다.</string>
+    <string name="board_toast_deactivate_success">게시판이 삭제(비활성화)되었습니다.</string>
+    <string name="board_toast_save_success_create">게시판이 추가되었습니다.</string>
+    <string name="board_toast_save_success_edit">게시판이 수정되었습니다.</string>
+    <string name="board_toast_required_fields">필수 항목(*)을 입력해 주세요.</string>
+    <string name="board_toast_save_failed">저장에 실패했습니다.</string>
+    <string name="board_toast_delete_failed">삭제에 실패했습니다.</string>
+    
+    <string name="post_toast_load_boards_failed">게시판 목록을 조회하지 못했습니다.</string>
+    <string name="post_toast_load_posts_failed">게시글 목록을 불러오지 못했습니다.</string>
+    <string name="post_toast_select_board_first">게시판을 먼저 선택하거나 생성해주세요.</string>
+    <string name="post_toast_load_detail_failed">게시글 정보를 가져오지 못했습니다.</string>
+    <string name="post_toast_save_success_create">게시글이 등록되었습니다.</string>
+    <string name="post_toast_save_success_edit">게시글이 수정되었습니다.</string>
+    <string name="post_toast_delete_success">게시글이 삭제되었습니다.</string>
+
+    <string name="board_dialog_delete_title">게시판 삭제</string>
+    <string name="board_dialog_delete_message">\'%1$s\' 게시판을 삭제하시겠습니까?\n삭제된 게시판은 복구할 수 없습니다.</string>
+    <string name="post_dialog_delete_title">게시글 삭제</string>
+    <string name="post_dialog_delete_message">이 게시글을 삭제하시겠습니까?\n삭제된 게시글은 목록에서 제외됩니다.</string>
 </resources>

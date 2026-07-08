@@ -230,7 +230,9 @@ class MainActivity : AppCompatActivity() {
                 destination.id == R.id.managePermissionsFragment ||
                 destination.id == R.id.inviteTeamFragment ||
                 destination.id == R.id.websiteDetailFragment ||
-                destination.id == R.id.websiteCreateFragment
+                destination.id == R.id.websiteCreateFragment ||
+                destination.id == R.id.boardTypeDetailFragment ||
+                destination.id == R.id.boardPostDetailFragment
             ) {
                  binding.bottomNavigation.visibility = android.view.View.GONE
                  binding.bottomNavigationDivider.visibility = android.view.View.GONE
