@@ -10,5 +10,8 @@ data class TenantStatusUiState(
     val totalGroups: Int = 0,
     val totalStatuses: Int = 0,
     val activeStatuses: Int = 0,
-    val inactiveStatuses: Int = 0
+    val inactiveStatuses: Int = 0,
+    val canWrite: Boolean = false,
+    val canUpdate: Boolean = false,
+    val canDelete: Boolean = false
 )

@@ -29,7 +29,10 @@ import javax.inject.Inject
 
 sealed class CounselDetailUiState {
     object Loading : CounselDetailUiState()
-    data class Success(val detail: CounselDetail) : CounselDetailUiState()
+    data class Success(
+        val detail: CounselDetail,
+        val canWriteSecurity: Boolean
+    ) : CounselDetailUiState()
     data class Error(val message: String) : CounselDetailUiState()
 }
 
@@ -44,7 +47,8 @@ sealed class CounselUpdateState {
 
 @HiltViewModel
 class CounselDetailViewModel @Inject constructor(
-    private val counselRepository: CounselRepository
+    private val counselRepository: CounselRepository,
+    private val sessionManager: com.example.flowdesk_android.data.local.SessionManager
 ) : BaseViewModel() {
 
     // 1. 수동 리프레시 트리거
@@ -55,22 +59,37 @@ class CounselDetailViewModel @Inject constructor(
 
     // 3. [핵심] 선언형 UI 상태 파이프라인 (상세 정보 조회)
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<CounselDetailUiState> = combine(_counselIdState, _refreshTrigger) { id, _ ->
+    private val _repoState = combine(_counselIdState, _refreshTrigger) { id, _ ->
         id
     }.flatMapLatest { id ->
         flow {
             if (id == -1) {
-                emit(CounselDetailUiState.Loading)
+                emit(null)
                 return@flow
             }
-            emit(CounselDetailUiState.Loading)
+            emit(null)
             counselRepository.getCounselDetail(id)
-                .onSuccess { detail -> emit(CounselDetailUiState.Success(detail)) }
-                .onFailure { err ->
+                .fold(
+                    onSuccess = { emit(Result.success(it)) },
+                    onFailure = { emit(Result.failure(it)) }
+                )
+        }
+    }
+
+    val uiState: StateFlow<CounselDetailUiState> = combine(
+        _repoState,
+        sessionManager.observePermission("security.create")
+    ) { repoResult, canWriteSecurity ->
+        if (repoResult == null) {
+            CounselDetailUiState.Loading
+        } else {
+            repoResult.fold(
+                onSuccess = { CounselDetailUiState.Success(it, canWriteSecurity) },
+                onFailure = { err ->
                     val msg = err.message ?: "상담 정보를 불러오지 못했습니다."
-                    emit(CounselDetailUiState.Error(msg))
-                    sendError(msg)
+                    CounselDetailUiState.Error(msg)
                 }
+            )
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), CounselDetailUiState.Loading)
 

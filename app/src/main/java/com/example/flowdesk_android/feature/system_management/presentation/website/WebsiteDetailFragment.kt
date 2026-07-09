@@ -99,9 +99,9 @@ class WebsiteDetailFragment : Fragment() {
                             is WebsiteDetailUiState.Success -> {
                                 binding.progressBar.visibility = View.GONE
                                 binding.scrollView.visibility = View.VISIBLE
-                                binding.layoutButtons.visibility = View.VISIBLE
-                                binding.btnSave.isEnabled = true
-                                bindWebsiteData(state.website)
+                                binding.layoutButtons.visibility = if (state.canUpdate) View.VISIBLE else View.GONE
+                                binding.btnSave.isEnabled = state.canUpdate
+                                bindWebsiteData(state.website, state.canUpdate)
                             }
                             is WebsiteDetailUiState.UpdateSuccess -> {
                                 binding.progressBar.visibility = View.GONE
@@ -137,7 +137,7 @@ class WebsiteDetailFragment : Fragment() {
         }
     }
 
-    private fun bindWebsiteData(website: Website) {
+    private fun bindWebsiteData(website: Website, canUpdate: Boolean) {
         binding.etWebCode.setText(website.webCode)
         binding.etWebTitle.setText(website.webTitle)
         binding.etWebUrl.setText(website.webUrl)
@@ -152,19 +152,19 @@ class WebsiteDetailFragment : Fragment() {
         binding.tvDates.text = "등록일: $created   /   수정일: $updated"
         
         // 데이터 바인딩 직후 항상 편집 모드로 설정
-        setEditMode(true)
+        setEditMode(true, canUpdate)
     }
 
-    private fun setEditMode(enabled: Boolean) {
+    private fun setEditMode(enabled: Boolean, canUpdate: Boolean) {
         isEditMode = true
         
         // 에디트 텍스트 항상 편집 가능 상태 설정 (코드 제외)
-        binding.etWebTitle.isEnabled = true
-        binding.etWebUrl.isEnabled = true
-        binding.etWebDesc.isEnabled = true
-        binding.etWebMemo.isEnabled = true
-        binding.etDuplicateDays.isEnabled = true
-        binding.switchActive.isEnabled = true
+        binding.etWebTitle.isEnabled = canUpdate
+        binding.etWebUrl.isEnabled = canUpdate
+        binding.etWebDesc.isEnabled = canUpdate
+        binding.etWebMemo.isEnabled = canUpdate
+        binding.etDuplicateDays.isEnabled = canUpdate
+        binding.switchActive.isEnabled = canUpdate
         
         binding.tvHeaderTitle.text = "웹사이트 상세 정보"
         binding.btnSave.text = "저장하기"

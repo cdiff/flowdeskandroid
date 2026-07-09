@@ -20,7 +20,8 @@ import javax.inject.Singleton
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
     private val api: AuthApi,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    private val sessionManager: com.example.flowdesk_android.data.local.SessionManager
 ) : AuthRepository {
 
     private val _sessionState = MutableStateFlow<AuthSession>(AuthSession.Guest)
@@ -56,6 +57,7 @@ class AuthRepositoryImpl @Inject constructor(
     fun clearSessionDueToAuthFailure() {
         tokenManager.clear()
         _sessionState.value = AuthSession.Guest
+        sessionManager.clear()
     }
 
 
@@ -72,8 +74,10 @@ class AuthRepositoryImpl @Inject constructor(
                 if (body != null) {
                     val authUser = body.user.toDomain(token)
                     _sessionState.value = AuthSession.Active(authUser)
+                    sessionManager.setSession(body.toDomain())
                 } else {
                     _sessionState.value = AuthSession.Guest
+                    sessionManager.clear()
                 }
             } else {
                 tokenManager.clear()
@@ -110,21 +114,25 @@ class AuthRepositoryImpl @Inject constructor(
             if (refreshToken == null) {
                  tokenManager.clear()
                  _sessionState.value = AuthSession.Guest
+                 sessionManager.clear()
                  return@withContext Result.success(Unit)
             }
             val response = api.logout(LogoutRequest(refreshToken))
             if (response.isSuccessful) {
                 tokenManager.clear()
                 _sessionState.value = AuthSession.Guest
+                sessionManager.clear()
                 Result.success(Unit)
             } else {
                 tokenManager.clear()
                 _sessionState.value = AuthSession.Guest
+                sessionManager.clear()
                 Result.failure(Exception("Logout failed with code: ${response.code()}"))
             }
         } catch (e: Exception) {
             tokenManager.clear()
             _sessionState.value = AuthSession.Guest
+            sessionManager.clear()
             Result.failure(e)
         }
     }
@@ -136,15 +144,18 @@ class AuthRepositoryImpl @Inject constructor(
              if (response.isSuccessful) {
                  tokenManager.clear()
                  _sessionState.value = AuthSession.Guest
+                 sessionManager.clear()
                  Result.success(Unit)
              } else {
                  tokenManager.clear()
                  _sessionState.value = AuthSession.Guest
+                 sessionManager.clear()
                  Result.failure(Exception("Logout all failed with code: ${response.code()}"))
              }
         } catch (e: Exception) {
             tokenManager.clear()
             _sessionState.value = AuthSession.Guest
+            sessionManager.clear()
             Result.failure(e)
         }
     }
@@ -155,7 +166,9 @@ class AuthRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body != null) {
-                    Result.success(body.toDomain())
+                    val meInfo = body.toDomain()
+                    sessionManager.setSession(meInfo)
+                    Result.success(meInfo)
                 } else {
                     Result.failure(Exception("Empty response body"))
                 }

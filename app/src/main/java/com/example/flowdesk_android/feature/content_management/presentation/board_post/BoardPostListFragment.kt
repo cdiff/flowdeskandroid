@@ -119,6 +119,9 @@ class BoardPostListFragment : Fragment() {
                                 adapter.submitList(state.posts)
                                 binding.tvListCount.text = "  ${state.totalCount}건"
 
+                                // 게시글 작성 권한에 따른 FAB 가시성 제어
+                                binding.fabWrite.visibility = if (state.canWrite) View.VISIBLE else View.GONE
+
                                 // 칩 탭 드로잉 (최초 1회 또는 보드 타입 변경 시)
                                 renderBoardChips(state.boardTypes)
 

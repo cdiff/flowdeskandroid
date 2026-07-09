@@ -112,6 +112,8 @@ class BoardTypeListFragment : Fragment() {
                             }
                             is BoardTypeListUiState.Success -> {
                                 binding.progressBar.visibility = View.GONE
+                                binding.btnAdd.visibility = if (state.canWrite) View.VISIBLE else View.GONE
+                                adapter.setPermissions(state.canUpdate, state.canDelete)
                                 adapter.submitList(state.items)
 
                                 // 통계 데이터 바인딩

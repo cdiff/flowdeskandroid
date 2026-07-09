@@ -23,6 +23,15 @@ class TenantStatusAdapter(
     // 확장 상태인 아이템들의 tenantStatusId 관리
     private val expandedItems = mutableSetOf<Long>()
 
+    private var canUpdate: Boolean = true
+    private var canDelete: Boolean = true
+
+    fun setPermissions(canUpdate: Boolean, canDelete: Boolean) {
+        this.canUpdate = canUpdate
+        this.canDelete = canDelete
+        notifyDataSetChanged()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemSystemTenantStatusBinding.inflate(
             LayoutInflater.from(parent.context),
@@ -68,8 +77,17 @@ class TenantStatusAdapter(
                 binding.viewStatusDot.setBackgroundResource(R.drawable.bg_circle_blue)
             }
 
+            // 권한 제어
+            binding.btnToggleStatus.visibility = if (canUpdate) View.VISIBLE else View.GONE
+            binding.btnDelete.visibility = if (canDelete) View.VISIBLE else View.GONE
+            if (!canUpdate && !canDelete) {
+                binding.ivMore.visibility = View.GONE
+            } else {
+                binding.ivMore.visibility = View.VISIBLE
+            }
+
             // 아코디언 확장/축소 상태 적용
-            val isExpanded = expandedItems.contains(item.tenantStatusId)
+            val isExpanded = expandedItems.contains(item.tenantStatusId) && (canUpdate || canDelete)
             binding.llHiddenMenu.visibility = if (isExpanded) View.VISIBLE else View.GONE
 
             // 카드 클릭 시 상세 페이지로 이동

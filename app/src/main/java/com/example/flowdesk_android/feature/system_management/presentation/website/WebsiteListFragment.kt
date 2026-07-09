@@ -124,6 +124,8 @@ class WebsiteListFragment : Fragment() {
                             }
                             is WebsiteListUiState.Success -> {
                                 binding.progressBar.visibility = View.GONE
+                                binding.btnAdd.visibility = if (state.canWrite) View.VISIBLE else View.GONE
+                                adapter.setPermissions(state.canUpdate, state.canDelete)
                                 adapter.submitList(state.websites)
                                 binding.tvListCount.text = "  ${state.totalCount}건"
                                 

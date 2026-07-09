@@ -12,7 +12,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TenantStatusViewModel @Inject constructor(
-    private val repository: SystemManagementRepository
+    private val repository: SystemManagementRepository,
+    private val sessionManager: com.example.flowdesk_android.data.local.SessionManager
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
@@ -40,14 +41,24 @@ class TenantStatusViewModel @Inject constructor(
     // 수동 리프레시 트리거용 Flow
     private val _refreshTrigger = MutableStateFlow(0)
 
+    private val permissionFlow = combine(
+        sessionManager.observePermission("tenants.status.create"),
+        sessionManager.observePermission("tenants.status.update"),
+        sessionManager.observePermission("tenants.status.delete")
+    ) { canWrite, canUpdate, canDelete ->
+        Triple(canWrite, canUpdate, canDelete)
+    }
+
     // 단일 UI 상태 흐름 (combine 적용 및 통계 수치 실시간 유도)
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<TenantStatusUiState> = combine(
         _isLoading,
         _selectedGroup,
         _statusGroups,
-        _filteredGroups
-    ) { loading, selected, groups, filtered ->
+        _filteredGroups,
+        permissionFlow
+    ) { loading, selected, groups, filtered, permissions ->
+        val (canWrite, canUpdate, canDelete) = permissions
         val allItems = filtered.flatMap { it.items }
         TenantStatusUiState(
             isLoading = loading,
@@ -57,7 +68,10 @@ class TenantStatusViewModel @Inject constructor(
             totalGroups = filtered.size,
             totalStatuses = allItems.size,
             activeStatuses = allItems.count { it.isActive },
-            inactiveStatuses = allItems.count { !it.isActive }
+            inactiveStatuses = allItems.count { !it.isActive },
+            canWrite = canWrite,
+            canUpdate = canUpdate,
+            canDelete = canDelete
         )
     }.distinctUntilChanged()
      .stateIn(

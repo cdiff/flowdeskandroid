@@ -39,7 +39,7 @@ class WebsiteCreateFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         // Window insets 처리 (상태바/카메라 홀 침범 예방)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -64,27 +64,38 @@ class WebsiteCreateFragment : Fragment() {
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.collectLatest { state ->
-                    when (state) {
-                        is WebsiteCreateUiState.Loading -> {
-                            binding.progressBar.visibility = View.VISIBLE
-                            binding.btnSave.isEnabled = false
-                        }
-                        is WebsiteCreateUiState.Success -> {
-                            binding.progressBar.visibility = View.GONE
-                            showTopToast(getString(R.string.website_toast_created))
-                            // 이전 화면으로 리프레시 시그널 전달
-                            findNavController().previousBackStackEntry?.savedStateHandle?.set("refresh", true)
-                            findNavController().popBackStack() // 등록 성공 후 목록으로 복귀
-                        }
-                        is WebsiteCreateUiState.Error -> {
-                            binding.progressBar.visibility = View.GONE
-                            binding.btnSave.isEnabled = true
-                            showTopToast(state.message)
-                        }
-                        is WebsiteCreateUiState.Idle -> {
-                            binding.progressBar.visibility = View.GONE
-                            binding.btnSave.isEnabled = true
+
+                // 생성 권한 반응형 구독 — 권한 변경 시 즉시 버튼 상태 반영
+                launch {
+                    viewModel.canWrite.collectLatest { canWrite ->
+                        binding.btnSave.visibility = if (canWrite) View.VISIBLE else View.GONE
+                    }
+                }
+
+                // UI 상태 구독
+                launch {
+                    viewModel.uiState.collectLatest { state ->
+                        when (state) {
+                            is WebsiteCreateUiState.Loading -> {
+                                binding.progressBar.visibility = View.VISIBLE
+                                binding.btnSave.isEnabled = false
+                            }
+                            is WebsiteCreateUiState.Success -> {
+                                binding.progressBar.visibility = View.GONE
+                                showTopToast(getString(R.string.website_toast_created))
+                                // 이전 화면으로 리프레시 시그널 전달
+                                findNavController().previousBackStackEntry?.savedStateHandle?.set("refresh", true)
+                                findNavController().popBackStack()
+                            }
+                            is WebsiteCreateUiState.Error -> {
+                                binding.progressBar.visibility = View.GONE
+                                binding.btnSave.isEnabled = viewModel.canWrite.value
+                                showTopToast(state.message)
+                            }
+                            is WebsiteCreateUiState.Idle -> {
+                                binding.progressBar.visibility = View.GONE
+                                binding.btnSave.isEnabled = viewModel.canWrite.value
+                            }
                         }
                     }
                 }
@@ -110,7 +121,7 @@ class WebsiteCreateFragment : Fragment() {
 
         viewModel.createWebsite(
             webCode = code,
-            userSeq = 1, // 로그인 유저 seq 임시 바인딩
+            userSeq = 1,
             webUrl = url,
             webTitle = title,
             webImg = null,

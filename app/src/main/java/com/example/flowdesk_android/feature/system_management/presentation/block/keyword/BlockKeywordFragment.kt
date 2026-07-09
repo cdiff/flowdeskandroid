@@ -65,6 +65,7 @@ class BlockKeywordFragment : BaseBlockListFragment<BlockWordItem>() {
                             }
                             is BlockWordUiState.Success -> {
                                 showSuccess(state.items, state.totalCount)
+                                updateWritePermission(state.canWrite)
                             }
                             is BlockWordUiState.Error -> {
                                 showError(state.message)

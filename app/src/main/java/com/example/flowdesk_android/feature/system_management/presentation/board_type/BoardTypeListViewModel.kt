@@ -8,12 +8,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
-@OptIn(FlowPreview::class)
+@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class BoardTypeListViewModel @Inject constructor(
-    private val boardRepository: BoardRepository
+    private val boardRepository: BoardRepository,
+    private val sessionManager: com.example.flowdesk_android.data.local.SessionManager
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
@@ -24,33 +26,45 @@ class BoardTypeListViewModel @Inject constructor(
     private val _toastMessage = MutableSharedFlow<String>()
     val toastMessage: SharedFlow<String> = _toastMessage.asSharedFlow()
 
-    val uiState: StateFlow<BoardTypeListUiState> = _refreshTrigger
+    private val _repoState = _refreshTrigger
         .onStart { emit(Unit) }
         .flatMapLatest {
             flow {
-                emit(BoardTypeListUiState.Loading)
-                boardRepository.getBoardTypes()
-                    .onSuccess { list ->
-                        // 검색 필터 적용
-                        val filteredList = list.filter {
-                            it.name.contains(_searchQuery.value, ignoreCase = true) ||
-                                    (it.description?.contains(_searchQuery.value, ignoreCase = true) ?: false)
-                        }
-                        val total = filteredList.size
-                        val active = filteredList.count { it.isActive }
-                        val inactive = total - active
-                        emit(BoardTypeListUiState.Success(filteredList, total, active, inactive))
-                    }
-                    .onFailure { err ->
-                        emit(BoardTypeListUiState.Error(err.message ?: "게시판 타입을 불러오지 못했습니다."))
-                    }
+                emit(null)
+                emit(boardRepository.getBoardTypes())
             }
         }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = BoardTypeListUiState.Loading
-        )
+
+    val uiState: StateFlow<BoardTypeListUiState> = combine(
+        _repoState,
+        sessionManager.observePermission("board_types.create"),
+        sessionManager.observePermission("board_types.update"),
+        sessionManager.observePermission("board_types.delete")
+    ) { repoResult, canWrite, canUpdate, canDelete ->
+        if (repoResult == null) {
+            BoardTypeListUiState.Loading
+        } else {
+            repoResult.fold(
+                onSuccess = { list ->
+                    val filteredList = list.filter {
+                        it.name.contains(_searchQuery.value, ignoreCase = true) ||
+                                (it.description?.contains(_searchQuery.value, ignoreCase = true) ?: false)
+                    }
+                    val total = filteredList.size
+                    val active = filteredList.count { it.isActive }
+                    val inactive = total - active
+                    BoardTypeListUiState.Success(filteredList, total, active, inactive, canWrite, canUpdate, canDelete)
+                },
+                onFailure = { err ->
+                    BoardTypeListUiState.Error(err.message ?: "게시판 타입을 불러오지 못했습니다.")
+                }
+            )
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = BoardTypeListUiState.Loading
+    )
 
     init {
         // 검색어가 변경될 때마다 자동 갱신 트리거 (300ms 디바운스 적용)

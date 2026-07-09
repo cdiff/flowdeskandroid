@@ -73,8 +73,8 @@ class BoardTypeDetailFragment : Fragment() {
             binding.tvDates.visibility = View.GONE
             binding.etBoardKey.isEnabled = true
             binding.btnSave.text = getString(R.string.board_btn_save)
-            
-            // 입력 폼 표시
+
+            // 입력 폼 바로 표시 (로딩 없음)
             binding.scrollView.visibility = View.VISIBLE
             binding.layoutButtons.visibility = View.VISIBLE
         } else {
@@ -104,6 +104,18 @@ class BoardTypeDetailFragment : Fragment() {
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+                // ─── 생성 모드: canWrite 구독 ────────────────────────────────────
+                if (boardId == -1L) {
+                    launch {
+                        viewModel.canWrite.collectLatest { canWrite ->
+                            binding.btnSave.isEnabled = canWrite
+                            binding.layoutButtons.visibility = if (canWrite) View.VISIBLE else View.GONE
+                        }
+                    }
+                }
+
+                // ─── 공통 uiState 구독 ────────────────────────────────────────
                 launch {
                     viewModel.uiState.collectLatest { state ->
                         when (state) {
@@ -116,21 +128,28 @@ class BoardTypeDetailFragment : Fragment() {
                             }
                             is BoardTypeDetailUiState.Success -> {
                                 binding.progressBar.visibility = View.GONE
-                                binding.btnSave.isEnabled = true
+                                // 수정 모드 → canUpdate 기준으로 버튼/폼 제어
+                                binding.btnSave.isEnabled = state.canUpdate
                                 binding.scrollView.visibility = View.VISIBLE
-                                binding.layoutButtons.visibility = View.VISIBLE
-                                bindData(state.boardType)
+                                binding.layoutButtons.visibility = if (state.canUpdate) View.VISIBLE else View.GONE
+                                bindData(state.boardType, state.canUpdate)
                             }
                             is BoardTypeDetailUiState.SaveSuccess -> {
                                 binding.progressBar.visibility = View.GONE
-                                showTopToast(if (boardId == -1L) getString(R.string.board_toast_save_success_create) else getString(R.string.board_toast_save_success_edit))
+                                showTopToast(
+                                    if (boardId == -1L) getString(R.string.board_toast_save_success_create)
+                                    else getString(R.string.board_toast_save_success_edit)
+                                )
                                 // 목록 화면 리프레시 시그널 전달 후 이전 백스택으로 탈출
                                 findNavController().previousBackStackEntry?.savedStateHandle?.set("refresh", true)
                                 findNavController().popBackStack()
                             }
                             is BoardTypeDetailUiState.Error -> {
                                 binding.progressBar.visibility = View.GONE
-                                binding.btnSave.isEnabled = true
+                                // 에러 후 버튼 복원: 모드에 따라 권한 다시 적용
+                                val hasPermission = if (boardId == -1L) viewModel.canWrite.value
+                                                   else (state as? BoardTypeDetailUiState.Error)?.let { false } ?: true
+                                binding.btnSave.isEnabled = if (boardId == -1L) viewModel.canWrite.value else true
                                 showTopToast(state.message)
                             }
                         }
@@ -146,15 +165,19 @@ class BoardTypeDetailFragment : Fragment() {
         }
     }
 
-    private fun bindData(boardType: BoardType) {
+    private fun bindData(boardType: BoardType, canUpdate: Boolean) {
         binding.etBoardName.setText(boardType.name)
         binding.etBoardKey.setText(boardType.boardKey)
         binding.etBoardDesc.setText(boardType.description ?: "")
         binding.etSortOrder.setText(boardType.sortOrder.toString())
         binding.switchActive.isChecked = boardType.isActive
 
-        // 등록일 / 수정일 표시 (KST yyyy. MM. dd. 포맷으로 출력될 것)
-        // StringExtensions가 제공하는 toFormattedDateString()을 사용하기 위해 import
+        // 권한에 따른 편집 가능 여부 제어
+        binding.etBoardName.isEnabled = canUpdate
+        binding.etBoardDesc.isEnabled = canUpdate
+        binding.etSortOrder.isEnabled = canUpdate
+        binding.switchActive.isEnabled = canUpdate
+
         val created = boardType.createdAt?.substringBefore("T") ?: "-"
         val updated = boardType.updatedAt?.substringBefore("T") ?: "-"
         binding.tvDates.text = getString(R.string.counsel_label_reg_date_prefix, created) + "   /   수정일: " + updated

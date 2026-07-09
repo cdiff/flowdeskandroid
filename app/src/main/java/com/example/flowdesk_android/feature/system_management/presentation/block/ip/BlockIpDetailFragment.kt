@@ -92,6 +92,7 @@ class BlockIpDetailFragment : BaseFragment(R.layout.fragment_block_ip_detail) {
                                 binding.progressBar.visibility = View.GONE
                                 setInputsEnabled(true)
                                 displayDetail(state.item)
+                                applyPermissions(state.canUpdate, state.canDelete)
                             }
                             is BlockIpDetailUiState.Error -> {
                                 binding.progressBar.visibility = View.GONE
@@ -107,6 +108,38 @@ class BlockIpDetailFragment : BaseFragment(R.layout.fragment_block_ip_detail) {
                     viewModel.errorMessage.collectLatest { msg ->
                         showTopToast(msg)
                     }
+                }
+            }
+        }
+    }
+
+    private fun applyPermissions(canUpdate: Boolean, canDelete: Boolean) {
+        binding.etReason.isEnabled = canUpdate
+        val buttonsContainer = binding.btnSaveInfo.parent as? android.widget.LinearLayout
+        if (buttonsContainer != null) {
+            if (!canUpdate && !canDelete) {
+                buttonsContainer.visibility = View.GONE
+            } else {
+                buttonsContainer.visibility = View.VISIBLE
+                binding.btnDelete.visibility = if (canDelete) View.VISIBLE else View.GONE
+                binding.btnSaveInfo.visibility = if (canUpdate) View.VISIBLE else View.GONE
+                
+                if (canUpdate && !canDelete) {
+                    val params = binding.btnSaveInfo.layoutParams as android.widget.LinearLayout.LayoutParams
+                    params.weight = 3f
+                    binding.btnSaveInfo.layoutParams = params
+                } else if (!canUpdate && canDelete) {
+                    val params = binding.btnDelete.layoutParams as android.widget.LinearLayout.LayoutParams
+                    params.weight = 3f
+                    binding.btnDelete.layoutParams = params
+                } else {
+                    val deleteParams = binding.btnDelete.layoutParams as android.widget.LinearLayout.LayoutParams
+                    deleteParams.weight = 1f
+                    binding.btnDelete.layoutParams = deleteParams
+                    
+                    val saveParams = binding.btnSaveInfo.layoutParams as android.widget.LinearLayout.LayoutParams
+                    saveParams.weight = 2f
+                    binding.btnSaveInfo.layoutParams = saveParams
                 }
             }
         }

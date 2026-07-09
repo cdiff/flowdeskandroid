@@ -23,6 +23,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.databinding.FragmentStatusEditBinding
 import com.example.flowdesk_android.feature.system_management.domain.model.TenantStatus
@@ -209,21 +211,24 @@ class StatusEditFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.isLoading.collect { loading ->
-                        binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
-                        binding.btnSave.isEnabled = !loading
+                    viewModel.uiState.collectLatest { state ->
+                        binding.progressBar.visibility = if (state.isLoading) View.VISIBLE else View.GONE
+                        binding.btnSave.isEnabled = !state.isLoading && state.canUpdate
+                        binding.btnSave.visibility = if (state.canUpdate) View.VISIBLE else View.GONE
                     }
                 }
 
                 launch {
-                    viewModel.selectedStatusDetail.collect { detail ->
+                    combine(viewModel.selectedStatusDetail, viewModel.uiState) { detail, state ->
+                        Pair(detail, state.canUpdate)
+                    }.collectLatest { (detail, canUpdate) ->
                         if (tenantStatusId != -1L) {
                             if (detail != null) {
-                                bindData(detail)
+                                bindData(detail, canUpdate)
                                 binding.scrollView.visibility = View.VISIBLE
                             }
                         } else {
-                            bindData(null)
+                            bindData(null, true)
                         }
                     }
                 }
@@ -233,11 +238,11 @@ class StatusEditFragment : Fragment() {
         if (tenantStatusId != -1L) {
             viewModel.loadStatusDetail(tenantStatusId)
         } else {
-            bindData(null)
+            bindData(null, true)
         }
     }
 
-    private fun bindData(detail: TenantStatus?) {
+    private fun bindData(detail: TenantStatus?, canUpdate: Boolean) {
         if (detail != null) {
             binding.tvTitle.visibility = View.GONE
             binding.btnSave.text = "저장하기"
@@ -261,6 +266,13 @@ class StatusEditFragment : Fragment() {
             binding.etStatusSort.setText(detail.sortOrder.toString())
             binding.cbStatusActive.isChecked = detail.isActive
             binding.viewColorPreview.updateColorIndicator(detail.color ?: "#3B82F6")
+
+            // 권한 제어 연동
+            binding.etStatusName.isEnabled = canUpdate
+            binding.etStatusDesc.isEnabled = canUpdate
+            binding.etStatusSort.isEnabled = canUpdate
+            binding.cbStatusActive.isEnabled = canUpdate
+            binding.layoutColorSelector.isEnabled = canUpdate
 
             val created = detail.createdAt?.toFormattedDateString() ?: "-"
             val updated = detail.updatedAt?.toFormattedDateString() ?: "-"

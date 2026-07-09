@@ -131,6 +131,17 @@ class BoardPostDetailFragment : Fragment() {
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+                // 생성 모드: canWrite 구독 → 저장 버튼 제어
+                if (postId == -1L) {
+                    launch {
+                        viewModel.canWrite.collectLatest { canWrite ->
+                            binding.btnSave.isEnabled = canWrite
+                            binding.layoutButtons.visibility = if (canWrite) View.VISIBLE else View.GONE
+                        }
+                    }
+                }
+
                 launch {
                     viewModel.uiState.collectLatest { state ->
                         when (state) {
@@ -144,10 +155,14 @@ class BoardPostDetailFragment : Fragment() {
                             }
                             is BoardPostDetailUiState.Success -> {
                                 binding.progressBar.visibility = View.GONE
-                                binding.btnSave.isEnabled = true
-                                binding.btnDelete.isEnabled = true
+                                // 수정 모드: canUpdate / canDelete 기준으로 버튼 제어
+                                binding.btnSave.isEnabled = state.canUpdate
+                                binding.btnSave.visibility = if (state.canUpdate) View.VISIBLE else View.GONE
+                                binding.btnDelete.isEnabled = state.canDelete
+                                binding.btnDelete.visibility = if (state.canDelete) View.VISIBLE else View.GONE
+                                binding.layoutButtons.visibility =
+                                    if (state.canUpdate || state.canDelete) View.VISIBLE else View.GONE
                                 binding.scrollView.visibility = View.VISIBLE
-                                binding.layoutButtons.visibility = View.VISIBLE
                                 bindData(state.post)
                             }
                             is BoardPostDetailUiState.SaveSuccess -> {
@@ -164,8 +179,13 @@ class BoardPostDetailFragment : Fragment() {
                             }
                             is BoardPostDetailUiState.Error -> {
                                 binding.progressBar.visibility = View.GONE
-                                binding.btnSave.isEnabled = true
-                                binding.btnDelete.isEnabled = true
+                                // 에러 후 버튼 복원: 모드에 따라 권한 다시 적용
+                                if (postId == -1L) {
+                                    binding.btnSave.isEnabled = viewModel.canWrite.value
+                                } else {
+                                    binding.btnSave.isEnabled = true
+                                    binding.btnDelete.isEnabled = true
+                                }
                                 showTopToast(state.message)
                             }
                         }

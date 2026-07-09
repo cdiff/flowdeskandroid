@@ -2,6 +2,7 @@ package com.example.flowdesk_android.feature.content_management.presentation.boa
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.flowdesk_android.data.local.SessionManager
 import com.example.flowdesk_android.feature.system_management.domain.model.BoardType
 import com.example.flowdesk_android.feature.system_management.domain.model.BoardPost
 import com.example.flowdesk_android.feature.system_management.domain.repository.BoardRepository
@@ -14,7 +15,8 @@ import javax.inject.Inject
 @OptIn(FlowPreview::class)
 @HiltViewModel
 class BoardPostListViewModel @Inject constructor(
-    private val boardRepository: BoardRepository
+    private val boardRepository: BoardRepository,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
     private val _boardTypes = MutableStateFlow<List<BoardType>>(emptyList())
@@ -33,56 +35,64 @@ class BoardPostListViewModel @Inject constructor(
     val toastMessage: SharedFlow<String> = _toastMessage.asSharedFlow()
 
     val uiState: StateFlow<BoardPostListUiState> = combine(
-        _selectedBoardId,
-        _currentPage,
-        _refreshTrigger.onStart { emit(Unit) }
-    ) { boardId, page, _ -> Triple(boardId, page, _searchQuery.value) }
-        .flatMapLatest { (boardId, page, query) ->
-            flow {
-                if (_boardTypes.value.isEmpty()) {
-                    emit(BoardPostListUiState.Loading)
-                    boardRepository.getBoardTypes()
-                        .onSuccess { types ->
-                            val activeTypes = types.filter { it.isActive }
-                            _boardTypes.value = activeTypes
-                            if (activeTypes.isNotEmpty() && _selectedBoardId.value == -1L) {
-                                _selectedBoardId.value = activeTypes.first().boardId
+        combine(
+            _selectedBoardId,
+            _currentPage,
+            _refreshTrigger.onStart { emit(Unit) }
+        ) { boardId, page, _ -> Triple(boardId, page, _searchQuery.value) }
+            .flatMapLatest { (boardId, page, query) ->
+                flow {
+                    if (_boardTypes.value.isEmpty()) {
+                        emit(null)  // Loading 신호
+                        boardRepository.getBoardTypes()
+                            .onSuccess { types ->
+                                val activeTypes = types.filter { it.isActive }
+                                _boardTypes.value = activeTypes
+                                if (activeTypes.isNotEmpty() && _selectedBoardId.value == -1L) {
+                                    _selectedBoardId.value = activeTypes.first().boardId
+                                }
                             }
+                            .onFailure { err ->
+                                emit(Result.failure<Pair<List<BoardPost>, Int>>(err))
+                                return@flow
+                            }
+                    }
+
+                    val currentBoardId = _selectedBoardId.value
+                    if (currentBoardId == -1L) {
+                        emit(Result.success(emptyList<BoardPost>() to 0))
+                        return@flow
+                    }
+
+                    boardRepository.getBoardPosts(currentBoardId, page, 20, query.ifEmpty { null })
+                        .onSuccess { (posts, pageInfo) ->
+                            val sortedPosts = posts.sortedWith(compareByDescending<BoardPost> { it.isNotice }.thenByDescending { it.createdAt })
+                            val currentBoardName = _boardTypes.value.find { it.boardId == currentBoardId }?.name
+                            val mappedPosts = sortedPosts.map { it.copy(boardName = currentBoardName) }
+                            emit(Result.success(mappedPosts to pageInfo.totalItems))
                         }
                         .onFailure { err ->
-                            emit(BoardPostListUiState.Error(err.message ?: "게시판 목록을 조회하지 못했습니다."))
-                            return@flow
+                            emit(Result.failure<Pair<List<BoardPost>, Int>>(err))
                         }
                 }
-
-                val currentBoardId = _selectedBoardId.value
-                if (currentBoardId == -1L) {
-                    emit(BoardPostListUiState.Success(_boardTypes.value, emptyList(), 0))
-                    return@flow
-                }
-
-                emit(BoardPostListUiState.Loading)
-                boardRepository.getBoardPosts(currentBoardId, page, 20, query.ifEmpty { null })
-                    .onSuccess { (posts, pageInfo) ->
-                        // 공지글 우선 정렬 (isNotice == true인 항목을 상단으로)
-                        val sortedPosts = posts.sortedWith(compareByDescending<BoardPost> { it.isNotice }.thenByDescending { it.createdAt })
-                        
-                        // 각 포스트에 게시판 이름 매핑 추가
-                        val currentBoardName = _boardTypes.value.find { it.boardId == currentBoardId }?.name
-                        val mappedPosts = sortedPosts.map { it.copy(boardName = currentBoardName) }
-                        
-                        emit(BoardPostListUiState.Success(_boardTypes.value, mappedPosts, pageInfo.totalItems))
-                    }
-                    .onFailure { err ->
-                        emit(BoardPostListUiState.Error(err.message ?: "게시글 목록을 불러오지 못했습니다."))
-                    }
+            },
+        sessionManager.observePermission("boards.posts.create")
+    ) { repoResult, canWrite ->
+        when {
+            repoResult == null -> BoardPostListUiState.Loading
+            repoResult.isFailure -> BoardPostListUiState.Error(
+                repoResult.exceptionOrNull()?.message ?: "오류가 발생했습니다."
+            )
+            else -> {
+                val (posts, total) = repoResult.getOrThrow()
+                BoardPostListUiState.Success(_boardTypes.value, posts, total, canWrite)
             }
         }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = BoardPostListUiState.Loading
-        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = BoardPostListUiState.Loading
+    )
 
     init {
         // 검색어 디바운스 처리 후 목록 갱신

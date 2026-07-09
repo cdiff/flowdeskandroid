@@ -107,6 +107,10 @@ abstract class BaseBlockListFragment<T> : Fragment() {
         }
     }
 
+    protected fun updateWritePermission(canWrite: Boolean) {
+        binding.btnAdd.visibility = if (canWrite) View.VISIBLE else View.GONE
+    }
+
     protected fun showError(message: String) {
         binding.progressBar.visibility = View.GONE
         binding.llEmpty.visibility = View.VISIBLE

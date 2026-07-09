@@ -28,7 +28,8 @@ sealed class MainUiState {
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val sessionManager: com.example.flowdesk_android.data.local.SessionManager
 ) : ViewModel() {
 
     // 1. 수동 리프레시 트리거
@@ -61,6 +62,7 @@ class MainViewModel @Inject constructor(
             try {
                 val info = com.google.gson.Gson().fromJson(authMeInfoJson, AuthMeInfo::class.java)
                 _cachedSession.value = info
+                sessionManager.setSession(info)
                 return
             } catch (e: Exception) {
                 // JSON 파싱 실패 시 서버 API 호출을 시도하기 위해 폴백 처리

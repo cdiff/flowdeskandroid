@@ -22,6 +22,15 @@ class BoardTypeAdapter(
     // 아코디언 메뉴가 확장된 아이템들의 boardId 저장
     private val expandedItems = mutableSetOf<Long>()
 
+    private var canUpdate: Boolean = true
+    private var canDelete: Boolean = true
+
+    fun setPermissions(canUpdate: Boolean, canDelete: Boolean) {
+        this.canUpdate = canUpdate
+        this.canDelete = canDelete
+        notifyDataSetChanged()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemSystemBoardTypeCardBinding.inflate(
             LayoutInflater.from(parent.context),
@@ -56,8 +65,17 @@ class BoardTypeAdapter(
             // 활성/비활성 텍스트 매핑
             binding.btnToggleStatus.text = if (item.isActive) "비활성화" else "활성화"
 
+            // 권한 제어
+            binding.btnToggleStatus.visibility = if (canUpdate) View.VISIBLE else View.GONE
+            binding.btnDelete.visibility = if (canDelete) View.VISIBLE else View.GONE
+            if (!canUpdate && !canDelete) {
+                binding.btnMore.visibility = View.GONE
+            } else {
+                binding.btnMore.visibility = View.VISIBLE
+            }
+
             // 아코디언 메뉴 가시성 설정
-            val isExpanded = expandedItems.contains(item.boardId)
+            val isExpanded = expandedItems.contains(item.boardId) && (canUpdate || canDelete)
             binding.llHiddenMenu.visibility = if (isExpanded) View.VISIBLE else View.GONE
 
             // 아이템 자체 클릭 -> 상세 페이지로 이동

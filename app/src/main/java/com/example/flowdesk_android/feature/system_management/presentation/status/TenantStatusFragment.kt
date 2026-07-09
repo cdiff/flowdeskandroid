@@ -110,7 +110,7 @@ class TenantStatusFragment : Fragment() {
     }
 
     // ─── Accordion 렌더링 ────────────────────────────────────────────────────
-    private fun renderAccordionGroups(groups: List<TenantStatusGroup>) {
+    private fun renderAccordionGroups(groups: List<TenantStatusGroup>, canUpdate: Boolean, canDelete: Boolean) {
         binding.layoutAccordionContainer.removeAllViews()
         val inflater = LayoutInflater.from(requireContext())
 
@@ -145,6 +145,7 @@ class TenantStatusFragment : Fragment() {
                     }
                 )
             }
+            adapter.setPermissions(canUpdate, canDelete)
             accordionBinding.rvTenantStatuses.adapter = adapter
             adapter.submitList(groupData.items)
 
@@ -216,27 +217,20 @@ class TenantStatusFragment : Fragment() {
                     viewModel.uiState.collectLatest { state ->
                         renderGroupChips(state.statusGroups)
                         updateChipSelection(state.selectedGroup)
-                        renderAccordionGroups(state.filteredGroups)
+                        renderAccordionGroups(state.filteredGroups, state.canUpdate, state.canDelete)
 
                         binding.tvStatTotalGroups.text = state.totalGroups.toString()
                         binding.tvStatTotalStatuses.text = state.totalStatuses.toString()
                         binding.tvStatActiveStatuses.text = state.activeStatuses.toString()
                         binding.tvStatInactiveStatuses.text = state.inactiveStatuses.toString()
+                        
+                        binding.btnAddStatus.visibility = if (state.canWrite) View.VISIBLE else View.GONE
                     }
                 }
 
                 launch {
                     viewModel.errorMessage.collectLatest { msg ->
                         showTopToast(msg)
-                    }
-                }
-
-                launch {
-                    dashboardViewModel.dashboardState.collect { state ->
-                        if (state is DashboardState.Success) {
-                            val hasCreate = state.data.permissions["tenants.status.create"] == true
-                            binding.btnAddStatus.visibility = if (hasCreate) View.VISIBLE else View.GONE
-                        }
                     }
                 }
             }

@@ -8,7 +8,10 @@ sealed class BoardTypeListUiState {
         val items: List<BoardType>,
         val totalCount: Int,
         val activeCount: Int,
-        val inactiveCount: Int
+        val inactiveCount: Int,
+        val canWrite: Boolean,
+        val canUpdate: Boolean,
+        val canDelete: Boolean
     ) : BoardTypeListUiState()
     data class Error(val message: String) : BoardTypeListUiState()
 }

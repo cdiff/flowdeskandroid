@@ -30,23 +30,54 @@ import javax.inject.Inject
 
 sealed class BlockWordUiState {
     object Loading : BlockWordUiState()
-    data class Success(val items: List<BlockWordItem>, val totalCount: Int) : BlockWordUiState()
+    data class Success(
+        val items: List<BlockWordItem>,
+        val totalCount: Int,
+        val canWrite: Boolean,
+        val canUpdate: Boolean,
+        val canDelete: Boolean
+    ) : BlockWordUiState()
     data class Error(val message: String) : BlockWordUiState()
 }
 
 sealed class BlockWordDetailUiState {
     object Loading : BlockWordDetailUiState()
-    data class Success(val item: BlockWordItem) : BlockWordDetailUiState()
+    data class Success(
+        val item: BlockWordItem,
+        val canUpdate: Boolean,
+        val canDelete: Boolean
+    ) : BlockWordDetailUiState()
     data class Error(val message: String) : BlockWordDetailUiState()
 }
 
 @HiltViewModel
 class BlockKeywordViewModel @Inject constructor(
-    private val repository: SecurityBlockRepository
+    private val repository: SecurityBlockRepository,
+    private val sessionManager: com.example.flowdesk_android.data.local.SessionManager
 ) : ViewModel() {
 
-    private val _detailState = MutableStateFlow<BlockWordDetailUiState>(BlockWordDetailUiState.Loading)
-    val detailState: StateFlow<BlockWordDetailUiState> = _detailState.asStateFlow()
+    private val _detailLoading = MutableStateFlow(false)
+    private val _detailError = MutableStateFlow<String?>(null)
+    private val _loadedWordDetail = MutableStateFlow<BlockWordItem?>(null)
+
+    val detailState: StateFlow<BlockWordDetailUiState> = combine(
+        _detailLoading,
+        _detailError,
+        _loadedWordDetail,
+        sessionManager.observePermission("security.update"),
+        sessionManager.observePermission("security.delete")
+    ) { loading, error, item, canUpdate, canDelete ->
+        when {
+            loading -> BlockWordDetailUiState.Loading
+            error != null -> BlockWordDetailUiState.Error(error)
+            item != null -> BlockWordDetailUiState.Success(item, canUpdate, canDelete)
+            else -> BlockWordDetailUiState.Loading
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = BlockWordDetailUiState.Loading
+    )
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
@@ -68,7 +99,7 @@ class BlockKeywordViewModel @Inject constructor(
     val errorMessage = _errorMessage.asSharedFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<BlockWordUiState> = combine(
+    private val _repoState = combine(
         debouncedQuery,
         _currentPage,
         _refreshTrigger
@@ -77,7 +108,7 @@ class BlockKeywordViewModel @Inject constructor(
     }.flatMapLatest { (query, page) ->
         flow {
             if (page == 1) {
-                emit(BlockWordUiState.Loading)
+                emit(null)
             }
             val queryParam = query.ifBlank { null }
             repository.getBlockWords(
@@ -91,18 +122,33 @@ class BlockKeywordViewModel @Inject constructor(
                         allLoadedItems.clear()
                     }
                     allLoadedItems.addAll(response.items)
-                    emit(
-                        BlockWordUiState.Success(
-                            items = allLoadedItems.toList(),
-                            totalCount = response.pageInfo.totalItems
-                        )
-                    )
+                    emit(Result.success(allLoadedItems.toList() to response.pageInfo.totalItems))
                     isPagingLoading = false
                 },
                 onFailure = { err ->
-                    emit(BlockWordUiState.Error(err.message ?: "금칙어 목록을 가져오는데 실패했습니다."))
                     isPagingLoading = false
                     _errorMessage.emit(err.message ?: "금칙어 목록 로드 실패")
+                    emit(Result.failure(err))
+                }
+            )
+        }
+    }
+
+    val uiState: StateFlow<BlockWordUiState> = combine(
+        _repoState,
+        sessionManager.observePermission("security.create"),
+        sessionManager.observePermission("security.update"),
+        sessionManager.observePermission("security.delete")
+    ) { repoResult, canWrite, canUpdate, canDelete ->
+        if (repoResult == null) {
+            BlockWordUiState.Loading
+        } else {
+            repoResult.fold(
+                onSuccess = { (items, total) ->
+                    BlockWordUiState.Success(items, total, canWrite, canUpdate, canDelete)
+                },
+                onFailure = { err ->
+                    BlockWordUiState.Error(err.message ?: "금칙어 목록을 가져오는데 실패했습니다.")
                 }
             )
         }
@@ -198,14 +244,18 @@ class BlockKeywordViewModel @Inject constructor(
     }
 
     fun loadDetail(id: Long) {
-        _detailState.value = BlockWordDetailUiState.Loading
         viewModelScope.launch {
+            _detailLoading.value = true
+            _detailError.value = null
+            _loadedWordDetail.value = null
             repository.getBlockWordDetail(id)
                 .onSuccess { item ->
-                    _detailState.value = BlockWordDetailUiState.Success(item)
+                    _loadedWordDetail.value = item
+                    _detailLoading.value = false
                 }
                 .onFailure { err ->
-                    _detailState.value = BlockWordDetailUiState.Error(err.message ?: "상세 정보를 가져오는 데 실패했습니다.")
+                    _detailError.value = err.message ?: "상세 정보를 가져오는 데 실패했습니다."
+                    _detailLoading.value = false
                 }
         }
     }

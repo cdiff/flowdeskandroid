@@ -33,6 +33,7 @@
 
             <!-- ─── 헤더 ─── -->
             <TextView
+                android:id="@+id/tv_header_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="상담 대시보드"
@@ -42,6 +43,7 @@
                 android:layout_marginBottom="4dp" />
 
             <TextView
+                android:id="@+id/tv_header_subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="상담 현황을 한눈에 확인할 수 있습니다."

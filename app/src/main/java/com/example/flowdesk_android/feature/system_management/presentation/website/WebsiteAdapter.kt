@@ -22,6 +22,15 @@ class WebsiteAdapter(
     // 확장 상태인 아이템들의 webCode 관리
     private val expandedWebsites = mutableSetOf<String>()
 
+    private var canUpdate: Boolean = true
+    private var canDelete: Boolean = true
+
+    fun setPermissions(canUpdate: Boolean, canDelete: Boolean) {
+        this.canUpdate = canUpdate
+        this.canDelete = canDelete
+        notifyDataSetChanged()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemWebsiteCardBinding.inflate(
             LayoutInflater.from(parent.context),
@@ -57,8 +66,17 @@ class WebsiteAdapter(
                 binding.tvStatusBadge.setTextColor(Color.parseColor("#94A3B8")) // Slate Gray
             }
 
+            // 권한 제어
+            binding.btnToggleStatus.visibility = if (canUpdate) View.VISIBLE else View.GONE
+            binding.btnDelete.visibility = if (canDelete) View.VISIBLE else View.GONE
+            if (!canUpdate && !canDelete) {
+                binding.btnMore.visibility = View.GONE
+            } else {
+                binding.btnMore.visibility = View.VISIBLE
+            }
+
             // 아코디언 메뉴 확장/축소 상태 제어
-            val isExpanded = expandedWebsites.contains(item.webCode)
+            val isExpanded = expandedWebsites.contains(item.webCode) && (canUpdate || canDelete)
             binding.llHiddenMenu.visibility = if (isExpanded) View.VISIBLE else View.GONE
             
             // 상태 토글 텍스트 세팅

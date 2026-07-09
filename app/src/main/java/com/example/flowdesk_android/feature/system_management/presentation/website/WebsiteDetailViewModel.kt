@@ -4,20 +4,43 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flowdesk_android.feature.system_management.domain.repository.WebsiteRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class WebsiteDetailViewModel @Inject constructor(
-    private val repository: WebsiteRepository
+    private val repository: WebsiteRepository,
+    private val sessionManager: com.example.flowdesk_android.data.local.SessionManager
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<WebsiteDetailUiState>(WebsiteDetailUiState.Idle)
-    val uiState = _uiState.asStateFlow()
+    private val _actionState = MutableStateFlow<WebsiteDetailUiState>(WebsiteDetailUiState.Idle)
+    private val _loadedWebsite = MutableStateFlow<com.example.flowdesk_android.feature.system_management.domain.model.Website?>(null)
+
+    val uiState: StateFlow<WebsiteDetailUiState> = combine(
+        _actionState,
+        _loadedWebsite,
+        sessionManager.observePermission("websites.update"),
+        sessionManager.observePermission("websites.delete")
+    ) { action, website, canUpdate, canDelete ->
+        when (action) {
+            is WebsiteDetailUiState.UpdateSuccess -> WebsiteDetailUiState.UpdateSuccess
+            is WebsiteDetailUiState.DeleteSuccess -> WebsiteDetailUiState.DeleteSuccess
+            is WebsiteDetailUiState.Loading -> WebsiteDetailUiState.Loading
+            is WebsiteDetailUiState.Error -> WebsiteDetailUiState.Error(action.message)
+            else -> {
+                if (website != null) {
+                    WebsiteDetailUiState.Success(website, canUpdate, canDelete)
+                } else {
+                    WebsiteDetailUiState.Idle
+                }
+            }
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = WebsiteDetailUiState.Idle
+    )
 
     private val _toastMessage = MutableSharedFlow<String>()
     val toastMessage = _toastMessage.asSharedFlow()
@@ -27,13 +50,15 @@ class WebsiteDetailViewModel @Inject constructor(
      */
     fun loadWebsiteDetail(webCode: String) {
         viewModelScope.launch {
-            _uiState.value = WebsiteDetailUiState.Loading
+            _actionState.value = WebsiteDetailUiState.Loading
+            _loadedWebsite.value = null
             repository.getWebsiteDetail(webCode).fold(
                 onSuccess = { website ->
-                    _uiState.value = WebsiteDetailUiState.Success(website)
+                    _loadedWebsite.value = website
+                    _actionState.value = WebsiteDetailUiState.Idle
                 },
                 onFailure = { throwable ->
-                    _uiState.value = WebsiteDetailUiState.Error(throwable.message ?: "상세 정보를 조회하는 데 실패했습니다.")
+                    _actionState.value = WebsiteDetailUiState.Error(throwable.message ?: "상세 정보를 조회하는 데 실패했습니다.")
                 }
             )
         }
@@ -54,7 +79,7 @@ class WebsiteDetailViewModel @Inject constructor(
         duplicateAllowAfterDays: Int
     ) {
         viewModelScope.launch {
-            _uiState.value = WebsiteDetailUiState.Loading
+            _actionState.value = WebsiteDetailUiState.Loading
             repository.updateWebsite(
                 webCode = webCode,
                 userSeq = userSeq,
@@ -67,10 +92,10 @@ class WebsiteDetailViewModel @Inject constructor(
                 duplicateAllowAfterDays = duplicateAllowAfterDays
             ).fold(
                 onSuccess = {
-                    _uiState.value = WebsiteDetailUiState.UpdateSuccess
+                    _actionState.value = WebsiteDetailUiState.UpdateSuccess
                 },
                 onFailure = { throwable ->
-                    _uiState.value = WebsiteDetailUiState.Error(throwable.message ?: "수정에 실패했습니다.")
+                    _actionState.value = WebsiteDetailUiState.Error(throwable.message ?: "수정에 실패했습니다.")
                 }
             )
         }
@@ -81,13 +106,13 @@ class WebsiteDetailViewModel @Inject constructor(
      */
     fun deleteWebsite(webCode: String) {
         viewModelScope.launch {
-            _uiState.value = WebsiteDetailUiState.Loading
+            _actionState.value = WebsiteDetailUiState.Loading
             repository.deleteWebsite(webCode).fold(
                 onSuccess = {
-                    _uiState.value = WebsiteDetailUiState.DeleteSuccess
+                    _actionState.value = WebsiteDetailUiState.DeleteSuccess
                 },
                 onFailure = { throwable ->
-                    _uiState.value = WebsiteDetailUiState.Error(throwable.message ?: "삭제에 실패했습니다.")
+                    _actionState.value = WebsiteDetailUiState.Error(throwable.message ?: "삭제에 실패했습니다.")
                 }
             )
         }

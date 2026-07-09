@@ -64,6 +64,7 @@ class BlockPhoneFragment : BaseBlockListFragment<BlockPhoneItem>() {
                             }
                             is BlockPhoneUiState.Success -> {
                                 showSuccess(state.items, state.totalCount)
+                                updateWritePermission(state.canWrite)
                             }
                             is BlockPhoneUiState.Error -> {
                                 showError(state.message)

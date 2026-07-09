@@ -64,6 +64,7 @@ class BlockIpFragment : BaseBlockListFragment<BlockIpItem>() {
                             }
                             is BlockIpUiState.Success -> {
                                 showSuccess(state.items, state.totalCount)
+                                updateWritePermission(state.canWrite)
                             }
                             is BlockIpUiState.Error -> {
                                 showError(state.message)

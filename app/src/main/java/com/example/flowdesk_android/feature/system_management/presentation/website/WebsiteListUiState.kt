@@ -10,9 +10,12 @@ sealed class WebsiteListUiState {
     
     data class Success(
         val websites: List<Website>,
-        val totalCount: Int
+        val totalCount: Int,
+        val canWrite: Boolean,
+        val canUpdate: Boolean,
+        val canDelete: Boolean
     ) : WebsiteListUiState()
-    
+
     data class Error(
         val message: String
     ) : WebsiteListUiState()

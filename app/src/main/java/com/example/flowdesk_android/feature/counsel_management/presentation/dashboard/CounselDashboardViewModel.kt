@@ -20,16 +20,19 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-// ── UI State ──────────────────────────────────────────────
 sealed class CounselDashboardUiState {
     object Loading : CounselDashboardUiState()
-    data class Success(val data: CounselDashboard) : CounselDashboardUiState()
+    data class Success(
+        val data: CounselDashboard,
+        val canAdmin: Boolean
+    ) : CounselDashboardUiState()
     data class Error(val message: String) : CounselDashboardUiState()
 }
 
 @HiltViewModel
 class CounselDashboardViewModel @Inject constructor(
-    private val counselRepository: CounselRepository
+    private val counselRepository: CounselRepository,
+    private val sessionManager: com.example.flowdesk_android.data.local.SessionManager
 ) : BaseViewModel() {
 
     // 1. 수동 리프레시 트리거
@@ -40,17 +43,33 @@ class CounselDashboardViewModel @Inject constructor(
 
     // 3. [핵심] 선언형 UI 상태 파이프라인
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<CounselDashboardUiState> = combine(
+    private val _repoState = combine(
         _dateRange,
         _refreshTrigger
     ) { range, _ ->
         range
     }.flatMapLatest { (startDate, endDate) ->
         flow {
-            emit(CounselDashboardUiState.Loading)
+            emit(null)
             counselRepository.getDashboard(startDate, endDate)
-                .onSuccess { emit(CounselDashboardUiState.Success(it)) }
-                .onFailure { emit(CounselDashboardUiState.Error(it.message ?: "오류 발생")) }
+                .fold(
+                    onSuccess = { emit(Result.success(it)) },
+                    onFailure = { emit(Result.failure(it)) }
+                )
+        }
+    }
+
+    val uiState: StateFlow<CounselDashboardUiState> = combine(
+        _repoState,
+        sessionManager.observePermission("counsels.admin")
+    ) { repoResult, canAdmin ->
+        if (repoResult == null) {
+            CounselDashboardUiState.Loading
+        } else {
+            repoResult.fold(
+                onSuccess = { CounselDashboardUiState.Success(it, canAdmin) },
+                onFailure = { CounselDashboardUiState.Error(it.message ?: "오류 발생") }
+            )
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), CounselDashboardUiState.Loading)
 

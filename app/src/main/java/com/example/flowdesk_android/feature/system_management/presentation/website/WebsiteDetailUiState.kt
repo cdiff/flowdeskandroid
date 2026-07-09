@@ -9,8 +9,12 @@ sealed class WebsiteDetailUiState {
     object Idle : WebsiteDetailUiState()
     object Loading : WebsiteDetailUiState()
     
-    data class Success(val website: Website) : WebsiteDetailUiState()
-    
+    data class Success(
+        val website: Website,
+        val canUpdate: Boolean,
+        val canDelete: Boolean
+    ) : WebsiteDetailUiState()
+
     data class Error(val message: String) : WebsiteDetailUiState()
     
     object UpdateSuccess : WebsiteDetailUiState()

@@ -24,7 +24,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WebsiteListViewModel @Inject constructor(
-    private val repository: WebsiteRepository
+    private val repository: WebsiteRepository,
+    private val sessionManager: com.example.flowdesk_android.data.local.SessionManager
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
@@ -56,16 +57,26 @@ class WebsiteListViewModel @Inject constructor(
         list.count { !it.isActive }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
+    private val permissionFlow = combine(
+        sessionManager.observePermission("websites.create"),
+        sessionManager.observePermission("websites.update"),
+        sessionManager.observePermission("websites.delete")
+    ) { canWrite, canUpdate, canDelete ->
+        Triple(canWrite, canUpdate, canDelete)
+    }
+
     // UI 상태 흐름 정의 (Mutable 데이터 변화와 로딩 여부를 즉시 방출)
     val uiState: StateFlow<WebsiteListUiState> = combine(
         _loadedWebsites,
         _totalItemsCount,
-        _isLoading
-    ) { websites, totalCount, loading ->
+        _isLoading,
+        permissionFlow
+    ) { websites, totalCount, loading, permissions ->
+        val (canWrite, canUpdate, canDelete) = permissions
         if (websites.isEmpty() && loading) {
             WebsiteListUiState.Loading
         } else {
-            WebsiteListUiState.Success(websites, totalCount)
+            WebsiteListUiState.Success(websites, totalCount, canWrite, canUpdate, canDelete)
         }
     }.stateIn(
         scope = viewModelScope,
