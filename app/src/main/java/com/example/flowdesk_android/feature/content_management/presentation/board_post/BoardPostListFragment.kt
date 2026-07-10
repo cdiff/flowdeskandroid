@@ -68,7 +68,7 @@ class BoardPostListFragment : Fragment() {
                 putLong("boardId", post.boardId)
                 putLong("postId", post.postId)
             }
-            findNavController().navigate(R.id.boardPostDetailFragment, bundle)
+            findNavController().navigate(R.id.boardPostReadFragment, bundle)
         }
         binding.rvPosts.layoutManager = LinearLayoutManager(requireContext())
         binding.rvPosts.adapter = adapter
@@ -173,19 +173,21 @@ class BoardPostListFragment : Fragment() {
         updateChipSelection(viewModel.selectedBoardId.value)
     }
 
-    // 칩 선택 상태에 따른 색상 및 드로어블 실시간 변경
+    // 칩 선택 상태에 따른 색상 및 카드 디자인 실시간 변경 (테넌트 칩 탭 스타일과 일치)
     private fun updateChipSelection(selectedId: Long) {
-        chipViews.forEach { (boardId, view) ->
-            val isSelected = boardId == selectedId
-            val tvChipName = view.findViewById<TextView>(R.id.tv_group_name)
+        val selectedBg = ContextCompat.getColor(requireContext(), R.color.bg_card_selected)
+        val unselectedBg = ContextCompat.getColor(requireContext(), R.color.bg_card_unselected)
+        val selectedText = ContextCompat.getColor(requireContext(), R.color.brand_primary)
+        val unselectedText = ContextCompat.getColor(requireContext(), R.color.text_secondary)
 
-            if (isSelected) {
-                view.setBackgroundResource(R.drawable.bg_chip_filter_selected)
-                tvChipName.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
-            } else {
-                view.setBackgroundResource(R.drawable.bg_chip_filter)
-                tvChipName.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_hint))
-            }
+        chipViews.forEach { (boardId, view) ->
+            val card = view as? com.google.android.material.card.MaterialCardView ?: return@forEach
+            val isSelected = boardId == selectedId
+            card.setCardBackgroundColor(
+                android.content.res.ColorStateList.valueOf(if (isSelected) selectedBg else unselectedBg)
+            )
+            val tvChipName = card.findViewById<TextView>(R.id.tv_group_name)
+            tvChipName.setTextColor(if (isSelected) selectedText else unselectedText)
         }
     }
 

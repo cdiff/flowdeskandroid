@@ -86,13 +86,13 @@ class BoardPostDetailFragment : Fragment() {
             binding.scrollView.visibility = View.VISIBLE
             binding.layoutButtons.visibility = View.VISIBLE
         } else {
-            // 상세/수정 모드
+            // 수정 모드
             binding.tvTitle.visibility = View.GONE
             binding.tvHeaderTitle.visibility = View.VISIBLE
-            binding.tvHeaderTitle.text = getString(R.string.post_title_detail)
-            binding.btnDelete.visibility = View.VISIBLE
+            binding.tvHeaderTitle.text = getString(R.string.post_title_edit)
+            binding.btnDelete.visibility = View.GONE // 삭제는 상세조회(Read) 화면의 더보기 메뉴에서 처리
             binding.btnSave.text = getString(R.string.board_btn_edit)
-
+ 
             // 로딩 전 숨김
             binding.scrollView.visibility = View.INVISIBLE
             binding.layoutButtons.visibility = View.INVISIBLE
@@ -205,7 +205,7 @@ class BoardPostDetailFragment : Fragment() {
         binding.etPostTitle.setText(post.title)
         binding.etPostContent.setText(post.content ?: "")
         binding.switchNotice.isChecked = post.isNotice
-
+        
         // 시작일/종료일 날짜 출력
         selectedStartDtm = post.startDtm
         selectedEndDtm = post.endDtm
@@ -214,7 +214,7 @@ class BoardPostDetailFragment : Fragment() {
 
         val created = post.createdAt?.substringBefore("T") ?: "-"
         val updated = post.updatedAt?.substringBefore("T") ?: "-"
-        binding.tvDates.text = getString(R.string.counsel_label_reg_date_prefix, created) + "   /   수정일: " + updated
+        binding.tvDates.text = getString(R.string.post_label_dates_format, created, updated)
         binding.tvDates.visibility = View.VISIBLE
     }
 
@@ -228,6 +228,10 @@ class BoardPostDetailFragment : Fragment() {
             return
         }
 
+        // 기간 미선택(빈값) 시 null로 매핑하여 기간 제한 없도록 설정
+        val startDtmToSend = if (selectedStartDtm.isNullOrEmpty()) null else selectedStartDtm
+        val endDtmToSend = if (selectedEndDtm.isNullOrEmpty()) null else selectedEndDtm
+
         viewModel.savePost(
             boardId = boardId,
             postId = postId,
@@ -235,8 +239,8 @@ class BoardPostDetailFragment : Fragment() {
             content = content,
             isNotice = isNotice,
             isActive = true, // default active
-            startDtm = selectedStartDtm,
-            endDtm = selectedEndDtm
+            startDtm = startDtmToSend,
+            endDtm = endDtmToSend
         )
     }
 

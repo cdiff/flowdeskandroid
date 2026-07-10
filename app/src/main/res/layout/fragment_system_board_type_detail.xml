@@ -294,26 +294,33 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- 하단 저장/수정 버튼 -->
     <LinearLayout
         android:id="@+id/layout_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="20dp"
+        android:clipToPadding="false"
+        android:clipChildren="false"
         android:visibility="invisible"
         tools:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <android.widget.Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_save"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="56dp"
             android:text="@string/board_btn_save"
-            android:textColor="@color/white"
+            android:textColor="#FFFFFF"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:background="@drawable/bg_rect_rounded_blue" />
+            android:backgroundTint="#3B82F6"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            app:cornerRadius="16dp"
+            app:elevation="1dp" />
     </LinearLayout>
 
     <ProgressBar

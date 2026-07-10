@@ -160,10 +160,10 @@ class BlockKeywordDetailFragment : BaseFragment(R.layout.fragment_block_keyword_
 
     private fun displayDetail(item: BlockWordItem) {
         binding.tvDetailKeyword.text = item.blockWord
-        binding.tvDetailTenantId.text = "차단 ID: ${item.dbwIdx}"
-        binding.tvDetailCreatedBy.text = "등록자 ID: ${item.createdBy}"
-        binding.tvDetailCreatedAt.text = "등록: ${item.createdAt ?: "-"}"
-        binding.tvDetailUpdatedAt.text = "수정: ${item.updatedAt ?: "-"}"
+        binding.tvDetailTenantId.text = getString(R.string.block_keyword_label_id_format, item.dbwIdx)
+        binding.tvDetailCreatedBy.text = getString(R.string.block_keyword_label_created_by_format, item.createdBy)
+        binding.tvDetailCreatedAt.text = getString(R.string.block_keyword_label_created_at_format, item.createdAt ?: "-")
+        binding.tvDetailUpdatedAt.text = getString(R.string.block_keyword_label_updated_at_format, item.updatedAt ?: "-")
         binding.etReason.setText(item.reason ?: "")
 
         when (item.matchType) {
@@ -173,10 +173,10 @@ class BlockKeywordDetailFragment : BaseFragment(R.layout.fragment_block_keyword_
         }
 
         if (item.isActive) {
-            binding.tvDetailStatusTag.text = "차단 중"
+            binding.tvDetailStatusTag.text = getString(R.string.block_keyword_status_blocking)
             binding.tvDetailStatusTag.setTextColor(ContextCompat.getColor(requireContext(), R.color.red))
         } else {
-            binding.tvDetailStatusTag.text = "해제됨"
+            binding.tvDetailStatusTag.text = getString(R.string.block_keyword_status_released)
             binding.tvDetailStatusTag.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_text))
         }
     }
@@ -214,8 +214,8 @@ class BlockKeywordDetailFragment : BaseFragment(R.layout.fragment_block_keyword_
 
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        dialogBinding.tvTitle.text = "금칙어 차단 해제"
-        dialogBinding.tvMessage.text = "'${binding.tvDetailKeyword.text}' 단어의 차단을 해제하시겠습니까?\n해제하면 즉시 해당 단어 사용이 허용됩니다."
+        dialogBinding.tvTitle.text = getString(R.string.block_keyword_dialog_delete_title)
+        dialogBinding.tvMessage.text = getString(R.string.block_keyword_dialog_delete_message, binding.tvDetailKeyword.text)
         dialogBinding.cbConfirm.visibility = View.GONE
 
         dialogBinding.btnCancel.setOnClickListener {

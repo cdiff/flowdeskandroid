@@ -3,6 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:clipChildren="false"
     android:background="#FFFFFF">
 
     <!-- 뒤로가기 버튼 -->
@@ -472,13 +474,13 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- 하단 파란 둥근 버튼 -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_save"
         android:layout_width="0dp"
         android:layout_height="56dp"
         android:text="추가하기"
         android:textColor="#FFFFFF"
-        android:textSize="17sp"
+        android:textSize="16sp"
         android:textStyle="bold"
         android:letterSpacing="0.01"
         android:backgroundTint="#3B82F6"
@@ -489,6 +491,7 @@
         android:layout_marginHorizontal="20dp"
         android:layout_marginBottom="28dp"
         app:cornerRadius="16dp"
+        app:elevation="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

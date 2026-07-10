@@ -10,9 +10,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
-@OptIn(FlowPreview::class)
+@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class BoardPostListViewModel @Inject constructor(
     private val boardRepository: BoardRepository,
@@ -47,9 +50,20 @@ class BoardPostListViewModel @Inject constructor(
                         boardRepository.getBoardTypes()
                             .onSuccess { types ->
                                 val activeTypes = types.filter { it.isActive }
-                                _boardTypes.value = activeTypes
-                                if (activeTypes.isNotEmpty() && _selectedBoardId.value == -1L) {
-                                    _selectedBoardId.value = activeTypes.first().boardId
+                                val allBoardType = BoardType(
+                                    boardId = 0L,
+                                    boardKey = "all",
+                                    name = "전체",
+                                    description = "전체 게시글 조회",
+                                    isActive = true,
+                                    sortOrder = 0,
+                                    createdAt = null,
+                                    updatedAt = null
+                                )
+                                val typesWithAll = listOf(allBoardType) + activeTypes
+                                _boardTypes.value = typesWithAll
+                                if (typesWithAll.isNotEmpty() && _selectedBoardId.value == -1L) {
+                                    _selectedBoardId.value = 0L // 기본값으로 '전체' 선택
                                 }
                             }
                             .onFailure { err ->
@@ -64,6 +78,61 @@ class BoardPostListViewModel @Inject constructor(
                         return@flow
                     }
 
+                    if (currentBoardId == 0L) {
+                        // '전체' 탭 선택 시 활성화된 모든 게시판의 글을 호출하여 병합
+                        val activeBoardsOnly = _boardTypes.value.filter { it.boardId != 0L }
+                        if (activeBoardsOnly.isEmpty()) {
+                            emit(Result.success(emptyList<BoardPost>() to 0))
+                            return@flow
+                        }
+
+                        val allPosts = mutableListOf<BoardPost>()
+                        var aggregateTotalItems = 0
+                        var hasError = false
+                        var lastError: Throwable? = null
+
+                        kotlinx.coroutines.coroutineScope {
+                            val deferreds = activeBoardsOnly.map { board ->
+                                async(kotlinx.coroutines.Dispatchers.IO) {
+                                    boardRepository.getBoardPosts(board.boardId, page, 20, query.ifEmpty { null }) to board.name
+                                }
+                            }
+
+                            deferreds.forEach { deferred ->
+                                try {
+                                    val (result, boardName) = deferred.await()
+                                    result.fold(
+                                        onSuccess = { (posts, pageInfo) ->
+                                            val mapped = posts.map { it.copy(boardName = boardName) }
+                                            allPosts.addAll(mapped)
+                                            aggregateTotalItems += pageInfo.totalItems
+                                        },
+                                        onFailure = { err ->
+                                            hasError = true
+                                            lastError = err
+                                        }
+                                    )
+                                } catch (e: Exception) {
+                                    hasError = true
+                                    lastError = e
+                                }
+                            }
+                        }
+
+                        if (hasError && allPosts.isEmpty()) {
+                            emit(Result.failure(lastError ?: Exception("전체 게시글을 불러오지 못했습니다.")))
+                        } else {
+                            // 공지 상단 고정 및 작성일시 내림차순 정렬
+                            val sortedPosts = allPosts.sortedWith(
+                                compareByDescending<BoardPost> { it.isNotice }
+                                    .thenByDescending { it.createdAt }
+                            )
+                            emit(Result.success(sortedPosts to aggregateTotalItems))
+                        }
+                        return@flow
+                    }
+
+                    // 특정 게시판 탭 조회
                     boardRepository.getBoardPosts(currentBoardId, page, 20, query.ifEmpty { null })
                         .onSuccess { (posts, pageInfo) ->
                             val sortedPosts = posts.sortedWith(compareByDescending<BoardPost> { it.isNotice }.thenByDescending { it.createdAt })

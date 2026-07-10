@@ -78,20 +78,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginBottom="2dp">
+                    android:layout_marginBottom="16dp">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/post_label_subject"
-                        android:textColor="#94A3B8"
-                        android:textSize="12sp"
-                        android:letterSpacing="0.02" />
+                        android:textColor="#0F172A"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" *"
                         android:textColor="#EF4444"
-                        android:textSize="12sp"
+                        android:textSize="15sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -143,7 +143,7 @@
                     app:layout_constraintBottom_toBottomOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- 3. 공지 노출 기간 설정 (DatePicker용) -->
+            <!-- 3. 공지 노출 기간 설정 -->
             <LinearLayout
                 android:id="@+id/layout_notice_dates"
                 android:layout_width="match_parent"
@@ -155,10 +155,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/post_label_notice_period"
-                    android:textColor="#94A3B8"
-                    android:textSize="12sp"
-                    android:letterSpacing="0.02"
-                    android:layout_marginBottom="6dp" />
+                    android:textColor="#0F172A"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="16dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -172,7 +172,7 @@
                         android:layout_width="0dp"
                         android:layout_height="44dp"
                         android:layout_weight="1"
-                        android:background="@drawable/bg_rect_rounded_light_gray"
+                        android:background="@drawable/bg_edit_text"
                         android:hint="@string/post_hint_start_date"
                         android:textColorHint="#CBD5E1"
                         android:textColor="#0F172A"
@@ -195,7 +195,7 @@
                         android:layout_width="0dp"
                         android:layout_height="44dp"
                         android:layout_weight="1"
-                        android:background="@drawable/bg_rect_rounded_light_gray"
+                        android:background="@drawable/bg_edit_text"
                         android:hint="@string/post_hint_end_date"
                         android:textColorHint="#CBD5E1"
                         android:textColor="#0F172A"
@@ -210,26 +210,27 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_marginBottom="28dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginBottom="2dp">
+                    android:layout_marginBottom="16dp">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/post_label_content"
-                        android:textColor="#94A3B8"
-                        android:textSize="12sp"
-                        android:letterSpacing="0.02" />
+                        android:textColor="#0F172A"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" *"
                         android:textColor="#EF4444"
-                        android:textSize="12sp"
+                        android:textSize="15sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -239,11 +240,11 @@
                     android:layout_height="wrap_content"
                     android:minLines="6"
                     android:gravity="top|start"
-                    android:background="@drawable/bg_rect_rounded_light_gray"
+                    android:background="@drawable/bg_edit_text"
                     android:hint="@string/post_hint_content"
                     android:textColorHint="#CBD5E1"
-                    android:textColor="#0F172A"
-                    android:textSize="15sp"
+                    android:textColor="#1E293B"
+                    android:textSize="14sp"
                     android:padding="12dp"
                     android:inputType="textMultiLine" />
             </LinearLayout>
@@ -271,34 +272,50 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="20dp"
+        android:clipToPadding="false"
+        android:clipChildren="false"
         android:visibility="invisible"
         tools:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <android.widget.Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_delete"
             android:layout_width="0dp"
-            android:layout_height="52dp"
+            android:layout_height="56dp"
             android:layout_weight="1"
             android:text="@string/post_btn_delete"
             android:textColor="@color/color_error"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:textStyle="bold"
-            android:background="@drawable/bg_rect_rounded_light_gray"
+            android:backgroundTint="#FFFFFF"
+            app:strokeColor="@color/color_error"
+            app:strokeWidth="1dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            app:cornerRadius="16dp"
+            app:elevation="1dp"
             android:layout_marginEnd="10dp"
             android:visibility="gone"
             tools:visibility="visible" />
 
-        <android.widget.Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_save"
             android:layout_width="0dp"
-            android:layout_height="52dp"
+            android:layout_height="56dp"
             android:layout_weight="2"
             android:text="@string/board_btn_save"
-            android:textColor="@color/white"
-            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
             android:textStyle="bold"
-            android:background="@drawable/bg_rect_rounded_blue" />
+            android:backgroundTint="#3B82F6"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            app:cornerRadius="16dp"
+            app:elevation="1dp" />
     </LinearLayout>
 
     <ProgressBar

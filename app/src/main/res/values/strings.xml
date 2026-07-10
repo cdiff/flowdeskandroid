@@ -294,4 +294,25 @@
     <string name="board_dialog_delete_message">\'%1$s\' 게시판을 삭제하시겠습니까?\n삭제된 게시판은 복구할 수 없습니다.</string>
     <string name="post_dialog_delete_title">게시글 삭제</string>
     <string name="post_dialog_delete_message">이 게시글을 삭제하시겠습니까?\n삭제된 게시글은 목록에서 제외됩니다.</string>
+
+    <!-- 게시글 수정 추가 -->
+    <string name="post_title_edit">게시글 수정</string>
+    <string name="post_label_dates_format">등록일: %1$s   /   수정일: %2$s</string>
+
+    <!-- 상담 상태 추가/수정 -->
+    <string name="status_title_detail">상태 상세 정보</string>
+    <string name="status_title_create">새로운 진행 단계를\n추가할 수 있어요.</string>
+    <string name="status_btn_create">추가하기</string>
+    <string name="status_label_dates_format">등록일: %1$s   /   수정일: %2$s</string>
+    <string name="status_hint_select_group">그룹 선택</string>
+
+    <!-- 금칙어 상세 -->
+    <string name="block_keyword_label_id_format">차단 ID: %1$d</string>
+    <string name="block_keyword_label_created_by_format">등록자 ID: %1$s</string>
+    <string name="block_keyword_label_created_at_format">등록: %1$s</string>
+    <string name="block_keyword_label_updated_at_format">수정: %1$s</string>
+    <string name="block_keyword_status_blocking">차단 중</string>
+    <string name="block_keyword_status_released">해제됨</string>
+    <string name="block_keyword_dialog_delete_title">금칙어 차단 해제</string>
+    <string name="block_keyword_dialog_delete_message">\'%1$s\' 단어의 차단을 해제하시겠습니까?\n해제하면 즉시 해당 단어 사용이 허용됩니다.</string>
 </resources>

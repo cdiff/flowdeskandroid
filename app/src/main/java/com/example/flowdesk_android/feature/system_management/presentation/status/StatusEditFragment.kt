@@ -198,12 +198,12 @@ class StatusEditFragment : Fragment() {
     private fun setupDataBinding() {
         if (tenantStatusId != -1L) {
             binding.tvTitle.visibility = View.GONE
-            binding.btnSave.text = "저장하기"
+            binding.btnSave.text = getString(R.string.board_btn_save)
             binding.tvHeaderTitle.visibility = View.VISIBLE
-            binding.tvHeaderTitle.text = "상태 상세 정보"
+            binding.tvHeaderTitle.text = getString(R.string.status_title_detail)
             binding.scrollView.visibility = View.INVISIBLE
         } else {
-            binding.tvTitle.text = "새로운 진행 단계를\n추가할 수 있어요."
+            binding.tvTitle.text = getString(R.string.status_title_create)
             binding.tvHeaderTitle.visibility = View.GONE
             binding.scrollView.visibility = View.VISIBLE
         }
@@ -245,9 +245,9 @@ class StatusEditFragment : Fragment() {
     private fun bindData(detail: TenantStatus?, canUpdate: Boolean) {
         if (detail != null) {
             binding.tvTitle.visibility = View.GONE
-            binding.btnSave.text = "저장하기"
+            binding.btnSave.text = getString(R.string.board_btn_save)
             binding.tvHeaderTitle.visibility = View.VISIBLE
-            binding.tvHeaderTitle.text = "상태 상세 정보"
+            binding.tvHeaderTitle.text = getString(R.string.status_title_detail)
 
             binding.layoutStatusGroup.visibility = View.VISIBLE
             binding.layoutGroupSelector.setReadOnly(true, binding.btnGroupDropdown)
@@ -276,12 +276,12 @@ class StatusEditFragment : Fragment() {
 
             val created = detail.createdAt?.toFormattedDateString() ?: "-"
             val updated = detail.updatedAt?.toFormattedDateString() ?: "-"
-            binding.tvStatusDates.text = "등록일: $created   /   수정일: $updated"
+            binding.tvStatusDates.text = getString(R.string.status_label_dates_format, created, updated)
             binding.tvStatusDates.visibility = View.VISIBLE
         } else {
-            binding.tvTitle.text = "새로운 진행 단계를\n추가할 수 있어요."
+            binding.tvTitle.text = getString(R.string.status_title_create)
             binding.tvTitle.visibility = View.VISIBLE
-            binding.btnSave.text = "추가하기"
+            binding.btnSave.text = getString(R.string.status_btn_create)
             binding.tvHeaderTitle.visibility = View.GONE
 
             binding.layoutStatusGroup.visibility = View.VISIBLE
@@ -301,7 +301,7 @@ class StatusEditFragment : Fragment() {
                 binding.tvStatusGroupSelected.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_primary))
                 binding.etStatusGroup.setText(defaultGroup)
             } else {
-                binding.tvStatusGroupSelected.text = "그룹 선택"
+                binding.tvStatusGroupSelected.text = getString(R.string.status_hint_select_group)
                 binding.tvStatusGroupSelected.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_disabled))
                 binding.etStatusGroup.setText("")
             }

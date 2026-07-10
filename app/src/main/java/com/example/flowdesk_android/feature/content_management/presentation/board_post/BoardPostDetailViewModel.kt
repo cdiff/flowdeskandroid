@@ -78,9 +78,15 @@ class BoardPostDetailViewModel @Inject constructor(
         viewModelScope.launch {
             _actionState.value = BoardPostDetailUiState.Loading
             _loadedPost.value = null
+            
+            // 게시판 명칭을 매핑하기 위해 게시판 타입 목록 조회
+            val boardTypesResult = boardRepository.getBoardTypes()
+            val resolvedBoardName = boardTypesResult.getOrNull()?.find { it.boardId == boardId }?.name
+            
             boardRepository.getBoardPostDetail(boardId, postId)
-                .onSuccess {
-                    _loadedPost.value = it
+                .onSuccess { post ->
+                    // 상세 조회된 Post에 매핑된 게시판 이름을 주입하여 전달
+                    _loadedPost.value = post.copy(boardName = resolvedBoardName)
                     _actionState.value = BoardPostDetailUiState.Idle
                 }
                 .onFailure { err ->
