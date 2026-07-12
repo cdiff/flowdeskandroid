@@ -14,20 +14,20 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.databinding.FragmentUserListBinding
+import com.example.flowdesk_android.databinding.FragmentUserManagementUserListBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import androidx.navigation.fragment.findNavController
 
 @AndroidEntryPoint
-class UserListFragment : Fragment(R.layout.fragment_user_list) {
-    private var _binding: FragmentUserListBinding? = null
+class UserListFragment : Fragment(R.layout.fragment_user_management_user_list) {
+    private var _binding: FragmentUserManagementUserListBinding? = null
     private val binding get() = _binding!!
     private val viewModel: UserListViewModel by viewModels()
     private lateinit var userAdapter: UserAdapter
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentUserListBinding.bind(view)
+        _binding = FragmentUserManagementUserListBinding.bind(view)
 
         parentFragmentManager.setFragmentResultListener("invite_success", viewLifecycleOwner) { _, _ ->
             viewModel.triggerRefresh()

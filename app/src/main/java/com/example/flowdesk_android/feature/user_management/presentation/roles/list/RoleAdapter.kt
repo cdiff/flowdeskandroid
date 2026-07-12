@@ -36,23 +36,21 @@ class RoleAdapter(
 
         fun bind(role: Role) {
             binding.tvRoleDisplayName.text = role.displayName
-            binding.tvRoleName.text = role.roleName
             binding.tvRoleDescription.text = role.description ?: ""
             
+            // 활성 상태 뱃지 텍스트 및 색상 매핑 (배경 제거)
             if (role.isActive) {
-                binding.tvRoleStatus.text = "활성"
-                binding.tvRoleStatus.setTextColor(itemView.context.getColor(R.color.green_accent))
-                binding.tvRoleStatus.setBackgroundResource(R.drawable.bg_tag_light_green)
+                binding.tvRoleStatus.text = "• 활성"
+                binding.tvRoleStatus.setTextColor(itemView.context.getColor(R.color.color_success_active))
             } else {
-                binding.tvRoleStatus.text = "비활성"
-                binding.tvRoleStatus.setTextColor(itemView.context.getColor(R.color.red))
-                binding.tvRoleStatus.setBackgroundResource(R.drawable.bg_card_danger)
+                binding.tvRoleStatus.text = "• 비활성"
+                binding.tvRoleStatus.setTextColor(itemView.context.getColor(R.color.text_hint))
             }
 
-            // formatting createdAt
+            // 생성일자 포맷팅
             val formattedDate = try {
                 val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-                val formatter = SimpleDateFormat("yyyy.MM.dd 생성", Locale.getDefault())
+                val formatter = SimpleDateFormat("yyyy.MM.dd", Locale.getDefault())
                 val date = role.createdAt?.let { parser.parse(it) }
                 if (date != null) formatter.format(date) else ""
             } catch (e: Exception) {
@@ -63,7 +61,7 @@ class RoleAdapter(
             binding.tvUserCount.text = "${role.userCount}명"
             binding.tvPermissionCount.text = "${role.permissionCount}개"
 
-            // Hidden Menu Logic
+            // 아코디언 확장 메뉴 처리 로직
             val isExpanded = expandedRoles.contains(role.roleId)
             binding.llHiddenMenu.visibility = if (isExpanded) View.VISIBLE else View.GONE
             

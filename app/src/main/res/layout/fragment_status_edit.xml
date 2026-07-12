@@ -435,12 +435,10 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent" />
 
-                <CheckBox
+                <com.example.flowdesk_android.core.widget.IosSwitch
                     android:id="@+id/cb_status_active"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:button="@null"
-                    android:background="@drawable/selector_custom_checkbox"
+                    android:layout_width="48dp"
+                    android:layout_height="28dp"
                     android:checked="true"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"

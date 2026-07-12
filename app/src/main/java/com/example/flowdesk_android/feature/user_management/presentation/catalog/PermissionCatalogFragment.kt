@@ -13,14 +13,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.flowdesk_android.databinding.FragmentRolePermissionCatalogBinding
+import com.example.flowdesk_android.databinding.FragmentUserManagementRolePermissionCatalogBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class PermissionCatalogFragment : Fragment() {
 
-    private var _binding: FragmentRolePermissionCatalogBinding? = null
+    private var _binding: FragmentUserManagementRolePermissionCatalogBinding? = null
     private val binding get() = _binding!!
     private val viewModel: PermissionCatalogViewModel by viewModels()
 
@@ -30,7 +30,7 @@ class PermissionCatalogFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentRolePermissionCatalogBinding.inflate(inflater, container, false)
+        _binding = FragmentUserManagementRolePermissionCatalogBinding.inflate(inflater, container, false)
         return binding.root
     }
 

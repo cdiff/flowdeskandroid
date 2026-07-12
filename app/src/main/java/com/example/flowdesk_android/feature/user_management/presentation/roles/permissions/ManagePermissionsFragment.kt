@@ -14,7 +14,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.feature.user_management.domain.model.RoleDetail
 import com.example.flowdesk_android.feature.user_management.domain.model.Role
-import com.example.flowdesk_android.databinding.FragmentRoleManagePermissionsBinding
+import com.example.flowdesk_android.databinding.FragmentUserManagementRoleManagePermissionsBinding
 import com.example.flowdesk_android.databinding.ViewRoleManageInfoBinding
 import com.example.flowdesk_android.databinding.ViewRoleManagePermissionsBinding
 import com.example.flowdesk_android.feature.user_management.presentation.roles.list.RolesViewModel
@@ -26,9 +26,9 @@ import kotlinx.coroutines.launch
 import com.example.flowdesk_android.core.extension.showTopToast
 
 @AndroidEntryPoint
-class ManagePermissionsFragment : BaseFragment(R.layout.fragment_role_manage_permissions) {
+class ManagePermissionsFragment : BaseFragment(R.layout.fragment_user_management_role_manage_permissions) {
 
-    private var _binding: FragmentRoleManagePermissionsBinding? = null
+    private var _binding: FragmentUserManagementRoleManagePermissionsBinding? = null
     private val binding get() = _binding!!
     private val viewModel: ManagePermissionsViewModel by viewModels()
     private val rolesViewModel: RolesViewModel by viewModels()
@@ -51,7 +51,7 @@ class ManagePermissionsFragment : BaseFragment(R.layout.fragment_role_manage_per
     override fun getToolbarView(view: View): View? = binding.toolbar
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        _binding = FragmentRoleManagePermissionsBinding.bind(view)
+        _binding = FragmentUserManagementRoleManagePermissionsBinding.bind(view)
         super.onViewCreated(view, savedInstanceState)
     }
 

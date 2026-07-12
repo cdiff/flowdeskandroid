@@ -11,21 +11,21 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.core.base.BaseFragment
-import com.example.flowdesk_android.databinding.FragmentUserInviteBinding
+import com.example.flowdesk_android.databinding.FragmentUserManagementUserInviteBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class InviteTeamFragment : BaseFragment(R.layout.fragment_user_invite) {
+class InviteTeamFragment : BaseFragment(R.layout.fragment_user_management_user_invite) {
 
-    private var _binding: FragmentUserInviteBinding? = null
+    private var _binding: FragmentUserManagementUserInviteBinding? = null
     private val binding get() = _binding!!
     private val viewModel: InviteTeamViewModel by viewModels()
 
     private lateinit var roleAdapter: RoleSelectionAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        _binding = FragmentUserInviteBinding.bind(view)
+        _binding = FragmentUserManagementUserInviteBinding.bind(view)
         super.onViewCreated(view, savedInstanceState)
     }
 

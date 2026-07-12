@@ -16,7 +16,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.databinding.DialogRoleDeleteBinding
-import com.example.flowdesk_android.databinding.FragmentRoleListBinding
+import com.example.flowdesk_android.databinding.FragmentUserManagementRoleListBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import com.example.flowdesk_android.core.extension.showTopToast
@@ -27,14 +27,14 @@ class RolesFragment : Fragment() {
     private val viewModel: RolesViewModel by viewModels()
     private lateinit var roleAdapter: RoleAdapter
 
-    private var _binding: FragmentRoleListBinding? = null
+    private var _binding: FragmentUserManagementRoleListBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentRoleListBinding.inflate(inflater, container, false)
+        _binding = FragmentUserManagementRoleListBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -91,10 +91,6 @@ class RolesFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        binding.btnCloseBanner.setOnClickListener {
-            binding.bannerInfo.visibility = View.GONE
-        }
-
         binding.btnCreateRole.setOnClickListener {
             val bottomSheet = CreateRoleBottomSheetFragment().apply {
                 onSuccess = {
@@ -132,9 +128,9 @@ class RolesFragment : Fragment() {
                                 val active = state.roles.count { it.isActive }
                                 val inactive = total - active
 
-                                binding.tvTotalCount.text = "총 ${total}개"
-                                binding.tvActiveCount.text = "활성 ${active}개"
-                                binding.tvInactiveCount.text = "비활성 ${inactive}개"
+                                binding.tvTotalCount.text = "${total}"
+                                binding.tvActiveCount.text = "${active}"
+                                binding.tvInactiveCount.text = "${inactive}"
 
                                 if (state.roles.isEmpty()) {
                                     binding.llEmpty.visibility = View.VISIBLE

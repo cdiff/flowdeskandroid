@@ -23,150 +23,185 @@
             android:clipChildren="false"
             android:clipToPadding="false">
 
-            <!-- ─── 안내 배너 (닫기 가능) ─── -->
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/banner_info"
+            <!-- 안내 타이틀 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="역할 관리"
+                android:textColor="@color/text_strong"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="원하는 역할을 등록하고 권한을 부여하세요"
+                android:textColor="@color/text_tertiary"
+                android:textSize="14sp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Toss 스타일 수평 통계 라인 -->
+            <LinearLayout
+                android:id="@+id/ll_stats_row"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_rect_rounded_blue"
-                android:padding="20dp"
-                android:layout_marginHorizontal="2dp"
-                android:layout_marginTop="2dp"
-                android:layout_marginBottom="30dp"
-                android:clipChildren="false"
-                android:clipToPadding="false">
+                android:orientation="horizontal"
+                android:background="@android:color/transparent"
+                android:paddingVertical="8dp"
+                android:paddingHorizontal="4dp"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="20dp">
 
-                <!-- 배경 장식 원 -->
+                <!-- 전체 역할 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="전체 역할"
+                        android:textColor="@color/text_tertiary"
+                        android:textSize="11sp" />
+                    <TextView
+                        android:id="@+id/tv_total_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="12"
+                        android:textColor="@color/text_strong"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+
+                <!-- 수직 구분선 1 -->
                 <View
-                    android:layout_width="90dp"
-                    android:layout_height="90dp"
-                    android:background="@drawable/ic_tenant_banner"
-                    android:alpha="0.15"
-                    android:scaleX="1.6"
-                    android:scaleY="1.6"
-                    android:rotation="-15"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:layout_marginEnd="-15dp"
-                    android:layout_marginBottom="-15dp" />
+                    android:layout_width="1dp"
+                    android:layout_height="20dp"
+                    android:background="@color/bg_divider" />
 
-                <!-- X 닫기 버튼 -->
-                <ImageView
-                    android:id="@+id/btn_close_banner"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/ic_close"
-                    app:tint="#FFFFFFCC"
-                    android:padding="6dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <!-- 타이틀 -->
-                <TextView
-                    android:id="@+id/tv_banner_title"
+                <!-- 활성 -->
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="역할 관리란?"
-                    android:textColor="#FFFFFFCC"
-                    android:textSize="12sp"
-                    android:layout_marginTop="4dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/btn_close_banner"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="활성"
+                        android:textColor="@color/text_tertiary"
+                        android:textSize="11sp" />
+                    <TextView
+                        android:id="@+id/tv_active_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="10"
+                        android:textColor="@color/color_success_active"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/tv_banner_subtitle"
+                <!-- 수직 구분선 2 -->
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="20dp"
+                    android:background="@color/bg_divider" />
+
+                <!-- 비활성 -->
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="새로운 역할을 만들고 권한을 부여하세요"
-                    android:textColor="@color/white"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginTop="4dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/btn_close_banner"
-                    app:layout_constraintTop_toBottomOf="@id/tv_banner_title" />
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="비활성"
+                        android:textColor="@color/text_tertiary"
+                        android:textSize="11sp" />
+                    <TextView
+                        android:id="@+id/tv_inactive_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="2"
+                        android:textColor="@color/text_hint"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+            </LinearLayout>
 
-                <!-- 설명 -->
-                <TextView
-                    android:id="@+id/tv_banner_desc"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="역할별로 세부 권한을 설정하고 사용자에게 부여하여,\n시스템 접근 및 사용을 안전하게 제어합니다."
-                    android:textColor="#CCE0FF"
-                    android:textSize="13sp"
-                    android:lineSpacingMultiplier="1.4"
-                    android:layout_marginTop="14dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_banner_subtitle" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <!-- ─── 검색바 (독립형 둥근 카드) ─── -->
+            <!-- 검색창 -->
             <LinearLayout
                 android:id="@+id/ll_search"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_white_rounded_12dp"
-                android:elevation="1dp"
-                android:paddingHorizontal="14dp"
-                android:paddingVertical="12dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_card_rounded"
+                android:paddingHorizontal="12dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:layout_marginHorizontal="5dp"
                 android:layout_marginBottom="24dp">
 
                 <ImageView
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:src="@android:drawable/ic_menu_search"
-                    app:tint="@color/gray_text"
+                    app:tint="@color/text_hint"
                     android:layout_marginEnd="8dp" />
 
                 <EditText
                     android:id="@+id/et_search"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:background="@null"
                     android:hint="역할 이름 검색..."
-                    android:textColorHint="@color/gray_text"
-                    android:textSize="13sp"
-                    android:textColor="@color/black"
+                    android:textColorHint="@color/text_hint"
+                    android:textSize="15sp"
+                    android:textColor="@color/text_primary"
                     android:maxLines="1"
-                    android:inputType="text" />
+                    android:inputType="text"
+                    android:gravity="center_vertical" />
             </LinearLayout>
 
-            <!-- ─── 리스트 헤더 (제목 + 추가 버튼) ─── -->
+            <!-- 리스트 헤더 (제목 + 추가 버튼) -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="4dp"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="12dp">
 
                 <TextView
                     android:id="@+id/tv_list_title"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="역할 목록"
-                    android:textColor="@color/black"
-                    android:textSize="18sp"
+                    android:textColor="@color/text_strong"
+                    android:textSize="17sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/btn_create_role" />
 
-                <!-- + 새 역할 버튼 -->
+                <!-- 새 역할 추가 버튼 -->
                 <ImageView
                     android:id="@+id/btn_create_role"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_add_thin"
-                    app:tint="@color/black"
+                    app:tint="@color/text_strong"
                     android:padding="8dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -174,57 +209,6 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <!-- ─── 헤더 하단 소형 통계 텍스트 ─── -->
-            <LinearLayout
-                android:id="@+id/ll_badges"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginStart="4dp"
-                android:layout_marginBottom="16dp">
-
-                <TextView
-                    android:id="@+id/tv_total_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    tools:text="총 12개"
-                    android:textColor="@color/gray_text"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="  •  "
-                    android:textColor="#D1D5DB"
-                    android:textSize="10sp" />
-
-                <TextView
-                    android:id="@+id/tv_active_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    tools:text="활성 10개"
-                    android:textColor="@color/green_accent"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="  •  "
-                    android:textColor="#D1D5DB"
-                    android:textSize="10sp" />
-
-                <TextView
-                    android:id="@+id/tv_inactive_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    tools:text="비활성 2개"
-                    android:textColor="@color/red"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
 
             <!-- ─── 리스트 영역 (RecyclerView 및 상태 뷰) ─── -->
             <androidx.constraintlayout.widget.ConstraintLayout

@@ -39,19 +39,19 @@
         android:id="@+id/userDetailFragment"
         android:name="com.example.flowdesk_android.feature.user_management.presentation.users.detail.UserDetailFragment"
         android:label="UserDetail"
-        tools:layout="@layout/fragment_user_detail" />
+        tools:layout="@layout/fragment_user_management_user_detail" />
 
     <fragment
         android:id="@+id/rolesFragment"
         android:name="com.example.flowdesk_android.feature.user_management.presentation.roles.list.RolesFragment"
         android:label="Roles"
-        tools:layout="@layout/fragment_roles" />
+        tools:layout="@layout/fragment_user_management_role_list" />
 
     <fragment
         android:id="@+id/roleDetailFragment"
         android:name="com.example.flowdesk_android.feature.user_management.presentation.roles.detail.RoleDetailFragment"
         android:label="RoleDetail"
-        tools:layout="@layout/fragment_role_detail">
+        tools:layout="@layout/fragment_user_management_role_detail">
         <argument
             android:name="roleId"
             app:argType="integer" />
@@ -71,7 +71,7 @@
         android:id="@+id/managePermissionsFragment"
         android:name="com.example.flowdesk_android.feature.user_management.presentation.roles.permissions.ManagePermissionsFragment"
         android:label="ManagePermissions"
-        tools:layout="@layout/fragment_role_manage_permissions">
+        tools:layout="@layout/fragment_user_management_role_manage_permissions">
         <argument
             android:name="role_id"
             app:argType="integer" />
@@ -149,7 +149,7 @@
         android:id="@+id/inviteTeamFragment"
         android:name="com.example.flowdesk_android.feature.user_management.presentation.users.invite.InviteTeamFragment"
         android:label="InviteTeam"
-        tools:layout="@layout/fragment_user_invite" />
+        tools:layout="@layout/fragment_user_management_user_invite" />
 
     <fragment
         android:id="@+id/websiteListFragment"
