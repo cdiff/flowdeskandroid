@@ -74,121 +74,110 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="#F1F5F9">
+            android:background="@color/slate_100">
 
-            <!-- ① 역할 기본 정보 섹션 (마이페이지 프로필 스타일 - 하단 모서리 둥글게) -->
+            <!-- ① 역할 기본 정보 섹션 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@drawable/bg_white_bottom_rounded_8dp"
                 android:paddingHorizontal="20dp"
-                android:paddingTop="20dp"
+                android:paddingTop="24dp"
                 android:paddingBottom="20dp">
 
-                <!-- 프로필 영역: 클릭 이벤트 영역 -->
+                <!-- 클릭 가능한 프로필 영역 -->
                 <LinearLayout
                     android:id="@+id/cl_display_name_row"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingVertical="8dp"
-                    android:layout_marginBottom="15dp"
+                    android:paddingVertical="4dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:background="@android:color/transparent">
 
-                    <!-- 배지 가로 배치 영역 -->
+                    <!-- 이름 + > 화살표 -->
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:baselineAligned="false"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="4dp">
+                        android:gravity="center_vertical">
 
-                        <!-- 상태 배지 (ADMIN 스타일: border + 작은 텍스트) -->
-                        <TextView
-                            android:id="@+id/tv_role_status"
-                            android:layout_width="wrap_content"
-                            android:layout_height="20dp"
-                            tools:text="활성"
-                            android:textSize="10sp"
-                            android:textColor="@color/color_success_active"
-                            android:background="@drawable/bg_badge_rounded_green_border"
-                            android:paddingHorizontal="8dp"
-                            android:gravity="center"
-                            android:includeFontPadding="false"
-                            android:layout_marginEnd="6dp" />
-
-                        <!-- 시스템 역할 코드 배지 -->
-                        <TextView
-                            android:id="@+id/tv_role_code_badge"
-                            android:layout_width="wrap_content"
-                            android:layout_height="20dp"
-                            tools:text="super_admin"
-                            android:textSize="10sp"
-                            android:textColor="@color/login_blue"
-                            android:background="@drawable/bg_badge_rounded_blue_border"
-                            android:paddingHorizontal="8dp"
-                            android:gravity="center"
-                            android:includeFontPadding="false" />
-
-                    </LinearLayout>
-
-                    <!-- 이름 + > 화살표 영역 -->
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginTop="4dp">
-
-                        <!-- 역할 표시 이름 (크게) -->
                         <TextView
                             android:id="@+id/tv_role_display_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             tools:text="슈퍼 관리자"
-                            android:textSize="20sp"
+                            android:textSize="22sp"
                             android:textStyle="bold"
-                            android:textColor="#0F172A" />
+                            android:textColor="@color/text_primary" />
 
-                        <!-- 수정 유도 > 아이콘 (이름 바로 옆에 배치, 이름과 동일한 색상) -->
                         <ImageView
                             android:id="@+id/iv_edit_arrow"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
                             android:src="@drawable/ic_chevron_right"
-                            app:tint="#0F172A"
+                            app:tint="@color/text_primary"
                             android:layout_marginStart="4dp" />
 
                     </LinearLayout>
 
+                    <!-- 역할 시스템 코드 (서브텍스트) -->
+                    <TextView
+                        android:id="@+id/tv_role_code_badge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="super_admin"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_hint"
+                        android:layout_marginTop="4dp" />
+
+                    <!-- 상태 배지 -->
+                    <TextView
+                        android:id="@+id/tv_role_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp"
+                        tools:text="활성"
+                        android:textSize="10sp"
+                        android:textColor="@color/color_success_active"
+                        android:background="@drawable/bg_badge_rounded_green_border"
+                        android:paddingHorizontal="8dp"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:layout_marginTop="10dp" />
+
                 </LinearLayout>
 
-                <!-- 설명 소제목 추가 -->
+                <!-- 구분선 -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/bg_divider"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="14dp" />
+
+                <!-- 설명 라벨 -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="설명"
+                    android:text="@string/user_management_desc_role"
                     android:textSize="12sp"
-                    android:textColor="#94A3B8"
-                    android:layout_marginBottom="8dp" />
+                    android:textColor="@color/text_hint"
+                    android:layout_marginBottom="6dp" />
 
-                <!-- bg_edit_text 스타일의 텍스트뷰 (역할명 아래 배치) -->
+                <!-- 역할 설명 (박스 없이 자연스러운 텍스트) -->
                 <TextView
                     android:id="@+id/tv_role_desc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_edit_text"
-                    android:padding="12dp"
-                    android:minLines="4"
+                    android:minLines="2"
                     android:gravity="top|start"
                     tools:text="시스템 전체 관리 권한을 가진 최고 관리자입니다. 이 역할은 모든 메뉴와 리소스에 자유롭게 접근할 수 있습니다."
                     android:textSize="14sp"
-                    android:textColor="#0F172A"
-                    android:lineSpacingExtra="4dp" />
+                    android:textColor="@color/text_secondary"
+                    android:lineSpacingExtra="6dp" />
 
             </LinearLayout>
 
@@ -202,16 +191,70 @@
                 android:clipChildren="false"
                 android:clipToPadding="false">
 
-                <!-- 섹션 제목 -->
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- 섹션 헤더: 타이틀+카운트(좌) / 전체 권한 보기(우) -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="다른 역할의 권한 복사하기"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="#0F172A"
                     android:layout_marginStart="20dp"
-                    android:layout_marginBottom="6dp" />
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="6dp">
+
+                    <!-- 타이틀 -->
+                    <TextView
+                        android:id="@+id/tv_copy_section_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/user_management_label_copy_title"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <!-- 역할 수 카운트 (타이틀 바로 옆 인라인) -->
+                    <TextView
+                        android:id="@+id/tv_copy_role_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="3"
+                        android:textSize="13sp"
+                        android:textColor="@color/text_hint"
+                        android:layout_marginStart="4dp"
+                        app:layout_constraintStart_toEndOf="@id/tv_copy_section_title"
+                        app:layout_constraintBaseline_toBaselineOf="@id/tv_copy_section_title" />
+
+                    <!-- 전체 권한 보기 > (우측) -->
+                    <LinearLayout
+                        android:id="@+id/btn_view_all_permissions"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/user_management_action_view_all_permissions"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_tertiary" />
+
+                        <ImageView
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:src="@drawable/ic_chevron_right"
+                            app:tint="@color/text_tertiary"
+                            android:layout_marginStart="2dp" />
+
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <!-- 가로 뷰페이저 (클리핑 비활성화로 좌우 카드 피크 효과) -->
                 <androidx.viewpager2.widget.ViewPager2
@@ -238,16 +281,38 @@
                 android:paddingBottom="20dp"
                 android:layout_marginBottom="8dp">
 
-                <!-- 섹션 제목 -->
-                <TextView
-                    android:id="@+id/tv_perm_title"
-                    android:layout_width="wrap_content"
+                <!-- 세부 권한 타이틀 클릭 영역 (수정 유도 > 아이콘 포함) -->
+                <LinearLayout
+                    android:id="@+id/cl_perm_edit_row"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    tools:text="세부 권한 (17개)"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#0F172A"
-                    android:layout_marginBottom="20dp" />
+                    android:orientation="horizontal"
+                    android:baselineAligned="false"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="20dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="@android:color/transparent">
+
+                    <TextView
+                        android:id="@+id/tv_perm_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="세부 권한 (17개)"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+
+                    <!-- 수정 유도 > 아이콘 (물결 효과 없음) -->
+                    <ImageView
+                        android:id="@+id/iv_perm_edit_arrow"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/text_primary"
+                        android:layout_marginStart="4dp" />
+
+                </LinearLayout>
 
                 <!-- 세부 권한 타이틀 하단 구분선 (부모 패딩 적용으로 원래 간격 복원) -->
                 <View
@@ -289,7 +354,7 @@
                     tools:text="할당된 팀원 (3명)"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="#0F172A"
+                    android:textColor="@color/text_primary"
                     android:layout_marginBottom="20dp" />
 
                 <!-- 할당된 팀원 타이틀 하단 구분선 (부모 패딩 적용으로 원래 간격 복원) -->

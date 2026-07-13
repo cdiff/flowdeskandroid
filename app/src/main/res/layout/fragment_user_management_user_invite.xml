@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="@color/white">
 
     <!-- 뒤로가기 및 타이틀 바 -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -25,7 +25,7 @@
             android:clickable="true"
             android:focusable="true"
             android:background="?attr/selectableItemBackgroundBorderless"
-            app:tint="#1E293B"
+            app:tint="@color/slate_800"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
@@ -34,8 +34,8 @@
             android:id="@+id/tv_header_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="팀원 초대"
-            android:textColor="#1E293B"
+            android:text="@string/user_management_title_invite_new_member_simple"
+            android:textColor="@color/slate_800"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -68,8 +68,8 @@
                 android:id="@+id/tv_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="새로운 팀원을\n초대할 수 있어요."
-                android:textColor="#0F172A"
+                android:text="@string/user_management_title_invite_new_member"
+                android:textColor="@color/slate_900"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:lineSpacingMultiplier="1.2"
@@ -79,8 +79,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="계정 정보"
-                android:textColor="#0F172A"
+                android:text="@string/user_management_label_account_info"
+                android:textColor="@color/slate_900"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="16dp" />
@@ -100,15 +100,15 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="사용자 ID"
-                        android:textColor="#94A3B8"
+                        android:text="@string/user_management_label_user_id"
+                        android:textColor="@color/slate_400"
                         android:textSize="12sp"
                         android:letterSpacing="0.02" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" *"
-                        android:textColor="#EF4444"
+                        android:textColor="@color/red_500"
                         android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -119,8 +119,8 @@
                     android:layout_height="wrap_content"
                     android:background="@null"
                     android:hint="john.doe"
-                    android:textColorHint="#CBD5E1"
-                    android:textColor="#0F172A"
+                    android:textColorHint="@color/slate_300"
+                    android:textColor="@color/slate_900"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:paddingTop="6dp"
@@ -131,7 +131,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#E2E8F0" />
+                    android:background="@color/slate_200" />
             </LinearLayout>
 
             <!-- 비밀번호 (필수) -->
@@ -149,15 +149,15 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="비밀번호"
-                        android:textColor="#94A3B8"
+                        android:text="@string/user_management_label_password"
+                        android:textColor="@color/slate_400"
                         android:textSize="12sp"
                         android:letterSpacing="0.02" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" *"
-                        android:textColor="#EF4444"
+                        android:textColor="@color/red_500"
                         android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -168,8 +168,8 @@
                     android:layout_height="wrap_content"
                     android:background="@null"
                     android:hint="6자 이상 입력"
-                    android:textColorHint="#CBD5E1"
-                    android:textColor="#0F172A"
+                    android:textColorHint="@color/slate_300"
+                    android:textColor="@color/slate_900"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:paddingTop="6dp"
@@ -180,7 +180,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#E2E8F0" />
+                    android:background="@color/slate_200" />
             </LinearLayout>
 
             <!-- 비밀번호 확인 (필수) -->
@@ -198,15 +198,15 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="비밀번호 확인"
-                        android:textColor="#94A3B8"
+                        android:text="@string/user_management_label_password_confirm"
+                        android:textColor="@color/slate_400"
                         android:textSize="12sp"
                         android:letterSpacing="0.02" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" *"
-                        android:textColor="#EF4444"
+                        android:textColor="@color/red_500"
                         android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -217,8 +217,8 @@
                     android:layout_height="wrap_content"
                     android:background="@null"
                     android:hint="비밀번호 재입력"
-                    android:textColorHint="#CBD5E1"
-                    android:textColor="#0F172A"
+                    android:textColorHint="@color/slate_300"
+                    android:textColor="@color/slate_900"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:paddingTop="6dp"
@@ -229,7 +229,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#E2E8F0" />
+                    android:background="@color/slate_200" />
             </LinearLayout>
 
 
@@ -238,8 +238,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="기본 정보"
-                android:textColor="#0F172A"
+                android:text="@string/user_management_label_basic_info"
+                android:textColor="@color/slate_900"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="16dp" />
@@ -259,15 +259,15 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="이름"
-                        android:textColor="#94A3B8"
+                        android:text="@string/user_management_label_name"
+                        android:textColor="@color/slate_400"
                         android:textSize="12sp"
                         android:letterSpacing="0.02" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" *"
-                        android:textColor="#EF4444"
+                        android:textColor="@color/red_500"
                         android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -278,8 +278,8 @@
                     android:layout_height="wrap_content"
                     android:background="@null"
                     android:hint="홍길동"
-                    android:textColorHint="#CBD5E1"
-                    android:textColor="#0F172A"
+                    android:textColorHint="@color/slate_300"
+                    android:textColor="@color/slate_900"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:paddingTop="6dp"
@@ -290,7 +290,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#E2E8F0" />
+                    android:background="@color/slate_200" />
             </LinearLayout>
 
             <!-- 이메일 (필수) -->
@@ -308,15 +308,15 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="이메일"
-                        android:textColor="#94A3B8"
+                        android:text="@string/user_management_label_email"
+                        android:textColor="@color/slate_400"
                         android:textSize="12sp"
                         android:letterSpacing="0.02" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" *"
-                        android:textColor="#EF4444"
+                        android:textColor="@color/red_500"
                         android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -327,8 +327,8 @@
                     android:layout_height="wrap_content"
                     android:background="@null"
                     android:hint="user@example.com"
-                    android:textColorHint="#CBD5E1"
-                    android:textColor="#0F172A"
+                    android:textColorHint="@color/slate_300"
+                    android:textColor="@color/slate_900"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:paddingTop="6dp"
@@ -339,7 +339,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#E2E8F0" />
+                    android:background="@color/slate_200" />
             </LinearLayout>
 
             <!-- 전화번호 -->
@@ -352,8 +352,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="전화번호"
-                    android:textColor="#94A3B8"
+                    android:text="@string/user_management_label_phone"
+                    android:textColor="@color/slate_400"
                     android:textSize="12sp"
                     android:letterSpacing="0.02"
                     android:layout_marginBottom="2dp" />
@@ -364,8 +364,8 @@
                     android:layout_height="wrap_content"
                     android:background="@null"
                     android:hint="02-1234-5678"
-                    android:textColorHint="#CBD5E1"
-                    android:textColor="#0F172A"
+                    android:textColorHint="@color/slate_300"
+                    android:textColor="@color/slate_900"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:paddingTop="6dp"
@@ -376,7 +376,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#E2E8F0" />
+                    android:background="@color/slate_200" />
             </LinearLayout>
 
             <!-- 휴대폰 -->
@@ -389,8 +389,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="휴대폰"
-                    android:textColor="#94A3B8"
+                    android:text="@string/user_management_label_mobile"
+                    android:textColor="@color/slate_400"
                     android:textSize="12sp"
                     android:letterSpacing="0.02"
                     android:layout_marginBottom="2dp" />
@@ -401,8 +401,8 @@
                     android:layout_height="wrap_content"
                     android:background="@null"
                     android:hint="010-1234-5678"
-                    android:textColorHint="#CBD5E1"
-                    android:textColor="#0F172A"
+                    android:textColorHint="@color/slate_300"
+                    android:textColor="@color/slate_900"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:paddingTop="6dp"
@@ -413,15 +413,15 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#E2E8F0" />
+                    android:background="@color/slate_200" />
             </LinearLayout>
 
             <!-- ===== 3. 역할 설정 ===== -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="역할 설정"
-                android:textColor="#0F172A"
+                android:text="@string/user_management_label_role_setup"
+                android:textColor="@color/slate_900"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="16dp" />
@@ -446,7 +446,7 @@
                 android:gravity="center_vertical"
                 android:background="@drawable/bg_oval_light_blue"
                 android:paddingHorizontal="16dp"
-                android:text="선택된 역할: 없음"
+                android:text="@string/user_management_status_no_role_selected"
                 android:textColor="@color/login_blue"
                 android:textSize="12sp"
                 android:visibility="gone"
@@ -481,12 +481,12 @@
         android:id="@+id/btn_invite"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:text="초대하기"
+        android:text="@string/user_management_action_invite"
         android:textColor="#FFFFFF"
         android:textSize="17sp"
         android:textStyle="bold"
         android:letterSpacing="0.01"
-        android:backgroundTint="#3B82F6"
+        android:backgroundTint="@color/brand_primary"
         android:insetTop="0dp"
         android:insetBottom="0dp"
         android:insetLeft="0dp"

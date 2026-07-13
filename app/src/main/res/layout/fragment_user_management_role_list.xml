@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FAFC">
+    android:background="@color/bg_page">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -27,7 +27,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="역할 관리"
+                android:text="@string/user_management_label_role_management"
                 android:textColor="@color/text_strong"
                 android:textSize="20sp"
                 android:textStyle="bold"
@@ -37,7 +37,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="원하는 역할을 등록하고 권한을 부여하세요"
+                android:text="@string/user_management_desc_role_management"
                 android:textColor="@color/text_tertiary"
                 android:textSize="14sp"
                 android:layout_marginStart="4dp"
@@ -66,7 +66,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="전체 역할"
+                        android:text="@string/user_management_label_total_role"
                         android:textColor="@color/text_tertiary"
                         android:textSize="11sp" />
                     <TextView
@@ -96,7 +96,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="활성"
+                        android:text="@string/user_management_label_active"
                         android:textColor="@color/text_tertiary"
                         android:textSize="11sp" />
                     <TextView
@@ -126,7 +126,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="비활성"
+                        android:text="@string/user_management_label_inactive"
                         android:textColor="@color/text_tertiary"
                         android:textSize="11sp" />
                     <TextView
@@ -165,7 +165,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@null"
-                    android:hint="역할 이름 검색..."
+                    android:hint="@string/user_management_hint_search_role"
                     android:textColorHint="@color/text_hint"
                     android:textSize="15sp"
                     android:textColor="@color/text_primary"
@@ -185,7 +185,7 @@
                     android:id="@+id/tv_list_title"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="역할 목록"
+                    android:text="@string/user_management_label_role_list"
                     android:textColor="@color/text_strong"
                     android:textSize="17sp"
                     android:textStyle="bold"
@@ -258,22 +258,22 @@
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:src="@android:drawable/ic_menu_sort_by_size"
-                        app:tint="#CBD5E1"
+                        app:tint="@color/slate_300"
                         android:layout_marginBottom="12dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="등록된 역할이 없습니다"
-                        android:textColor="@color/gray_text"
+                        android:text="@string/user_management_empty_role_list"
+                        android:textColor="@color/text_secondary"
                         android:textSize="14sp"
                         android:layout_marginBottom="4dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="플러스(+) 버튼으로 추가해보세요"
-                        android:textColor="#CBD5E1"
+                        android:text="@string/user_management_empty_role_list_desc"
+                        android:textColor="@color/slate_300"
                         android:textSize="12sp" />
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>

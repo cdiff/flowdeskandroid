@@ -49,10 +49,6 @@ class RolesFragment : Fragment() {
 
     private fun setupRecyclerView() {
         roleAdapter = RoleAdapter(
-            onManagePermissionsClick = { role ->
-                val bundle = Bundle().apply { putInt("role_id", role.roleId) }
-                findNavController().navigate(R.id.managePermissionsFragment, bundle)
-            },
             onEditRoleClick = { role ->
                 val bundle = Bundle().apply {
                     putInt("roleId", role.roleId)
@@ -154,6 +150,25 @@ class RolesFragment : Fragment() {
                 launch {
                     viewModel.filteredRoles.collect { roles ->
                         roleAdapter.submitList(roles)
+                    }
+                }
+
+                launch {
+                    viewModel.event.collect { event ->
+                        when(event) {
+                            is RoleListEvent.RoleCreated -> {
+                                // 생성은 CreateRoleBottomSheetFragment 내에서 처리
+                            }
+                            is RoleListEvent.RoleDeleted -> {
+                                showTopToast(getString(R.string.toast_role_deleted))
+                            }
+                            is RoleListEvent.StatusToggled -> {
+                                showTopToast(getString(R.string.toast_status_changed))
+                            }
+                            is RoleListEvent.Error -> {
+                                showTopToast(event.message)
+                            }
+                        }
                     }
                 }
             }

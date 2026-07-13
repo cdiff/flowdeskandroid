@@ -11,7 +11,7 @@
         android:id="@+id/handle"
         android:layout_width="40dp"
         android:layout_height="4dp"
-        android:background="#E2E8F0"
+        android:background="@color/slate_200"
         android:layout_marginTop="12dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,8 +22,8 @@
         android:id="@+id/tv_header_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="새 역할 생성"
-        android:textColor="#0F172A"
+        android:text="@string/user_management_title_create_role"
+        android:textColor="@color/slate_900"
         android:textSize="22sp"
         android:textStyle="bold"
         android:lineSpacingMultiplier="1.2"
@@ -39,8 +39,8 @@
         android:id="@+id/tv_header_subtitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="새로운 직무나 팀에 맞는 역할을 정의하세요"
-        android:textColor="#94A3B8"
+        android:text="@string/user_management_desc_create_role"
+        android:textColor="@color/slate_400"
         android:textSize="13sp"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
@@ -83,15 +83,15 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="역할 표시 이름"
-                        android:textColor="#94A3B8"
+                        android:text="@string/user_management_label_role_display_name"
+                        android:textColor="@color/slate_400"
                         android:textSize="12sp"
                         android:letterSpacing="0.02" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" *"
-                        android:textColor="#EF4444"
+                        android:textColor="@color/red_500"
                         android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -102,8 +102,8 @@
                     android:layout_height="wrap_content"
                     android:background="@null"
                     android:hint="마케팅 매니저"
-                    android:textColorHint="#CBD5E1"
-                    android:textColor="#0F172A"
+                    android:textColorHint="@color/slate_300"
+                    android:textColor="@color/slate_900"
                     android:textSize="18sp"
                     android:paddingTop="6dp"
                     android:paddingBottom="10dp"
@@ -114,7 +114,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#E2E8F0" />
+                    android:background="@color/slate_200" />
             </LinearLayout>
 
             <!-- 시스템 역할 코드 (필수) -->
@@ -133,15 +133,15 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="시스템 역할 코드"
-                        android:textColor="#94A3B8"
+                        android:text="@string/user_management_label_system_role_code"
+                        android:textColor="@color/slate_400"
                         android:textSize="12sp"
                         android:letterSpacing="0.02" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" *"
-                        android:textColor="#EF4444"
+                        android:textColor="@color/red_500"
                         android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -152,8 +152,8 @@
                     android:layout_height="wrap_content"
                     android:background="@null"
                     android:hint="marketing_manager"
-                    android:textColorHint="#CBD5E1"
-                    android:textColor="#0F172A"
+                    android:textColorHint="@color/slate_300"
+                    android:textColor="@color/slate_900"
                     android:textSize="18sp"
                     android:paddingTop="6dp"
                     android:paddingBottom="10dp"
@@ -164,7 +164,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#E2E8F0" />
+                    android:background="@color/slate_200" />
             </LinearLayout>
 
             <!-- 설명 (필수) -->
@@ -184,15 +184,15 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:text="설명"
-                        android:textColor="#94A3B8"
+                        android:text="@string/user_management_desc_role"
+                        android:textColor="@color/slate_400"
                         android:textSize="12sp"
                         android:letterSpacing="0.02" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" *"
-                        android:textColor="#EF4444"
+                        android:textColor="@color/red_500"
                         android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -205,9 +205,9 @@
                     android:minLines="6"
                     android:gravity="top|start"
                     android:background="@drawable/bg_edit_text"
-                    android:hint="역할에 대한 간략한 설명을 입력해주세요."
-                    android:textColorHint="#CBD5E1"
-                    android:textColor="#0F172A"
+                    android:hint="@string/user_management_hint_role_desc"
+                    android:textColorHint="@color/slate_300"
+                    android:textColor="@color/slate_900"
                     android:textSize="15sp"
                     android:padding="12dp"
                     android:inputType="textMultiLine" />
@@ -228,7 +228,7 @@
                     android:id="@+id/tv_error"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/red"
+                    android:textColor="@color/color_error"
                     android:textSize="13sp"
                     android:gravity="center"
                     android:visibility="gone" />
@@ -242,12 +242,12 @@
         android:id="@+id/btn_create"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:text="생성하기"
+        android:text="@string/user_management_action_create"
         android:textColor="#FFFFFF"
         android:textSize="16sp"
         android:textStyle="bold"
         android:letterSpacing="0.01"
-        android:backgroundTint="#3B82F6"
+        android:backgroundTint="@color/brand_primary"
         android:insetTop="0dp"
         android:insetBottom="0dp"
         android:insetLeft="0dp"

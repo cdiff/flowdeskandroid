@@ -99,7 +99,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="|"
-            android:textColor="#D1D5DB"
+            android:textColor="@color/slate_300"
             android:textSize="11sp"
             android:layout_gravity="center_vertical" />
 
@@ -108,7 +108,7 @@
             android:id="@+id/btn_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="로그아웃"
+            android:text="@string/user_management_action_logout"
             android:textColor="@color/red"
             android:textSize="13sp"
             android:paddingHorizontal="8dp"

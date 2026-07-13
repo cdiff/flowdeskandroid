@@ -15,7 +15,6 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class RoleAdapter(
-    private val onManagePermissionsClick: (Role) -> Unit,
     private val onEditRoleClick: (Role) -> Unit,
     private val onToggleStatusClick: (Role) -> Unit,
     private val onDeleteRoleClick: (Role) -> Unit
@@ -105,7 +104,6 @@ class RoleAdapter(
                 binding.llHiddenMenu.visibility = View.GONE
             }
 
-            binding.btnManagePermissions.setOnClickListener { onManagePermissionsClick(role) }
             itemView.setOnClickListener { onEditRoleClick(role) }
         }
     }

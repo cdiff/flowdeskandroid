@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="0dp"
         tools:text="슈퍼 관리자"
-        android:textColor="@color/black"
+        android:textColor="@color/text_primary"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -66,7 +66,7 @@
         app:layout_constraintTop_toTopOf="@id/tv_role_display_name"
         app:layout_constraintBottom_toBottomOf="@id/tv_role_display_name"/>
 
-    <!-- 하단 통계 정보 (사용자 수, 권한 수, 생성일) -->
+    <!-- 하단 통계 정보 (사용자 수, 권한 수) -->
     <LinearLayout
         android:id="@+id/ll_info_counts"
         android:layout_width="wrap_content"
@@ -79,11 +79,19 @@
 
         <!-- 사용자 아이콘 -->
         <ImageView
-            android:layout_width="14dp"
-            android:layout_height="14dp"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
             android:src="@drawable/ic_user"
-            app:tint="@color/text_hint"
+            app:tint="@color/text_tertiary"
             android:layout_marginEnd="4dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/user_management_label_user_prefix"
+            android:textColor="@color/text_tertiary"
+            android:textSize="12sp"
+            android:layout_marginEnd="2dp" />
 
         <TextView
             android:id="@+id/tv_user_count"
@@ -94,20 +102,30 @@
             android:textSize="12sp"
             android:textStyle="bold"/>
 
-        <!-- 수직 구분선 1 -->
-        <View
-            android:layout_width="1dp"
-            android:layout_height="10dp"
-            android:background="#D1D5DB"
-            android:layout_marginHorizontal="8dp" />
+        <!-- 가운데 점 구분선 1 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" · "
+            android:textColor="@color/text_disabled"
+            android:textSize="12sp"
+            android:layout_gravity="center_vertical" />
 
         <!-- 권한 아이콘 -->
         <ImageView
-            android:layout_width="14dp"
-            android:layout_height="14dp"
-            android:src="@drawable/ic_lock"
-            app:tint="@color/text_hint"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:src="@drawable/ic_permission"
+            app:tint="@color/text_tertiary"
             android:layout_marginEnd="4dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/user_management_label_permission_prefix"
+            android:textColor="@color/text_tertiary"
+            android:textSize="12sp"
+            android:layout_marginEnd="2dp" />
 
         <TextView
             android:id="@+id/tv_permission_count"
@@ -118,21 +136,19 @@
             android:textSize="12sp"
             android:textStyle="bold"/>
 
-        <!-- 수직 구분선 2 -->
-        <View
-            android:layout_width="1dp"
-            android:layout_height="10dp"
-            android:background="#D1D5DB"
-            android:layout_marginHorizontal="8dp" />
-
-        <TextView
-            android:id="@+id/tv_created_at"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="2026.02.17"
-            android:textColor="@color/text_tertiary"
-            android:textSize="12sp"/>
     </LinearLayout>
+
+    <!-- 생성일 (우측 정렬로 카드 우측 끝에 배치) -->
+    <TextView
+        android:id="@+id/tv_created_at"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="2026.02.17"
+        android:textColor="@color/text_tertiary"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/ll_info_counts"
+        app:layout_constraintBottom_toBottomOf="@id/ll_info_counts" />
 
     <!-- 확장 메뉴 (아코디언 구조) -->
     <LinearLayout
@@ -145,30 +161,6 @@
         app:layout_constraintTop_toBottomOf="@id/ll_info_counts"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
-
-        <!-- 수정 버튼 -->
-        <TextView
-            android:id="@+id/btn_manage_permissions"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="수정"
-            android:textColor="@color/login_blue"
-            android:textSize="13sp"
-            android:paddingHorizontal="8dp"
-            android:paddingVertical="4dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true" />
-
-        <!-- 세로 구분선 1 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="|"
-            android:textColor="#D1D5DB"
-            android:textSize="11sp"
-            android:layout_gravity="center_vertical" />
 
         <!-- 활성화/비활성화 버튼 -->
         <TextView
@@ -190,7 +182,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="|"
-            android:textColor="#D1D5DB"
+            android:textColor="@color/slate_300"
             android:textSize="11sp"
             android:layout_gravity="center_vertical" />
 
@@ -199,7 +191,7 @@
             android:id="@+id/btn_delete_role"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="삭제"
+            android:text="@string/user_management_action_delete"
             android:textColor="@color/red"
             android:textSize="13sp"
             android:paddingHorizontal="8dp"

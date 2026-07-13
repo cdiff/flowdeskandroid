@@ -57,6 +57,7 @@ class RoleDetailFragment : BaseFragment(R.layout.fragment_user_management_role_d
     }
 
     private fun setupEditButton() {
+        // 1. 기본 정보 수정 바텀시트 호출
         binding.clDisplayNameRow.setOnClickListener {
             val state = viewModel.uiState.value
             if (state is RoleDetailUiState.Success) {
@@ -73,6 +74,23 @@ class RoleDetailFragment : BaseFragment(R.layout.fragment_user_management_role_d
                 }
                 bottomSheet.show(childFragmentManager, com.example.flowdesk_android.feature.user_management.presentation.roles.list.CreateRoleBottomSheetFragment.TAG)
             }
+        }
+
+        // 2. 세부 권한 수정 페이지(ManagePermissionsFragment) 전환
+        binding.clPermEditRow.setOnClickListener {
+            val bundle = Bundle().apply {
+                putInt("role_id", currentRoleId)
+            }
+            findNavController().navigate(R.id.managePermissionsFragment, bundle)
+        }
+
+        // 3. "전체 권한 보기" → 현재 역할 권한 읽기 전용 조회
+        binding.btnViewAllPermissions.setOnClickListener {
+            val bundle = Bundle().apply {
+                putInt("role_id", currentRoleId)
+                putBoolean("read_only", true)
+            }
+            findNavController().navigate(R.id.managePermissionsFragment, bundle)
         }
     }
 
@@ -172,20 +190,13 @@ class RoleDetailFragment : BaseFragment(R.layout.fragment_user_management_role_d
             else R.drawable.bg_badge_gray_border
         )
 
-        // 시스템 역할 코드 배지
+        // 시스템 역할 코드 (서브텍스트)
         binding.tvRoleCodeBadge.text = role.roleName
-        binding.tvRoleCodeBadge.setTextColor(
-            ContextCompat.getColor(
-                requireContext(),
-                if (isActive) R.color.login_blue else R.color.text_hint
-            )
-        )
-        binding.tvRoleCodeBadge.setBackgroundResource(
-            if (isActive) R.drawable.bg_badge_rounded_blue_border
-            else R.drawable.bg_badge_gray_border
-        )
 
         // 세부 권한 목록
+        // NOTE: 전체 화면이 NestedScrollView 구조이므로 RecyclerView 중첩 스크롤 충돌(Double Scroll)을 
+        // 예방하고, 소량의 고정형 아이템 데이터의 렌더링 성능 및 코드 보일러플레이트를 줄이기 위해 
+        // LinearLayout에 직접 addView() 하는 동적 뷰 렌더링 방식을 사용합니다.
         binding.llPermissionsContainer.removeAllViews()
         binding.tvPermTitle.text = "세부 권한 (${role.permissionsByPage.sumOf { it.permissions.size }}개)"
 
@@ -204,6 +215,8 @@ class RoleDetailFragment : BaseFragment(R.layout.fragment_user_management_role_d
         }
 
         // 할당된 팀원 목록
+        // NOTE: 세부 권한 목록과 마찬가지로 NestedScrollView 내 중첩 충돌 방지 및 적은 양의 팀원 데이터를 
+        // 가장 가볍고 안전하게 표현하기 위해 LinearLayout 동적 addView() 구조를 사용합니다.
         binding.llUsersContainer.removeAllViews()
         binding.tvUsersTitle.text = "할당된 팀원 (${role.assignedUsers.size}명)"
 
@@ -225,9 +238,23 @@ class RoleDetailFragment : BaseFragment(R.layout.fragment_user_management_role_d
         }
         binding.llCopySection.visibility = View.VISIBLE
 
-        val adapter = RoleCopyCardAdapter(templates) { selectedRole ->
-            showCopyConfirmDialog(selectedRole)
-        }
+        // 역할 수 카운트 표시
+        binding.tvCopyRoleCount.text = templates.size.toString()
+
+        val adapter = RoleCopyCardAdapter(
+            items = templates,
+            onCopyClick = { selectedRole ->
+                showCopyConfirmDialog(selectedRole)
+            },
+            onViewPermissionsClick = { selectedRole ->
+                // 해당 역할의 세부 권한 읽기 전용 조회
+                val bundle = Bundle().apply {
+                    putInt("role_id", selectedRole.roleId)
+                    putBoolean("read_only", true)
+                }
+                findNavController().navigate(R.id.managePermissionsFragment, bundle)
+            }
+        )
         binding.vpRoleTemplates.adapter = adapter
     }
 
