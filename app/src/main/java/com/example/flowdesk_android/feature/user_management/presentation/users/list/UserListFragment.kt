@@ -68,9 +68,14 @@ class UserListFragment : Fragment(R.layout.fragment_user_management_user_list) {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 viewModel.search(s.toString())
+                binding.btnClear.isVisible = !s.isNullOrEmpty()
             }
             override fun afterTextChanged(s: Editable?) {}
         })
+
+        binding.btnClear.setOnClickListener {
+            binding.etSearch.text.clear()
+        }
     }
 
     private fun observeViewModel() {

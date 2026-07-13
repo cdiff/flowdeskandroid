@@ -73,8 +73,7 @@
             tools:text="• 활성"
             android:textColor="@color/color_success_active"
             android:textSize="12sp"
-            android:textStyle="bold"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="4dp"
             app:layout_constraintEnd_toStartOf="@id/btn_more"
             app:layout_constraintTop_toTopOf="@id/tv_board_name"
             app:layout_constraintBottom_toBottomOf="@id/tv_board_name" />

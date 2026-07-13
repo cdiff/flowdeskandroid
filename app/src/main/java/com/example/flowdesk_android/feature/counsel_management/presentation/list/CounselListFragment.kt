@@ -120,9 +120,14 @@ class CounselListFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 viewModel.updateSearchQuery(s?.toString())
+                binding.btnClear.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
             }
             override fun afterTextChanged(s: Editable?) {}
         })
+
+        binding.btnClear.setOnClickListener {
+            binding.etSearch.text.clear()
+        }
 
         // Infinite Scroll listener on NestedScrollView
         binding.nestedScrollView.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, _, scrollY, _, _ ->

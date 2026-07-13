@@ -26,7 +26,7 @@ class BlockPhoneFragment : BaseBlockListFragment<BlockPhoneItem>() {
 
     // UI Configuration
     override val titleText: String = "휴대폰 차단 목록"
-    override val searchHint: String = "휴대폰 번호 검색..."
+    override val searchHint: String = "휴대폰 번호를 검색하세요."
     override val emptyTitleText: String = "차단된 번호가 없습니다"
     override val emptySubtitleText: String = "번호 추가 버튼으로 차단할 번호를 등록하세요"
 

@@ -293,7 +293,7 @@
     <string name="board_label_total">전체 게시판</string>
     <string name="board_label_active">활성</string>
     <string name="board_label_inactive">비활성</string>
-    <string name="board_hint_search_type">게시판 이름 또는 설명 검색...</string>
+    <string name="board_hint_search_type">게시판 이름 또는 설명을 검색하세요.</string>
     <string name="board_label_type">게시판 유형</string>
     <string name="board_empty_types">등록된 게시판 타입이 없습니다</string>
     <string name="board_empty_types_desc">우측 상단 + 버튼으로 등록하세요</string>
@@ -313,7 +313,7 @@
     
     <string name="post_title_management">게시글 관리</string>
     <string name="post_desc_management">각 게시판의 게시물 목록을 조회하고 공지글을 관리합니다.</string>
-    <string name="post_hint_search">제목 또는 내용 검색...</string>
+    <string name="post_hint_search">제목 또는 내용을 검색하세요.</string>
     <string name="post_label_title">게시글</string>
     <string name="post_empty_list">등록된 게시글이 없습니다</string>
     <string name="post_empty_list_desc">아래 연필 버튼을 눌러 첫 글을 작성해보세요</string>

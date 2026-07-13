@@ -208,7 +208,18 @@ class TenantStatusViewModel @Inject constructor(
             val targetActiveInt = if (currentActive) 0 else 1
             repository.updateTenantStatusActive(id, targetActiveInt)
                 .onSuccess {
-                    triggerRefresh()
+                    val currentGroups = _filteredGroups.value
+                    val updatedGroups = currentGroups.map { group ->
+                        val updatedItems = group.items.map { item ->
+                            if (item.tenantStatusId == id) {
+                                item.copy(isActive = !currentActive)
+                            } else {
+                                item
+                            }
+                        }
+                        group.copy(items = updatedItems)
+                    }
+                    _filteredGroups.value = updatedGroups
                 }.onFailure { error ->
                     _errorMessage.emit(error.message ?: "활성 상태 변경 중 오류가 발생했습니다.")
                 }

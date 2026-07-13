@@ -171,9 +171,14 @@ class TenantStatusFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 viewModel.updateSearchQuery(s?.toString() ?: "")
+                binding.btnClear.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
             }
             override fun afterTextChanged(s: Editable?) {}
         })
+
+        binding.btnClear.setOnClickListener {
+            binding.etStatusSearch.text.clear()
+        }
 
         binding.btnAddStatus.setOnClickListener {
             val bundle = Bundle().apply {

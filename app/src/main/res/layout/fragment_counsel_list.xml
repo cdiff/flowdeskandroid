@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:background="#F8FAFC"
                 android:orientation="vertical"
-                android:paddingTop="32dp"
+                android:paddingTop="16dp"
                 android:paddingBottom="0dp">
 
                 <!-- 타이틀 -->
@@ -38,7 +38,7 @@
                     android:text="상담 목록"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    android:textColor="#111827"
+                    android:textColor="@color/text_strong"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="4dp" />
@@ -48,9 +48,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="인입된 고객 상담 신청 내역을 관리하고 배정합니다."
-                    android:textSize="13sp"
+                    android:textSize="14sp"
                     android:layout_marginBottom="32dp"
-                    android:textColor="@color/gray_text"
+                    android:textColor="@color/text_tertiary"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="32dp" />
 
@@ -183,15 +183,28 @@
 
                     <EditText
                         android:id="@+id/et_search"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:background="@null"
-                        android:hint="고객명, 연락처로 검색..."
-                        android:textColorHint="@color/gray_text"
-                        android:textSize="13sp"
-                        android:textColor="@color/black"
+                        android:hint="고객명, 연락처로 검색하세요."
+                        android:textColorHint="@color/text_hint"
+                        android:textSize="15sp"
+                        android:textColor="@color/text_primary"
                         android:maxLines="1"
                         android:inputType="text" />
+
+                    <ImageView
+                        android:id="@+id/btn_clear"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@android:drawable/ic_menu_close_clear_cancel"
+                        app:tint="@color/text_hint"
+                        android:visibility="gone"
+                        tools:visibility="visible"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:focusable="true" />
                 </LinearLayout>
 
                 <!-- 리스트 정보 영역 -->

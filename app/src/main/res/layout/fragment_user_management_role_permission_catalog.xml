@@ -29,7 +29,7 @@
                 android:background="@android:color/transparent"
                 android:orientation="vertical"
                 android:paddingHorizontal="16dp"
-                android:paddingTop="20dp"
+                android:paddingTop="16dp"
                 android:paddingBottom="4dp">
 
                 <TextView
@@ -46,7 +46,7 @@
                     android:layout_marginTop="6dp"
                     android:lineSpacingExtra="4dp"
                     android:text="@string/user_management_desc_all_permission_list"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="@color/text_tertiary"
                     android:textSize="14sp" />
 
                 <!-- Search Bar -->
@@ -68,8 +68,9 @@
 
                     <EditText
                         android:id="@+id/et_search"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
+                        android:layout_weight="1"
                         android:background="@null"
                         android:textColorHint="@color/text_hint"
                         android:textSize="15sp"
@@ -79,6 +80,18 @@
                         android:gravity="center_vertical"
                         android:imeOptions="actionSearch"
                         android:hint="@string/user_management_hint_search_permission" />
+
+                    <ImageView
+                        android:id="@+id/btn_clear"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@android:drawable/ic_menu_close_clear_cancel"
+                        app:tint="@color/text_hint"
+                        android:visibility="gone"
+                        tools:visibility="visible"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:focusable="true" />
                 </LinearLayout>
             </LinearLayout>
 
