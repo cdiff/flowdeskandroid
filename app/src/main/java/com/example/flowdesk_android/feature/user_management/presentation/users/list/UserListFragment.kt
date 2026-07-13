@@ -60,10 +60,6 @@ class UserListFragment : Fragment(R.layout.fragment_user_management_user_list) {
     }
 
     private fun setupListeners() {
-        binding.btnCloseBanner.setOnClickListener {
-            binding.bannerInfo.visibility = View.GONE
-        }
-
         binding.btnInviteTeam.setOnClickListener {
             findNavController().navigate(R.id.inviteTeamFragment)
         }
@@ -85,15 +81,7 @@ class UserListFragment : Fragment(R.layout.fragment_user_management_user_list) {
                     viewModel.uiState.collect { state ->
                         binding.progressBar.isVisible = state is UserListUiState.Loading
                         if (state is UserListUiState.Error) {
-                            binding.tvTotalTitle.text = "Error: ${state.message}"
-                            binding.tvTotalTitle.setTextColor(
-                                androidx.core.content.ContextCompat.getColor(requireContext(), R.color.red)
-                            )
-                        } else {
-                            binding.tvTotalTitle.text = "전체 사용자"
-                            binding.tvTotalTitle.setTextColor(
-                                androidx.core.content.ContextCompat.getColor(requireContext(), R.color.gray_text)
-                            )
+                            Toast.makeText(requireContext(), state.message, Toast.LENGTH_LONG).show()
                         }
                     }
                 }
@@ -122,6 +110,9 @@ class UserListFragment : Fragment(R.layout.fragment_user_management_user_list) {
                         when (event) {
                             is UserListEvent.TokensInvalidated -> {
                                 Toast.makeText(requireContext(), getString(R.string.success_tokens_invalidated), Toast.LENGTH_SHORT).show()
+                            }
+                            is UserListEvent.StatusToggled -> {
+                                Toast.makeText(requireContext(), getString(R.string.success_user_status_changed), Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
