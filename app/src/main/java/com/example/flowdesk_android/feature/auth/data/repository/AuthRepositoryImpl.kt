@@ -43,7 +43,7 @@ class AuthRepositoryImpl @Inject constructor(
                     Result.failure(Exception("Empty response body"))
                 }
             } else {
-                Result.failure(Exception("Login failed with code: ${response.code()}"))
+                Result.failure(Exception(parseLoginError(response)))
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -222,4 +222,38 @@ class AuthRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    private fun parseLoginError(response: retrofit2.Response<*>): String {
+        return when (response.code()) {
+            400 -> "입력한 로그인 정보의 형식이 올바르지 않습니다."
+            401 -> "테넌트명, 아이디 또는 비밀번호가 일치하지 않습니다."
+            403 -> "접근 권한이 없는 계정입니다."
+            404 -> "존재하지 않는 사용자 계정입니다."
+            429 -> "과도한 로그인 시도로 인해 일시적으로 차단되었습니다. 잠시 후(약 1분 뒤) 다시 시도해 주세요."
+            in 500..599 -> "서버 시스템 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
+            else -> {
+                try {
+                    val errorBodyString = response.errorBody()?.string()
+                    if (!errorBodyString.isNullOrEmpty()) {
+                        val errorObj = com.google.gson.Gson().fromJson(errorBodyString, ApiErrorResponse::class.java)
+                        errorObj?.error?.message ?: "로그인에 실패했습니다. (오류 코드: ${response.code()})"
+                    } else {
+                        "로그인에 실패했습니다. (오류 코드: ${response.code()})"
+                    }
+                } catch (e: Exception) {
+                    "로그인에 실패했습니다. (오류 코드: ${response.code()})"
+                }
+            }
+        }
+    }
 }
+
+private data class ApiErrorResponse(
+    val error: ApiError
+)
+
+private data class ApiError(
+    val code: String,
+    val message: String,
+    val statusCode: Int
+)

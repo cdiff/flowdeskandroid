@@ -47,10 +47,21 @@ class UserRepositoryImpl @Inject constructor(
         userHp: String, roleIds: List<Int>?
     ): Result<User> = withContext(Dispatchers.IO) {
         runCatching {
-            val request = CreateUserRequest(userId, password, corpName, userName, userEmail, userTel, userHp, roleIds)
+            // roleIds는 생성 API의 DTO 검증을 통과하기 위해 null로 전달합니다.
+            val request = CreateUserRequest(userId, password, corpName, userName, userEmail, userTel, userHp, null)
             val response = api.createUser(request)
             if (response.isSuccessful) {
-                response.body()?.toDomain() ?: throw Exception("응답 바디 없음")
+                val createdUserDto = response.body() ?: throw Exception("응답 바디 없음")
+                val createdUser = createdUserDto.toDomain()
+                
+                // 만약 사용자가 선택한 역할(roleIds)이 존재한다면, 별도의 역할 매핑 API를 호출합니다.
+                if (!roleIds.isNullOrEmpty()) {
+                    val roleResponse = api.updateUserRoles(createdUser.userSeq, UpdateUserRolesRequest(add = roleIds))
+                    if (!roleResponse.isSuccessful) {
+                        throw Exception("유저 생성은 성공하였으나 역할 지정에 실패했습니다. (${roleResponse.code()})")
+                    }
+                }
+                createdUser
             } else {
                 throw Exception("유저 생성 실패 (${response.code()})")
             }

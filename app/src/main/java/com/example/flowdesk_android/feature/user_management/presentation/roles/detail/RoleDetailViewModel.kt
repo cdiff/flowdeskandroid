@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.flowdesk_android.core.base.BaseViewModel
 import com.example.flowdesk_android.feature.user_management.domain.model.RoleDetail
 import com.example.flowdesk_android.feature.user_management.domain.repository.RoleRepository
+import com.example.flowdesk_android.feature.user_management.domain.usecase.CopyRolePermissionsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -32,7 +33,8 @@ sealed class RoleDetailEvent {
 
 @HiltViewModel
 class RoleDetailViewModel @Inject constructor(
-    private val roleRepository: RoleRepository
+    private val roleRepository: RoleRepository,
+    private val copyRolePermissionsUseCase: CopyRolePermissionsUseCase
 ) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow<RoleDetailUiState>(RoleDetailUiState.Loading)
@@ -95,7 +97,7 @@ class RoleDetailViewModel @Inject constructor(
     fun copyRolePermissions(roleId: Int, sourceRoleId: Int) {
         viewModelScope.launch {
             _uiState.value = RoleDetailUiState.Loading
-            roleRepository.copyRolePermissions(roleId, sourceRoleId)
+            copyRolePermissionsUseCase(roleId, sourceRoleId)
                 .onSuccess {
                     _event.send(RoleDetailEvent.PermissionsCopied)
                     loadRoleDetail(roleId)
