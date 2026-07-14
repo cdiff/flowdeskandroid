@@ -29,6 +29,18 @@ class LoginFragment : Fragment(R.layout.fragment_auth_login) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentAuthLoginBinding.bind(view)
 
+        // 회원가입 완료 후 유입된 정보 자동 기입 (Pre-fill)
+        arguments?.let { bundle ->
+            val tenantName = bundle.getString("tenantName")
+            val email = bundle.getString("email")
+            if (!tenantName.isNullOrEmpty()) {
+                binding.etTenant.setText(tenantName)
+            }
+            if (!email.isNullOrEmpty()) {
+                binding.etUserId.setText(email)
+            }
+        }
+
         setupListeners()
         observeViewModel()
     }

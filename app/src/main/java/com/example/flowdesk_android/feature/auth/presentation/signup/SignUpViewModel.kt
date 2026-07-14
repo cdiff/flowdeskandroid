@@ -24,7 +24,7 @@ sealed class SignUpUiState {
  * 회원가입 단계 정의
  * TENANT → COMPANY → ADMIN_NAME → EMAIL → PHONE → (Password Fragment로 이동)
  */
-enum class SignUpStep(val titleText: String, val label: String, val hint: String) {
+enum class SignUpStep(val titleText: String, val label: String, val hint: String, val descText: String? = null) {
     ADMIN_NAME(
         titleText = "관리자 이름을\n입력해주세요",
         label = "관리자 이름",
@@ -43,12 +43,14 @@ enum class SignUpStep(val titleText: String, val label: String, val hint: String
     COMPANY(
         titleText = "업체명을\n입력해주세요",
         label = "업체명",
-        hint = "업체명"
+        hint = "업체명",
+        descText = "서비스 내부에서 노출될 실제 한글/영문 회사명입니다. (예: 주식회사 플로우)"
     ),
     TENANT(
-        titleText = "테넌트 식별자를\n입력해주세요",
+        titleText = "로그인에 사용할\n테넌트 식별자를 입력해주세요",
         label = "테넌트 식별자",
-        hint = "my-company"
+        hint = "my-company",
+        descText = "로그인 시 회사명(테넌트) 칸에 고정 입력할 영문 고유 ID입니다. 영문 소문자, 숫자, 하이픈(-) 조합만 허용됩니다."
     )
 }
 

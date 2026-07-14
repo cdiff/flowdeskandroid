@@ -249,7 +249,12 @@ class SignUpFragment : Fragment(R.layout.fragment_auth_signup) {
 
         // 에러/설명 초기화
         binding.tvInputError.visibility = View.GONE
-        binding.tvInputDesc.visibility = View.GONE
+        if (step.descText != null) {
+            binding.tvInputDesc.text = step.descText
+            binding.tvInputDesc.visibility = View.VISIBLE
+        } else {
+            binding.tvInputDesc.visibility = View.GONE
+        }
 
         // 스크롤 최상단으로
         binding.scrollView.post { binding.scrollView.smoothScrollTo(0, 0) }

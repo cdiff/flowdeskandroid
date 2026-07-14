@@ -33,6 +33,10 @@ class SignUpPasswordFragment : Fragment(R.layout.fragment_auth_signup_password) 
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentAuthSignupPasswordBinding.bind(view)
 
+        // 가입하려는 로그인 정보 요약 바인딩 (1안)
+        binding.tvSummaryTenant.text = viewModel.tenantName
+        binding.tvSummaryEmail.text = viewModel.email
+
         setupListeners()
         observeViewModel()
     }
@@ -104,8 +108,7 @@ class SignUpPasswordFragment : Fragment(R.layout.fragment_auth_signup_password) 
                         is SignUpUiState.Loading -> binding.btnSignUp.isEnabled = false
                         is SignUpUiState.Success -> {
                             binding.btnSignUp.isEnabled = true
-                            Toast.makeText(context, "회원가입에 성공했습니다.", Toast.LENGTH_LONG).show()
-                            findNavController().navigate(R.id.action_signUpPasswordFragment_to_loginFragment)
+                            showSuccessDialog(viewModel.tenantName, viewModel.email)
                         }
                         is SignUpUiState.Error -> {
                             binding.btnSignUp.isEnabled = true
@@ -116,6 +119,32 @@ class SignUpPasswordFragment : Fragment(R.layout.fragment_auth_signup_password) 
                 }
             }
         }
+    }
+
+    private fun showSuccessDialog(tenantName: String, email: String) {
+        val dialogBinding = com.example.flowdesk_android.databinding.DialogSignupSuccessBinding.inflate(layoutInflater)
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setView(dialogBinding.root)
+            .setCancelable(false)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        dialogBinding.tvDialogTenant.text = tenantName
+        dialogBinding.tvDialogEmail.text = email
+
+        dialogBinding.btnConfirm.setOnClickListener {
+            dialog.dismiss()
+
+            // 2안: 로그인 화면으로 이동할 때 가입한 계정 정보를 전달하여 자동기입 처리
+            val bundle = Bundle().apply {
+                putString("tenantName", tenantName)
+                putString("email", email)
+            }
+            findNavController().navigate(R.id.action_signUpPasswordFragment_to_loginFragment, bundle)
+        }
+
+        dialog.show()
     }
 
     override fun onDestroyView() {
