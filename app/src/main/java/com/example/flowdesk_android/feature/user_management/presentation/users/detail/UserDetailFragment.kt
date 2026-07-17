@@ -70,9 +70,7 @@ class UserDetailFragment : BaseFragment(R.layout.fragment_user_management_user_d
     }
 
     private fun setupRecyclerView() {
-        roleAdapter = RoleSelectionAdapter { _ ->
-            // Selection changes handled internally in adapter
-        }
+        roleAdapter = RoleSelectionAdapter()
         binding.rvRoles.apply {
             layoutManager = com.google.android.flexbox.FlexboxLayoutManager(requireContext()).apply {
                 flexDirection = com.google.android.flexbox.FlexDirection.ROW

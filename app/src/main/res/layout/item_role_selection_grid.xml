@@ -1,37 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/cl_main"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_margin="4dp"
-    android:background="@drawable/selector_custom_radio_bg"
-    android:paddingHorizontal="16dp"
-    android:paddingVertical="10dp"
-    android:clickable="true"
-    android:focusable="true">
+    android:layout_margin="3dp"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
-    <TextView
-        android:id="@+id/tv_title"
+    <!-- 칩 본체 (마진을 제거하여 좌우 정렬을 완벽하게 맞춤) -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_main"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="게스트"
-        android:textStyle="bold"
-        android:textColor="@color/selector_custom_radio_text"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/iv_radio" />
+        android:background="@drawable/selector_custom_radio_bg"
+        android:paddingHorizontal="18dp"
+        android:paddingVertical="9dp"
+        android:clickable="true"
+        android:focusable="true">
 
-    <ImageView
-        android:id="@+id/iv_radio"
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="역할"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/selector_custom_radio_text"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- 우측 숨김용 (기존 ivRadio 바인딩 호환) -->
+        <ImageView
+            android:id="@+id/iv_radio"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- 선택 순서 숫자 배지 (clipChildren=false 덕분에 음수 번역을 통해 칩 좌측 상단으로 튀어나와 겹치게 배치) -->
+    <TextView
+        android:id="@+id/tv_badge"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:src="@drawable/selector_custom_radio_indicator"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/tv_title"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:gravity="center"
+        android:textColor="#FFFFFF"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:background="@drawable/bg_badge_blue"
+        android:visibility="gone"
+        android:layout_gravity="top|start"
+        android:translationX="-5dp"
+        android:translationY="-5dp"
+        android:elevation="2dp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

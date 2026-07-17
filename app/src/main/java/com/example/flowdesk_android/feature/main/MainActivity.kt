@@ -229,6 +229,8 @@ class MainActivity : AppCompatActivity() {
                 destination.id == R.id.blockKeywordDetailFragment ||
                 destination.id == R.id.managePermissionsFragment ||
                 destination.id == R.id.inviteTeamFragment ||
+                destination.id == R.id.invitePasswordFragment ||
+                destination.id == R.id.inviteRoleFragment ||
                 destination.id == R.id.websiteDetailFragment ||
                 destination.id == R.id.websiteCreateFragment ||
                 destination.id == R.id.boardTypeDetailFragment ||

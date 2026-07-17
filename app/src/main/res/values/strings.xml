@@ -10,7 +10,7 @@
     </string-array>
     <string name="login_title">로그인하고\n간편하게 회원관리 하기</string>
     <string name="hint_tenant">회사명</string>
-    <string name="hint_user_id">아이디 (이메일)</string>
+    <string name="hint_user_id">이메일</string>
     <string name="hint_password">비밀번호</string>
     <string name="auto_login">자동 로그인</string>
     <string name="btn_login">로그인</string>

@@ -149,7 +149,35 @@
         android:id="@+id/inviteTeamFragment"
         android:name="com.example.flowdesk_android.feature.user_management.presentation.users.invite.InviteTeamFragment"
         android:label="InviteTeam"
-        tools:layout="@layout/fragment_user_management_user_invite" />
+        tools:layout="@layout/fragment_user_management_user_invite">
+        <action
+            android:id="@+id/action_inviteTeamFragment_to_invitePasswordFragment"
+            app:destination="@id/invitePasswordFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/invitePasswordFragment"
+        android:name="com.example.flowdesk_android.feature.user_management.presentation.users.invite.InvitePasswordFragment"
+        android:label="InvitePassword"
+        tools:layout="@layout/fragment_invite_password">
+        <action
+            android:id="@+id/action_invitePasswordFragment_to_inviteRoleFragment"
+            app:destination="@id/inviteRoleFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/inviteRoleFragment"
+        android:name="com.example.flowdesk_android.feature.user_management.presentation.users.invite.InviteRoleFragment"
+        android:label="InviteRole"
+        tools:layout="@layout/fragment_invite_role" />
 
     <fragment
         android:id="@+id/websiteListFragment"
