@@ -23,6 +23,7 @@ import androidx.core.view.updatePadding
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.transition.ChangeBounds
 import androidx.transition.Fade
+import androidx.activity.OnBackPressedCallback
 import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
 
@@ -79,6 +80,17 @@ class InviteTeamFragment : Fragment(R.layout.fragment_user_management_user_invit
             viewModel.resetSteps()
             isFirstLaunch = false
         }
+
+        // 기기 뒤로가기 버튼/제스처 가로채기
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (!viewModel.previousStep()) {
+                    // 첫 단계(이름)면 시스템 뒤로가기 기본 동작(목록으로 복귀) 수행
+                    isEnabled = false
+                    findNavController().popBackStack()
+                }
+            }
+        })
 
         setupEmailChips()
         setupListeners()

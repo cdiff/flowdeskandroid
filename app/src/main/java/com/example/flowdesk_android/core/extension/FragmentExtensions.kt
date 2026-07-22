@@ -12,7 +12,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 /**
- * Fragment에서 상단에 고품질 커스텀 디자인 애니메이션 토스트 메시지를 표시하는 확장 함수
+ * Fragment에서 하단에 둥근 플로팅 스낵바(Floating SnackBar) 메시지를 표시하는 확장 함수
+ * (1.8초간 안내 후 자동으로 부드럽게 소멸)
  */
 fun Fragment.showTopToast(message: String) {
     activity?.let { activeActivity ->
@@ -22,6 +23,14 @@ fun Fragment.showTopToast(message: String) {
             type = ToastType.INFO
         )
     }
+}
+
+fun Fragment.showToast(message: String) {
+    showTopToast(message)
+}
+
+fun Fragment.showFloatingSnackBar(message: String) {
+    showTopToast(message)
 }
 /**
  * SessionManager의 특정 권한을 라이프사이클에 맞춰 반응형으로 관찰하는 확장 함수

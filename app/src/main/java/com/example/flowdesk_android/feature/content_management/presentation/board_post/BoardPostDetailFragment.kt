@@ -23,6 +23,9 @@ import com.example.flowdesk_android.feature.system_management.domain.model.Board
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import com.example.flowdesk_android.feature.counsel_management.presentation.list.CustomCalendarDialogFragment
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
 @AndroidEntryPoint
@@ -112,20 +115,12 @@ class BoardPostDetailFragment : Fragment() {
             showDeleteConfirmDialog()
         }
 
-        // 공지 기간 설정 DatePickerDialog 바인딩
-        binding.tvStartDtm.setOnClickListener {
-            showDatePicker { date ->
-                selectedStartDtm = "${date}T00:00:00"
-                binding.tvStartDtm.text = date
-            }
+        // 공지 기간 설정 상담 대시보드 커스텀 달력(CustomCalendarDialogFragment) 바인딩
+        val openCalendarListener = View.OnClickListener {
+            showCustomCalendarPicker()
         }
-
-        binding.tvEndDtm.setOnClickListener {
-            showDatePicker { date ->
-                selectedEndDtm = "${date}T23:59:59"
-                binding.tvEndDtm.text = date
-            }
-        }
+        binding.tvStartDtm.setOnClickListener(openCalendarListener)
+        binding.tvEndDtm.setOnClickListener(openCalendarListener)
     }
 
     private fun observeViewModel() {
@@ -244,19 +239,40 @@ class BoardPostDetailFragment : Fragment() {
         )
     }
 
-    private fun showDatePicker(onDateSelected: (String) -> Unit) {
-        val calendar = Calendar.getInstance()
-        DatePickerDialog(
-            requireContext(),
-            { _, year, month, dayOfMonth ->
-                val monthStr = String.format("%02d", month + 1)
-                val dayStr = String.format("%02d", dayOfMonth)
-                onDateSelected("$year-$monthStr-$dayStr")
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        ).show()
+    /**
+     * 상담 대시보드와 동일한 CustomCalendarDialogFragment 달력 UI/UX 연결
+     */
+    private fun showCustomCalendarPicker() {
+        val customCalendar = CustomCalendarDialogFragment()
+
+        val startLocalDate = try {
+            if (!selectedStartDtm.isNullOrEmpty()) {
+                LocalDate.parse(selectedStartDtm?.substringBefore("T"))
+            } else LocalDate.now()
+        } catch (e: Exception) {
+            LocalDate.now()
+        }
+
+        val endLocalDate = try {
+            if (!selectedEndDtm.isNullOrEmpty()) {
+                LocalDate.parse(selectedEndDtm?.substringBefore("T"))
+            } else startLocalDate.plusDays(7)
+        } catch (e: Exception) {
+            startLocalDate.plusDays(7)
+        }
+
+        customCalendar.setInitialRange(startLocalDate, endLocalDate)
+        customCalendar.setOnDateRangeSelectedListener { start, end ->
+            val startStr = start.format(DateTimeFormatter.ISO_LOCAL_DATE)
+            val endStr = end.format(DateTimeFormatter.ISO_LOCAL_DATE)
+
+            selectedStartDtm = "${startStr}T00:00:00"
+            selectedEndDtm = "${endStr}T23:59:59"
+
+            binding.tvStartDtm.text = startStr
+            binding.tvEndDtm.text = endStr
+        }
+        customCalendar.show(childFragmentManager, "custom_calendar_dialog")
     }
 
     private fun showDeleteConfirmDialog() {

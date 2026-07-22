@@ -15,12 +15,9 @@ import com.example.flowdesk_android.R
 enum class ToastType { SUCCESS, ERROR, INFO, WARNING }
 
 /**
- * 커스텀 상단 토스트
+ * 하단 둥근 플로팅 스낵바 (Floating SnackBar)
  *
- * 사용 예시 (Fragment):
- * ```kotlin
- * TopToast.show(requireActivity(), "저장 완료", ToastType.SUCCESS)
- * ```
+ * 1.5~2초간 하단에 둥근 캡슐 스타일로 노출 후 자동으로 소멸합니다.
  */
 object TopToast {
 
@@ -28,50 +25,57 @@ object TopToast {
         activity: Activity,
         message: String,
         type: ToastType = ToastType.INFO,
-        durationMs: Long = 2500
+        durationMs: Long = 1800L
     ) {
         val rootView = activity.window.decorView.findViewById<ViewGroup>(android.R.id.content)
-        val toastView = LayoutInflater.from(activity).inflate(R.layout.view_common_toast_top, rootView, false)
+        
+        // 기존에 이미 떠있는 토스트 뷰가 있다면 제거
+        val existingView = rootView.findViewById<View>(R.id.floating_snackbar_root)
+        if (existingView != null) {
+            rootView.removeView(existingView)
+        }
+
+        val toastView = LayoutInflater.from(activity).inflate(R.layout.view_common_floating_snackbar, rootView, false)
+        toastView.id = R.id.floating_snackbar_root
 
         toastView.findViewById<TextView>(R.id.tv_toast_message).text = message
 
-        // 타입별 배경 색 적용
-        val bgColor = when (type) {
-            ToastType.SUCCESS -> android.R.color.holo_green_dark
-            ToastType.ERROR -> android.R.color.holo_red_dark
-            ToastType.WARNING -> android.R.color.holo_orange_dark
-            ToastType.INFO -> android.R.color.holo_blue_dark
-        }
-        toastView.setBackgroundColor(activity.getColor(bgColor))
-
         val params = FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT,
             FrameLayout.LayoutParams.WRAP_CONTENT
-        ).apply { gravity = Gravity.TOP }
+        ).apply {
+            gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+            bottomMargin = (80 * activity.resources.displayMetrics.density).toInt()
+        }
 
         rootView.addView(toastView, params)
 
-        // 슬라이드 인 애니메이션
-        val slideIn = ObjectAnimator.ofFloat(toastView, View.TRANSLATION_Y, -200f, 0f)
+        // 하단 슬라이드 업 + 페이드 인 애니메이션
+        val slideIn = ObjectAnimator.ofFloat(toastView, View.TRANSLATION_Y, 100f, 0f)
         val fadeIn = ObjectAnimator.ofFloat(toastView, View.ALPHA, 0f, 1f)
         AnimatorSet().apply {
             playTogether(slideIn, fadeIn)
-            duration = 250
+            duration = 200
             start()
         }
 
+        // 1.8초(1.5~2초 범위) 안내 후 부드럽게 페이드 아웃 + 슬라이드 다운 소멸
         toastView.postDelayed({
-            val slideOut = ObjectAnimator.ofFloat(toastView, View.TRANSLATION_Y, 0f, -200f)
-            val fadeOut = ObjectAnimator.ofFloat(toastView, View.ALPHA, 1f, 0f)
-            AnimatorSet().apply {
-                playTogether(slideOut, fadeOut)
-                duration = 250
-                addListener(object : android.animation.AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation: android.animation.Animator) {
-                        rootView.removeView(toastView)
-                    }
-                })
-                start()
+            if (toastView.parent != null) {
+                val slideOut = ObjectAnimator.ofFloat(toastView, View.TRANSLATION_Y, 0f, 100f)
+                val fadeOut = ObjectAnimator.ofFloat(toastView, View.ALPHA, 1f, 0f)
+                AnimatorSet().apply {
+                    playTogether(slideOut, fadeOut)
+                    duration = 200
+                    addListener(object : android.animation.AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: android.animation.Animator) {
+                            if (toastView.parent != null) {
+                                rootView.removeView(toastView)
+                            }
+                        }
+                    })
+                    start()
+                }
             }
         }, durationMs)
     }

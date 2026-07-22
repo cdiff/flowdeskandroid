@@ -15,6 +15,7 @@
         app:tabIndicatorColor="@color/login_blue"
         app:tabSelectedTextColor="@color/login_blue"
         app:tabTextColor="@color/gray_text"
+        app:tabRippleColor="@android:color/transparent"
         app:tabMode="scrollable"
         app:tabGravity="start"
         app:tabIndicatorGravity="bottom"

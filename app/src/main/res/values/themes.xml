@@ -5,10 +5,13 @@
         <item name="colorPrimary">@color/login_blue</item>
         <item name="colorPrimaryVariant">@color/login_blue</item>
         <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <!-- Secondary brand color (Blue계열로 통일하여 초록/청록 틴트 방지). -->
+        <item name="colorSecondary">@color/blue_600</item>
+        <item name="colorSecondaryVariant">@color/blue_700</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <!-- 터치/클릭 물결(Ripple) 효과 전역 완전히 제거 -->
+        <item name="colorControlHighlight">@android:color/transparent</item>
+        <item name="colorControlActivated">@color/blue_600</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/white</item>
         <item name="android:windowLightStatusBar">true</item>
