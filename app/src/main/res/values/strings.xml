@@ -15,7 +15,7 @@
     <string name="auto_login">자동 로그인</string>
     <string name="btn_login">로그인</string>
     <string name="not_member_yet">아직 회원이 아니신가요?</string>
-    <string name="sign_up">회원가입</string>
+    <string name="sign_up">계정 만들기</string>
     <string name="signup_subtitle">회원가입에 사용할 이메일 주소를 입력하세요.</string>
     <string name="label_company_name">업체명</string>
     <string name="hint_company_name">업체명</string>

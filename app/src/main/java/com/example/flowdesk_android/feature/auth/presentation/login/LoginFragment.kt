@@ -54,30 +54,12 @@ class LoginFragment : Fragment(R.layout.fragment_auth_login) {
             viewModel.login(tenantName, userId, password)
         }
 
-        // SignUp Button
-        binding.btnSignUp.setOnClickListener {
+        // SignUp Link Click
+        val openSignUp = View.OnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_signUpFragment)
         }
-        
-        // Password Toggle
-        binding.ivPasswordToggle.setOnClickListener {
-            togglePasswordVisibility()
-        }
-    }
-
-    private fun togglePasswordVisibility() {
-        val selection = binding.etPassword.selectionEnd
-        if (isPasswordVisible) {
-            // Hide Password
-            binding.etPassword.transformationMethod = PasswordTransformationMethod.getInstance()
-            binding.ivPasswordToggle.setImageResource(R.drawable.ic_visibility_off)
-        } else {
-            // Show Password
-            binding.etPassword.transformationMethod = HideReturnsTransformationMethod.getInstance()
-            binding.ivPasswordToggle.setImageResource(R.drawable.ic_visibility_on)
-        }
-        isPasswordVisible = !isPasswordVisible
-        binding.etPassword.setSelection(selection)
+        binding.layoutSignUpLink.setOnClickListener(openSignUp)
+        binding.tvSignUpLink.setOnClickListener(openSignUp)
     }
 
     private fun observeViewModel() {

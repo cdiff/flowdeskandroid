@@ -38,18 +38,21 @@ class MainViewModel @Inject constructor(
     // 2. 캐시 세션 정보 StateFlow
     private val _cachedSession = MutableStateFlow<AuthMeInfo?>(null)
 
-    // 3. [핵심] 선언형 UI 상태 파이프라인
+    // 3. [핵심] 선언형 UI 상태 파이프라인 (SessionManager 상태 변경 시 하단 네비 탭도 실시간 즉시 갱신)
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<MainUiState> = combine(_refreshTrigger, _cachedSession) { trigger, cached ->
-        trigger to cached
-    }.flatMapLatest { (trigger, cached) ->
+    val uiState: StateFlow<MainUiState> = combine(_refreshTrigger, sessionManager.sessionState) { trigger, session ->
+        trigger to session
+    }.flatMapLatest { (trigger, session) ->
         flow {
-            if (cached != null) {
-                emit(MainUiState.Success(cached))
+            if (session != null) {
+                emit(MainUiState.Success(session))
             } else if (trigger > 0) {
                 emit(MainUiState.Loading)
                 authRepository.getMe()
-                    .onSuccess { emit(MainUiState.Success(it)) }
+                    .onSuccess { 
+                        sessionManager.setSession(it)
+                        emit(MainUiState.Success(it)) 
+                    }
                     .onFailure { emit(MainUiState.Error(it.message ?: "인증 세션을 불러오지 못했습니다.")) }
             } else {
                 emit(MainUiState.Idle)
