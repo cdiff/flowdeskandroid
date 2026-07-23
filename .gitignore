@@ -13,3 +13,8 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Agents & Understand-Anything Customizations
+.agents/
+.ua/
+.understand-anything/
