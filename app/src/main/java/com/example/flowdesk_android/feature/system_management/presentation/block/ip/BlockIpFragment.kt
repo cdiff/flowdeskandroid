@@ -26,7 +26,7 @@ class BlockIpFragment : BaseBlockListFragment<BlockIpItem>() {
 
     // UI Configuration
     override val titleText: String = "IP 차단 목록"
-    override val searchHint: String = "IP 주소 검색..."
+    override val searchHint: String = "IP 주소를 검색하세요."
     override val emptyTitleText: String = "차단된 IP가 없습니다"
     override val emptySubtitleText: String = "위의 IP 추가 버튼으로 차단 IP를 등록하세요"
 
@@ -64,6 +64,7 @@ class BlockIpFragment : BaseBlockListFragment<BlockIpItem>() {
                             }
                             is BlockIpUiState.Success -> {
                                 showSuccess(state.items, state.totalCount)
+                                updateWritePermission(state.canWrite)
                             }
                             is BlockIpUiState.Error -> {
                                 showError(state.message)

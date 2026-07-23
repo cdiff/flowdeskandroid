@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 옅은 회색의 부드러운 칩 배경 (토스 스타일) -->
+    <solid android:color="#F2F4F7"/>
+    <corners android:radius="18dp"/>
+</shape>

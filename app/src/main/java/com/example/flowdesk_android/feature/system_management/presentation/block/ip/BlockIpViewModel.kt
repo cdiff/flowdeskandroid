@@ -30,23 +30,54 @@ import javax.inject.Inject
 
 sealed class BlockIpUiState {
     object Loading : BlockIpUiState()
-    data class Success(val items: List<BlockIpItem>, val totalCount: Int) : BlockIpUiState()
+    data class Success(
+        val items: List<BlockIpItem>,
+        val totalCount: Int,
+        val canWrite: Boolean,
+        val canUpdate: Boolean,
+        val canDelete: Boolean
+    ) : BlockIpUiState()
     data class Error(val message: String) : BlockIpUiState()
 }
 
 sealed class BlockIpDetailUiState {
     object Loading : BlockIpDetailUiState()
-    data class Success(val item: BlockIpItem) : BlockIpDetailUiState()
+    data class Success(
+        val item: BlockIpItem,
+        val canUpdate: Boolean,
+        val canDelete: Boolean
+    ) : BlockIpDetailUiState()
     data class Error(val message: String) : BlockIpDetailUiState()
 }
 
 @HiltViewModel
 class BlockIpViewModel @Inject constructor(
-    private val repository: SecurityBlockRepository
+    private val repository: SecurityBlockRepository,
+    private val sessionManager: com.example.flowdesk_android.data.local.SessionManager
 ) : ViewModel() {
 
-    private val _detailState = MutableStateFlow<BlockIpDetailUiState>(BlockIpDetailUiState.Loading)
-    val detailState: StateFlow<BlockIpDetailUiState> = _detailState.asStateFlow()
+    private val _detailLoading = MutableStateFlow(false)
+    private val _detailError = MutableStateFlow<String?>(null)
+    private val _loadedIpDetail = MutableStateFlow<BlockIpItem?>(null)
+
+    val detailState: StateFlow<BlockIpDetailUiState> = combine(
+        _detailLoading,
+        _detailError,
+        _loadedIpDetail,
+        sessionManager.observePermission("security.update"),
+        sessionManager.observePermission("security.delete")
+    ) { loading, error, item, canUpdate, canDelete ->
+        when {
+            loading -> BlockIpDetailUiState.Loading
+            error != null -> BlockIpDetailUiState.Error(error)
+            item != null -> BlockIpDetailUiState.Success(item, canUpdate, canDelete)
+            else -> BlockIpDetailUiState.Loading
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = BlockIpDetailUiState.Loading
+    )
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
@@ -68,7 +99,7 @@ class BlockIpViewModel @Inject constructor(
     val errorMessage = _errorMessage.asSharedFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<BlockIpUiState> = combine(
+    private val _repoState = combine(
         debouncedQuery,
         _currentPage,
         _refreshTrigger
@@ -77,7 +108,7 @@ class BlockIpViewModel @Inject constructor(
     }.flatMapLatest { (query, page) ->
         flow {
             if (page == 1) {
-                emit(BlockIpUiState.Loading)
+                emit(null)
             }
             val queryParam = query.ifBlank { null }
             repository.getBlockIps(
@@ -91,18 +122,33 @@ class BlockIpViewModel @Inject constructor(
                         allLoadedItems.clear()
                     }
                     allLoadedItems.addAll(response.items)
-                    emit(
-                        BlockIpUiState.Success(
-                            items = allLoadedItems.toList(),
-                            totalCount = response.pageInfo.totalItems
-                        )
-                    )
+                    emit(Result.success(allLoadedItems.toList() to response.pageInfo.totalItems))
                     isPagingLoading = false
                 },
                 onFailure = { err ->
-                    emit(BlockIpUiState.Error(err.message ?: "IP 차단 목록을 가져오는데 실패했습니다."))
+                    emit(Result.failure(err))
                     isPagingLoading = false
                     _errorMessage.emit(err.message ?: "IP 차단 목록 로드 실패")
+                }
+            )
+        }
+    }
+
+    val uiState: StateFlow<BlockIpUiState> = combine(
+        _repoState,
+        sessionManager.observePermission("security.create"),
+        sessionManager.observePermission("security.update"),
+        sessionManager.observePermission("security.delete")
+    ) { repoResult, canWrite, canUpdate, canDelete ->
+        if (repoResult == null) {
+            BlockIpUiState.Loading
+        } else {
+            repoResult.fold(
+                onSuccess = { (items, total) ->
+                    BlockIpUiState.Success(items, total, canWrite, canUpdate, canDelete)
+                },
+                onFailure = { err ->
+                    BlockIpUiState.Error(err.message ?: "IP 차단 목록을 가져오는데 실패했습니다.")
                 }
             )
         }
@@ -180,14 +226,18 @@ class BlockIpViewModel @Inject constructor(
     }
 
     fun loadDetail(id: Long) {
-        _detailState.value = BlockIpDetailUiState.Loading
         viewModelScope.launch {
+            _detailLoading.value = true
+            _detailError.value = null
+            _loadedIpDetail.value = null
             repository.getBlockIpDetail(id)
                 .onSuccess { item ->
-                    _detailState.value = BlockIpDetailUiState.Success(item)
+                    _loadedIpDetail.value = item
+                    _detailLoading.value = false
                 }
                 .onFailure { err ->
-                    _detailState.value = BlockIpDetailUiState.Error(err.message ?: "상세 정보를 가져오는 데 실패했습니다.")
+                    _detailError.value = err.message ?: "상세 정보를 가져오는 데 실패했습니다."
+                    _detailLoading.value = false
                 }
         }
     }

@@ -28,7 +28,11 @@ import javax.inject.Inject
 
 sealed class CounselListUiState {
     object Loading : CounselListUiState()
-    data class Success(val items: List<CounselItem>, val totalCount: Int) : CounselListUiState()
+    data class Success(
+        val items: List<CounselItem>,
+        val totalCount: Int,
+        val canAdmin: Boolean
+    ) : CounselListUiState()
     data class Error(val message: String) : CounselListUiState()
 }
 
@@ -46,7 +50,8 @@ data class CounselFilterState(
 
 @HiltViewModel
 class CounselListViewModel @Inject constructor(
-    private val counselRepository: CounselRepository
+    private val counselRepository: CounselRepository,
+    private val sessionManager: com.example.flowdesk_android.data.local.SessionManager
 ) : BaseViewModel() {
 
     private val _statusCounts = MutableStateFlow<List<CounselStatusStat>>(emptyList())
@@ -83,28 +88,35 @@ class CounselListViewModel @Inject constructor(
     private var totalPages = 1
     private var isPagingLoading = false
 
-
-
     // 수동 리프레시 트리거용 Flow
     private val _refreshTrigger = MutableStateFlow(0)
 
-    // 선언형 UI 상태 파이프라인
+    // counsels.admin 권한 — observePermission Flow로 반응형 관찰
+    private val _canAdminFlow = sessionManager.observePermission("counsels.admin")
+
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<CounselListUiState> = combine(
+    private val _repoState = combine(
         filterState,
         _currentPage,
-        _refreshTrigger
-    ) { filter, page, _ ->
-        filter to page
-    }.flatMapLatest { (filter, page) ->
+        _refreshTrigger,
+        _canAdminFlow   // ← 권한 Flow를 combine에 포함: 세션 변경 시 자동으로 API 재호출
+    ) { filter, page, _, canAdmin ->
+        Triple(filter, page, canAdmin)
+    }.flatMapLatest { (filter, page, canAdmin) ->
         flow {
             if (page == 1) {
-                emit(CounselListUiState.Loading)
+                emit(null)
             }
-            
+
             val isUnassignedQuery = filter.q?.trim() == "미배정"
             val queryParam = if (isUnassignedQuery) null else filter.q
-            val empSeqParam = if (isUnassignedQuery) 0 else filter.empSeq
+            val myUserSeq = sessionManager.sessionState.value?.user?.id?.toIntOrNull() ?: 0
+            // canAdmin은 이제 observePermission Flow에서 받아 동기 hasPermission 호출 제거
+            val empSeqParam = if (!canAdmin) {
+                myUserSeq
+            } else {
+                if (isUnassignedQuery) 0 else filter.empSeq
+            }
 
             counselRepository.getCounsels(
                 page = page,
@@ -125,18 +137,32 @@ class CounselListViewModel @Inject constructor(
                         allLoadedItems.clear()
                     }
                     allLoadedItems.addAll(list.items)
-                    emit(
-                        CounselListUiState.Success(
-                            items = allLoadedItems.toList(),
-                            totalCount = list.pageInfo?.totalItems ?: allLoadedItems.size
-                        )
-                    )
+                    emit(Result.success(allLoadedItems.toList() to (list.pageInfo?.totalItems ?: allLoadedItems.size)))
                     isPagingLoading = false
                 },
                 onFailure = { err ->
-                    emit(CounselListUiState.Error(err.message ?: "상담 목록 조회에 실패했습니다."))
+                    emit(Result.failure(err))
                     isPagingLoading = false
                     sendError(err.message ?: "상담 목록 로딩 실패")
+                }
+            )
+        }
+    }
+
+    // 선언형 UI 상태 파이프라인
+    val uiState: StateFlow<CounselListUiState> = combine(
+        _repoState,
+        sessionManager.observePermission("counsels.admin")
+    ) { repoResult, canAdmin ->
+        if (repoResult == null) {
+            CounselListUiState.Loading
+        } else {
+            repoResult.fold(
+                onSuccess = { (items, total) ->
+                    CounselListUiState.Success(items, total, canAdmin)
+                },
+                onFailure = { err ->
+                    CounselListUiState.Error(err.message ?: "상담 목록 조회에 실패했습니다.")
                 }
             )
         }

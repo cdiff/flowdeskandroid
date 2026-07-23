@@ -40,14 +40,14 @@ class UserAdapter(
             binding.tvUserName.text = user.userName
             binding.tvUserEmail.text = user.userEmail
 
-            // isActive is boolean
+            // isActive is boolean (역할 목록 텍스트 배지 스타일 준수)
             if (user.isActive) {
                 binding.tvActiveStatus.text = "• 활성"
                 binding.tvActiveStatus.setTextColor(ContextCompat.getColor(binding.root.context, R.color.color_success_active))
                 binding.btnToggleStatus.text = "비활성화"
             } else {
                 binding.tvActiveStatus.text = "• 비활성"
-                binding.tvActiveStatus.setTextColor(ContextCompat.getColor(binding.root.context, R.color.slate_400))
+                binding.tvActiveStatus.setTextColor(ContextCompat.getColor(binding.root.context, R.color.text_hint))
                 binding.btnToggleStatus.text = "활성화"
             }
 

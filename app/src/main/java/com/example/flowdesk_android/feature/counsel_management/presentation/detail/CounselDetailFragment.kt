@@ -226,6 +226,7 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
                             is CounselDetailUiState.Success -> {
                                 currentDetail = state.detail
                                 bindDetail(state.detail)
+                                applySecurityPermissions(state.canWriteSecurity)
                             }
                             is CounselDetailUiState.Error -> {
                                 Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
@@ -282,6 +283,54 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun applySecurityPermissions(canWriteSecurity: Boolean) {
+        if (!canWriteSecurity) {
+            binding.btnBlockPhone.alpha = 0.4f
+            binding.btnBlockIp.alpha = 0.4f
+            binding.btnBlockKeyword.alpha = 0.4f
+
+            binding.btnBlockPhone.setOnClickListener {
+                Toast.makeText(requireContext(), "차단 설정 권한이 없습니다.", Toast.LENGTH_SHORT).show()
+            }
+            binding.btnBlockIp.setOnClickListener {
+                Toast.makeText(requireContext(), "차단 설정 권한이 없습니다.", Toast.LENGTH_SHORT).show()
+            }
+            binding.btnBlockKeyword.setOnClickListener {
+                Toast.makeText(requireContext(), "차단 설정 권한이 없습니다.", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            binding.btnBlockPhone.alpha = 1.0f
+            binding.btnBlockIp.alpha = 1.0f
+            binding.btnBlockKeyword.alpha = 1.0f
+            
+            binding.btnBlockPhone.setOnClickListener {
+                val phone = currentDetail?.counselHp
+                val sheet = com.example.flowdesk_android.feature.system_management.presentation.block.phone.PhoneBlockCreateBottomSheet.newInstance(
+                    phone = phone,
+                    hideModeSelector = true
+                )
+                sheet.show(childFragmentManager, "PhoneBlockCreateBottomSheet")
+            }
+
+            binding.btnBlockIp.setOnClickListener {
+                val ip = currentDetail?.counselIp
+                val sheet = com.example.flowdesk_android.feature.system_management.presentation.block.ip.IpBlockCreateBottomSheet.newInstance(
+                    ip = ip,
+                    hideModeSelector = true
+                )
+                sheet.show(childFragmentManager, "IpBlockCreateBottomSheet")
+            }
+
+            binding.btnBlockKeyword.setOnClickListener {
+                val sheet = com.example.flowdesk_android.feature.system_management.presentation.block.keyword.KeywordBlockCreateBottomSheet.newInstance(
+                    keyword = null,
+                    hideModeSelector = true
+                )
+                sheet.show(childFragmentManager, "KeywordBlockCreateBottomSheet")
             }
         }
     }

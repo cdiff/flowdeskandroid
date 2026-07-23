@@ -18,7 +18,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.databinding.FragmentUserDetailBinding
+import com.example.flowdesk_android.databinding.FragmentUserManagementUserDetailBinding
 import com.example.flowdesk_android.feature.user_management.domain.model.Role
 import com.example.flowdesk_android.feature.user_management.domain.model.UserDetail
 import com.example.flowdesk_android.feature.user_management.presentation.users.detail.UserDetailEvent
@@ -34,9 +34,9 @@ import com.example.flowdesk_android.core.extension.showTopToast
 import com.example.flowdesk_android.core.extension.toFormattedDateString
 
 @AndroidEntryPoint
-class UserDetailFragment : BaseFragment(R.layout.fragment_user_detail) {
+class UserDetailFragment : BaseFragment(R.layout.fragment_user_management_user_detail) {
 
-    private var _binding: FragmentUserDetailBinding? = null
+    private var _binding: FragmentUserManagementUserDetailBinding? = null
     private val binding get() = _binding!!
     private val viewModel: UserDetailViewModel by viewModels()
 
@@ -54,7 +54,7 @@ class UserDetailFragment : BaseFragment(R.layout.fragment_user_detail) {
     override fun getToolbarView(view: View): View? = view.findViewById(R.id.toolbar)
  
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        _binding = FragmentUserDetailBinding.bind(view)
+        _binding = FragmentUserManagementUserDetailBinding.bind(view)
         super.onViewCreated(view, savedInstanceState)
     }
  
@@ -70,9 +70,7 @@ class UserDetailFragment : BaseFragment(R.layout.fragment_user_detail) {
     }
 
     private fun setupRecyclerView() {
-        roleAdapter = RoleSelectionAdapter { _ ->
-            // Selection changes handled internally in adapter
-        }
+        roleAdapter = RoleSelectionAdapter()
         binding.rvRoles.apply {
             layoutManager = com.google.android.flexbox.FlexboxLayoutManager(requireContext()).apply {
                 flexDirection = com.google.android.flexbox.FlexDirection.ROW

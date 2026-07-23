@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginHorizontal="4dp"
+    android:layout_marginVertical="5dp"
+    android:background="@drawable/bg_white_rounded_12dp"
+    android:clickable="true"
+    android:focusable="true">
+
+    <!-- 카드 상단 메인 영역 -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- 게시판 타입 타이틀 (명칭) -->
+        <TextView
+            android:id="@+id/tv_board_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_strong"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tv_status_badge"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="공지사항" />
+
+        <!-- 게시판 키 (notice, free 등) -->
+        <TextView
+            android:id="@+id/tv_board_key"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textSize="12sp"
+            android:textColor="@color/text_hint"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tv_status_badge"
+            app:layout_constraintTop_toBottomOf="@id/tv_board_name"
+            tools:text="notice" />
+
+        <!-- 정렬 순서 표시 -->
+        <TextView
+            android:id="@+id/tv_sort_order"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_tertiary"
+            android:background="@drawable/bg_rect_rounded_light_gray"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="2dp"
+            android:layout_marginTop="6dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_board_key"
+            tools:text="우선순위: 1" />
+
+        <!-- 상태 표시 배지 (• 활성 / • 비활성) -->
+        <TextView
+            android:id="@+id/tv_status_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="• 활성"
+            android:textColor="@color/color_success_active"
+            android:textSize="12sp"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintEnd_toStartOf="@id/btn_more"
+            app:layout_constraintTop_toTopOf="@id/tv_board_name"
+            app:layout_constraintBottom_toBottomOf="@id/tv_board_name" />
+
+        <!-- 더보기 버튼 (⋮) -->
+        <ImageView
+            android:id="@+id/btn_more"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_more_vert"
+            app:tint="@color/text_hint"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="4dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_board_name"
+            app:layout_constraintBottom_toBottomOf="@id/tv_board_name" />
+
+        <!-- 설명 (Description) -->
+        <TextView
+            android:id="@+id/tv_board_desc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            tools:text="전사 공지사항 게시판"
+            android:textColor="@color/gray_text"
+            android:textSize="13sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_sort_order" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- 아코디언 확장 영역 (ll_hidden_menu) -->
+    <LinearLayout
+        android:id="@+id/ll_hidden_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:visibility="gone"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="12dp"
+        tools:visibility="visible">
+
+        <!-- 상태 수정 / 편집 버튼 -->
+        <TextView
+            android:id="@+id/btn_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="수정"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <!-- 세로 구분선 1 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="|"
+            android:textColor="#D1D5DB"
+            android:textSize="11sp"
+            android:layout_gravity="center_vertical" />
+
+        <!-- 활성화/비활성화 버튼 -->
+        <TextView
+            android:id="@+id/btn_toggle_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="비활성화"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <!-- 세로 구분선 2 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="|"
+            android:textColor="#D1D5DB"
+            android:textSize="11sp"
+            android:layout_gravity="center_vertical" />
+
+        <!-- 삭제 버튼 -->
+        <TextView
+            android:id="@+id/btn_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="삭제"
+            android:textColor="@color/color_error"
+            android:textSize="13sp"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true" />
+
+    </LinearLayout>
+
+</LinearLayout>

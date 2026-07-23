@@ -27,8 +27,14 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 
+import com.example.flowdesk_android.core.extension.observePermission
+import javax.inject.Inject
+
 @AndroidEntryPoint
 class CounselFilterBottomSheetFragment : BottomSheetDialogFragment() {
+
+    @Inject
+    lateinit var sessionManager: com.example.flowdesk_android.data.local.SessionManager
 
     private val viewModel: CounselListViewModel by viewModels({ requireParentFragment() })
 
@@ -90,8 +96,15 @@ class CounselFilterBottomSheetFragment : BottomSheetDialogFragment() {
         updateDatePresetUi()
         updateDateRangeDisplay()
 
-        // Populate Choice Options in 2 Columns
-        populateManagerOptions()
+        // counsels.admin 권한에 따라 담당자 필터 가시성 제어 (observePermission 확장함수 사용)
+        observePermission(sessionManager, "counsels.admin") { isAdmin ->
+            binding.tvManagerLabel.visibility = if (isAdmin) View.VISIBLE else View.GONE
+            binding.containerManager.visibility = if (isAdmin) View.VISIBLE else View.GONE
+            if (isAdmin) {
+                populateManagerOptions()
+            }
+        }
+        
         populateWebsiteOptions()
     }
 

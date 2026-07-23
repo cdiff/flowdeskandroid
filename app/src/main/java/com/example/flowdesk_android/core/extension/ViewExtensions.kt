@@ -8,8 +8,37 @@ import android.widget.ListAdapter
 import android.widget.ListPopupWindow
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.flowdesk_android.R
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
+// ── 1. 기본 가시성 제어 확장 함수 ──────────────────────────
+fun View.visible() { visibility = View.VISIBLE }
+fun View.gone() { visibility = View.GONE }
+fun View.invisible() { visibility = View.INVISIBLE }
+
+fun View.visibleIf(condition: Boolean) {
+    visibility = if (condition) View.VISIBLE else View.GONE
+}
+
+// ── 2. Lifecycle-safe Flow 수집 확장 함수 ─────────────────
+fun <T> Fragment.collectFlow(
+    flow: Flow<T>,
+    state: Lifecycle.State = Lifecycle.State.STARTED,
+    action: suspend (T) -> Unit
+) {
+    viewLifecycleOwner.lifecycleScope.launch {
+        viewLifecycleOwner.repeatOnLifecycle(state) {
+            flow.collect { action(it) }
+        }
+    }
+}
+
+// ── 3. 기존 UI 제어 확장 함수 ──────────────────────────────
 /**
  * 공통 커스텀 드롭다운 ListPopupWindow 노출 확장 함수
  * 앵커 뷰에 지정된 스타일의 팝업창을 인플레이트하고 어댑터를 바인딩하여 띄워줍니다.
@@ -94,4 +123,3 @@ fun View.updateColorIndicator(hexColor: String, defaultColorHex: String = "#3B82
         this.background = drawable
     }
 }
-

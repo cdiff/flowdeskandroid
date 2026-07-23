@@ -39,19 +39,19 @@
         android:id="@+id/userDetailFragment"
         android:name="com.example.flowdesk_android.feature.user_management.presentation.users.detail.UserDetailFragment"
         android:label="UserDetail"
-        tools:layout="@layout/fragment_user_detail" />
+        tools:layout="@layout/fragment_user_management_user_detail" />
 
     <fragment
         android:id="@+id/rolesFragment"
         android:name="com.example.flowdesk_android.feature.user_management.presentation.roles.list.RolesFragment"
         android:label="Roles"
-        tools:layout="@layout/fragment_roles" />
+        tools:layout="@layout/fragment_user_management_role_list" />
 
     <fragment
         android:id="@+id/roleDetailFragment"
         android:name="com.example.flowdesk_android.feature.user_management.presentation.roles.detail.RoleDetailFragment"
         android:label="RoleDetail"
-        tools:layout="@layout/fragment_role_detail">
+        tools:layout="@layout/fragment_user_management_role_detail">
         <argument
             android:name="roleId"
             app:argType="integer" />
@@ -71,7 +71,7 @@
         android:id="@+id/managePermissionsFragment"
         android:name="com.example.flowdesk_android.feature.user_management.presentation.roles.permissions.ManagePermissionsFragment"
         android:label="ManagePermissions"
-        tools:layout="@layout/fragment_role_manage_permissions">
+        tools:layout="@layout/fragment_user_management_role_manage_permissions">
         <argument
             android:name="role_id"
             app:argType="integer" />
@@ -149,6 +149,106 @@
         android:id="@+id/inviteTeamFragment"
         android:name="com.example.flowdesk_android.feature.user_management.presentation.users.invite.InviteTeamFragment"
         android:label="InviteTeam"
-        tools:layout="@layout/fragment_user_invite" />
+        tools:layout="@layout/fragment_user_management_user_invite">
+        <action
+            android:id="@+id/action_inviteTeamFragment_to_invitePasswordFragment"
+            app:destination="@id/invitePasswordFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/invitePasswordFragment"
+        android:name="com.example.flowdesk_android.feature.user_management.presentation.users.invite.InvitePasswordFragment"
+        android:label="InvitePassword"
+        tools:layout="@layout/fragment_invite_password">
+        <action
+            android:id="@+id/action_invitePasswordFragment_to_inviteRoleFragment"
+            app:destination="@id/inviteRoleFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/inviteRoleFragment"
+        android:name="com.example.flowdesk_android.feature.user_management.presentation.users.invite.InviteRoleFragment"
+        android:label="InviteRole"
+        tools:layout="@layout/fragment_invite_role" />
+
+    <fragment
+        android:id="@+id/websiteListFragment"
+        android:name="com.example.flowdesk_android.feature.system_management.presentation.website.WebsiteListFragment"
+        android:label="WebsiteList"
+        tools:layout="@layout/fragment_system_website_list" />
+
+    <fragment
+        android:id="@+id/websiteDetailFragment"
+        android:name="com.example.flowdesk_android.feature.system_management.presentation.website.WebsiteDetailFragment"
+        android:label="WebsiteDetail"
+        tools:layout="@layout/fragment_system_website_detail">
+        <argument
+            android:name="webCode"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/websiteCreateFragment"
+        android:name="com.example.flowdesk_android.feature.system_management.presentation.website.WebsiteCreateFragment"
+        android:label="WebsiteCreate"
+        tools:layout="@layout/fragment_system_website_create" />
+
+    <!-- 게시판 타입 관리 -->
+    <fragment
+        android:id="@+id/boardTypeListFragment"
+        android:name="com.example.flowdesk_android.feature.system_management.presentation.board_type.BoardTypeListFragment"
+        android:label="BoardTypeList"
+        tools:layout="@layout/fragment_system_board_type_list" />
+
+    <fragment
+        android:id="@+id/boardTypeDetailFragment"
+        android:name="com.example.flowdesk_android.feature.system_management.presentation.board_type.BoardTypeDetailFragment"
+        android:label="BoardTypeDetail"
+        tools:layout="@layout/fragment_system_board_type_detail">
+        <argument
+            android:name="boardId"
+            app:argType="long" />
+    </fragment>
+
+    <!-- 게시글 관리 -->
+    <fragment
+        android:id="@+id/boardPostListFragment"
+        android:name="com.example.flowdesk_android.feature.content_management.presentation.board_post.BoardPostListFragment"
+        android:label="BoardPostList"
+        tools:layout="@layout/fragment_content_board_post_list" />
+
+    <fragment
+        android:id="@+id/boardPostDetailFragment"
+        android:name="com.example.flowdesk_android.feature.content_management.presentation.board_post.BoardPostDetailFragment"
+        android:label="BoardPostDetail"
+        tools:layout="@layout/fragment_content_board_post_detail">
+        <argument
+            android:name="boardId"
+            app:argType="long" />
+        <argument
+            android:name="postId"
+            app:argType="long" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/boardPostReadFragment"
+        android:name="com.example.flowdesk_android.feature.content_management.presentation.board_post.BoardPostReadFragment"
+        android:label="BoardPostRead"
+        tools:layout="@layout/fragment_content_board_post_read">
+        <argument
+            android:name="boardId"
+            app:argType="long" />
+        <argument
+            android:name="postId"
+            app:argType="long" />
+    </fragment>
 
 </navigation>

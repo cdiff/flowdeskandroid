@@ -30,23 +30,54 @@ import javax.inject.Inject
 
 sealed class BlockPhoneUiState {
     object Loading : BlockPhoneUiState()
-    data class Success(val items: List<BlockPhoneItem>, val totalCount: Int) : BlockPhoneUiState()
+    data class Success(
+        val items: List<BlockPhoneItem>,
+        val totalCount: Int,
+        val canWrite: Boolean,
+        val canUpdate: Boolean,
+        val canDelete: Boolean
+    ) : BlockPhoneUiState()
     data class Error(val message: String) : BlockPhoneUiState()
 }
 
 sealed class BlockPhoneDetailUiState {
     object Loading : BlockPhoneDetailUiState()
-    data class Success(val item: BlockPhoneItem) : BlockPhoneDetailUiState()
+    data class Success(
+        val item: BlockPhoneItem,
+        val canUpdate: Boolean,
+        val canDelete: Boolean
+    ) : BlockPhoneDetailUiState()
     data class Error(val message: String) : BlockPhoneDetailUiState()
 }
 
 @HiltViewModel
 class BlockPhoneViewModel @Inject constructor(
-    private val repository: SecurityBlockRepository
+    private val repository: SecurityBlockRepository,
+    private val sessionManager: com.example.flowdesk_android.data.local.SessionManager
 ) : ViewModel() {
 
-    private val _detailState = MutableStateFlow<BlockPhoneDetailUiState>(BlockPhoneDetailUiState.Loading)
-    val detailState: StateFlow<BlockPhoneDetailUiState> = _detailState.asStateFlow()
+    private val _detailLoading = MutableStateFlow(false)
+    private val _detailError = MutableStateFlow<String?>(null)
+    private val _loadedPhoneDetail = MutableStateFlow<BlockPhoneItem?>(null)
+
+    val detailState: StateFlow<BlockPhoneDetailUiState> = combine(
+        _detailLoading,
+        _detailError,
+        _loadedPhoneDetail,
+        sessionManager.observePermission("security.update"),
+        sessionManager.observePermission("security.delete")
+    ) { loading, error, item, canUpdate, canDelete ->
+        when {
+            loading -> BlockPhoneDetailUiState.Loading
+            error != null -> BlockPhoneDetailUiState.Error(error)
+            item != null -> BlockPhoneDetailUiState.Success(item, canUpdate, canDelete)
+            else -> BlockPhoneDetailUiState.Loading
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = BlockPhoneDetailUiState.Loading
+    )
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
@@ -68,7 +99,7 @@ class BlockPhoneViewModel @Inject constructor(
     val errorMessage = _errorMessage.asSharedFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<BlockPhoneUiState> = combine(
+    private val _repoState = combine(
         debouncedQuery,
         _currentPage,
         _refreshTrigger
@@ -77,7 +108,7 @@ class BlockPhoneViewModel @Inject constructor(
     }.flatMapLatest { (query, page) ->
         flow {
             if (page == 1) {
-                emit(BlockPhoneUiState.Loading)
+                emit(null)
             }
             val queryParam = query.ifBlank { null }
             repository.getBlockPhones(
@@ -91,18 +122,33 @@ class BlockPhoneViewModel @Inject constructor(
                         allLoadedItems.clear()
                     }
                     allLoadedItems.addAll(response.items)
-                    emit(
-                        BlockPhoneUiState.Success(
-                            items = allLoadedItems.toList(),
-                            totalCount = response.pageInfo.totalItems
-                        )
-                    )
+                    emit(Result.success(allLoadedItems.toList() to response.pageInfo.totalItems))
                     isPagingLoading = false
                 },
                 onFailure = { err ->
-                    emit(BlockPhoneUiState.Error(err.message ?: "휴대폰 차단 목록을 가져오는데 실패했습니다."))
                     isPagingLoading = false
                     _errorMessage.emit(err.message ?: "휴대폰 차단 목록 로드 실패")
+                    emit(Result.failure(err))
+                }
+            )
+        }
+    }
+
+    val uiState: StateFlow<BlockPhoneUiState> = combine(
+        _repoState,
+        sessionManager.observePermission("security.create"),
+        sessionManager.observePermission("security.update"),
+        sessionManager.observePermission("security.delete")
+    ) { repoResult, canWrite, canUpdate, canDelete ->
+        if (repoResult == null) {
+            BlockPhoneUiState.Loading
+        } else {
+            repoResult.fold(
+                onSuccess = { (items, total) ->
+                    BlockPhoneUiState.Success(items, total, canWrite, canUpdate, canDelete)
+                },
+                onFailure = { err ->
+                    BlockPhoneUiState.Error(err.message ?: "휴대폰 차단 목록을 가져오는데 실패했습니다.")
                 }
             )
         }
@@ -180,14 +226,18 @@ class BlockPhoneViewModel @Inject constructor(
     }
 
     fun loadDetail(id: Long) {
-        _detailState.value = BlockPhoneDetailUiState.Loading
         viewModelScope.launch {
+            _detailLoading.value = true
+            _detailError.value = null
+            _loadedPhoneDetail.value = null
             repository.getBlockPhoneDetail(id)
                 .onSuccess { item ->
-                    _detailState.value = BlockPhoneDetailUiState.Success(item)
+                    _loadedPhoneDetail.value = item
+                    _detailLoading.value = false
                 }
                 .onFailure { err ->
-                    _detailState.value = BlockPhoneDetailUiState.Error(err.message ?: "상세 정보를 가져오는 데 실패했습니다.")
+                    _detailError.value = err.message ?: "상세 정보를 가져오는 데 실패했습니다."
+                    _detailLoading.value = false
                 }
         }
     }

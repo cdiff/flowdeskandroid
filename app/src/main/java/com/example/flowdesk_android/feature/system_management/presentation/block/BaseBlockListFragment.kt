@@ -73,9 +73,14 @@ abstract class BaseBlockListFragment<T> : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 onSearchQueryChanged(s?.toString() ?: "")
+                binding.btnClear.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
             }
             override fun afterTextChanged(s: Editable?) {}
         })
+
+        binding.btnClear.setOnClickListener {
+            binding.etSearch.text.clear()
+        }
 
         // NestedScrollView 무한 스크롤 연동
         binding.nsvBlock.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, _, scrollY, _, _ ->
@@ -105,6 +110,10 @@ abstract class BaseBlockListFragment<T> : Fragment() {
             binding.llEmpty.visibility = View.GONE
             binding.rvList.visibility = View.VISIBLE
         }
+    }
+
+    protected fun updateWritePermission(canWrite: Boolean) {
+        binding.btnAdd.visibility = if (canWrite) View.VISIBLE else View.GONE
     }
 
     protected fun showError(message: String) {

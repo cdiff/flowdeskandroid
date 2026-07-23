@@ -10,12 +10,12 @@
     </string-array>
     <string name="login_title">로그인하고\n간편하게 회원관리 하기</string>
     <string name="hint_tenant">회사명</string>
-    <string name="hint_user_id">아이디 (이메일)</string>
+    <string name="hint_user_id">이메일</string>
     <string name="hint_password">비밀번호</string>
     <string name="auto_login">자동 로그인</string>
     <string name="btn_login">로그인</string>
     <string name="not_member_yet">아직 회원이 아니신가요?</string>
-    <string name="sign_up">회원가입</string>
+    <string name="sign_up">계정 만들기</string>
     <string name="signup_subtitle">회원가입에 사용할 이메일 주소를 입력하세요.</string>
     <string name="label_company_name">업체명</string>
     <string name="hint_company_name">업체명</string>
@@ -59,6 +59,65 @@
     <string name="success_permissions_saved">권한이 저장되었습니다.</string>
     <string name="success_permissions_copied">다른 역할의 권한을 성공적으로 가져왔습니다.</string>
     <string name="success_role_info_updated">역할 정보가 수정되었습니다.</string>
+
+    <!-- User Management Shared Strings -->
+    <string name="user_management_desc_role">설명</string>
+    <string name="user_management_label_copy_title">다른 역할의 권한 복사</string>
+    <string name="user_management_action_view_all_permissions">전체 권한 보기</string>
+    <string name="user_management_label_role_management">역할 관리</string>
+    <string name="user_management_desc_role_management">원하는 역할을 등록하고 권한을 부여하세요</string>
+    <string name="user_management_label_total_role">전체 역할</string>
+    <string name="user_management_label_active">활성</string>
+    <string name="user_management_label_inactive">비활성</string>
+    <string name="user_management_hint_search_role">역할 이름 검색...</string>
+    <string name="user_management_label_role_list">역할 목록</string>
+    <string name="user_management_empty_role_list">등록된 역할이 없습니다</string>
+    <string name="user_management_empty_role_list_desc">플러스(+) 버튼으로 추가해보세요</string>
+    <string name="user_management_title_detailed_permission_setup">세부 권한 설정</string>
+    <string name="user_management_title_detailed_permission_mgmt">세부 권한 관리</string>
+    <string name="user_management_desc_detailed_permission">각 메뉴별 접근 및 행동 권한을 켜고 끌 수 있습니다.</string>
+    <string name="user_management_action_save_btn">저장하기</string>
+    <string name="user_management_label_all_permission_list">전체 권한 목록</string>
+    <string name="user_management_desc_all_permission_list">시스템에서 사용 가능한 모든 권한 목록입니다.\n개발자가 정의한 권한 키(Key)를 확인할 수 있습니다.</string>
+    <string name="user_management_hint_search_permission">권한 이름 또는 키 검색...</string>
+    <string name="user_management_status_loading">로딩 중...</string>
+    <string name="user_management_desc_user_detail">팀원의 정보를 수정하거나 비활성화, 또는 강제 로그아웃을 수행할 수 있습니다.</string>
+    <string name="user_management_label_basic_info">기본 정보</string>
+    <string name="user_management_label_user_id">사용자 ID</string>
+    <string name="user_management_label_company_name">회사명</string>
+    <string name="user_management_label_name">이름</string>
+    <string name="user_management_label_email">이메일</string>
+    <string name="user_management_label_phone">전화번호</string>
+    <string name="user_management_label_mobile">휴대폰</string>
+    <string name="user_management_label_reg_date_format">가입일: </string>
+    <string name="user_management_title_invite_new_member">새로운 팀원을\n초대할 수 있어요.</string>
+    <string name="user_management_title_invite_new_member_simple">팀원 초대</string>
+    <string name="user_management_label_copy_permission_count">권한 개수</string>
+    <string name="user_management_label_copy_role_users">역할 사용자</string>
+    <string name="toast_status_changed">상태가 변경되었습니다.</string>
+    <string name="toast_role_deleted">역할이 삭제되었습니다.</string>
+    <string name="user_management_label_account_info">계정 정보</string>
+    <string name="user_management_label_password">비밀번호</string>
+    <string name="user_management_label_password_confirm">비밀번호 확인</string>
+    <string name="user_management_label_role_setup">역할 설정</string>
+    <string name="user_management_status_no_role_selected">선택된 역할: 없음</string>
+    <string name="user_management_action_invite">초대하기</string>
+    <string name="user_management_banner_title_what_is_team_mgmt">팀원 관리란?</string>
+    <string name="user_management_banner_desc_what_is_team_mgmt">새로운 팀원을 초대하고 역할을 부여하세요</string>
+    <string name="user_management_banner_body_what_is_team_mgmt">팀원별로 역할을 설정하고 권한을 관리하여,\n시스템 접근 및 사용을 안전하게 제어합니다.</string>
+    <string name="user_management_hint_search_user">이름, 이메일, ID 검색하세요.</string>
+    <string name="user_management_label_user_list">팀원 목록</string>
+    <string name="user_management_label_total_user">전체 사용자</string>
+    <string name="user_management_action_logout">로그아웃</string>
+    <string name="user_management_label_user_prefix">사용자 </string>
+    <string name="user_management_label_permission_prefix">권한 </string>
+    <string name="user_management_action_delete">삭제</string>
+    <string name="user_management_title_create_role">새 역할 생성</string>
+    <string name="user_management_desc_create_role">새로운 직무나 팀에 맞는 역할을 정의하세요</string>
+    <string name="user_management_label_role_display_name">역할 표시 이름</string>
+    <string name="user_management_label_system_role_code">시스템 역할 코드</string>
+    <string name="user_management_hint_role_desc">역할에 대한 간략한 설명을 입력해주세요.</string>
+    <string name="user_management_action_create">생성하기</string>
 
     <!-- System Management Status -->
     <string name="status_msg_enter_group">업무 분류를 입력해주세요.</string>
@@ -220,4 +279,99 @@
     <string name="counsel_count_suffix">%1$d건</string>
     <string name="counsel_edit_error_required_fields">이름과 전화번호는 필수 입력 항목입니다.</string>
     <string name="counsel_toast_info_updated">수정이 완료되었습니다.</string>
+
+    <!-- 웹사이트 관리 -->
+    <string name="website_label_duplicate_days">중복 허용 %1$d일</string>
+    <string name="website_toast_created">웹사이트가 등록되었습니다.</string>
+    <string name="website_toast_updated">웹사이트가 수정되었습니다.</string>
+    <string name="website_toast_deleted">웹사이트가 삭제되었습니다.</string>
+    <string name="website_error_load_failed">웹사이트 목록을 불러오지 못했습니다.</string>
+
+    <!-- 게시판 및 게시글 관리 -->
+    <string name="board_title_management">게시판 타입 관리</string>
+    <string name="board_desc_management">시스템 내에 연동되는 게시판 종류와 순서를 설정합니다.</string>
+    <string name="board_label_total">전체 게시판</string>
+    <string name="board_label_active">활성</string>
+    <string name="board_label_inactive">비활성</string>
+    <string name="board_hint_search_type">게시판 이름 또는 설명을 검색하세요.</string>
+    <string name="board_label_type">게시판 유형</string>
+    <string name="board_empty_types">등록된 게시판 타입이 없습니다</string>
+    <string name="board_empty_types_desc">우측 상단 + 버튼으로 등록하세요</string>
+    <string name="board_title_detail">게시판 상세 정보</string>
+    <string name="board_title_create">새로운 게시판 타입을\n추가할 수 있어요.</string>
+    <string name="board_label_name">게시판 명칭</string>
+    <string name="board_hint_name">예: 공지사항, 자유게시판</string>
+    <string name="board_label_key">게시판 키 (boardKey)</string>
+    <string name="board_hint_key">예: notice, free_board</string>
+    <string name="board_label_desc">게시판 설명</string>
+    <string name="board_hint_desc">게시판 설명을 입력하세요</string>
+    <string name="board_label_sort_order">정렬 순서</string>
+    <string name="board_hint_sort_order">예: 1</string>
+    <string name="board_label_switch_active">게시판 활성화</string>
+    <string name="board_btn_save">저장하기</string>
+    <string name="board_btn_edit">수정하기</string>
+    
+    <string name="post_title_management">게시글 관리</string>
+    <string name="post_desc_management">각 게시판의 게시물 목록을 조회하고 공지글을 관리합니다.</string>
+    <string name="post_hint_search">제목 또는 내용을 검색하세요.</string>
+    <string name="post_label_title">게시글</string>
+    <string name="post_empty_list">등록된 게시글이 없습니다</string>
+    <string name="post_empty_list_desc">아래 연필 버튼을 눌러 첫 글을 작성해보세요</string>
+    <string name="post_title_detail">게시글 상세 정보</string>
+    <string name="post_title_create">새로운 게시글을\n작성할 수 있어요.</string>
+    <string name="post_label_subject">제목</string>
+    <string name="post_hint_subject">게시글 제목을 입력하세요</string>
+    <string name="post_label_switch_notice">중요 공지사항 지정</string>
+    <string name="post_label_notice_period">공지 노출 기간 설정</string>
+    <string name="post_hint_start_date">시작일 선택</string>
+    <string name="post_hint_end_date">종료일 선택(선택)</string>
+    <string name="post_label_content">본문 내용</string>
+    <string name="post_hint_content">내용을 작성해 주세요.</string>
+    <string name="post_btn_delete">삭제하기</string>
+    
+    <string name="board_toast_load_failed">게시판 타입을 불러오지 못했습니다.</string>
+    <string name="board_toast_activated">게시판이 활성화되었습니다.</string>
+    <string name="board_toast_deactivated">게시판이 비활성화되었습니다.</string>
+    <string name="board_toast_toggle_failed">상태 변경에 실패했습니다.</string>
+    <string name="board_toast_load_detail_failed">상세 정보를 조회하는 데 실패했습니다.</string>
+    <string name="board_toast_deactivate_success">게시판이 삭제(비활성화)되었습니다.</string>
+    <string name="board_toast_save_success_create">게시판이 추가되었습니다.</string>
+    <string name="board_toast_save_success_edit">게시판이 수정되었습니다.</string>
+    <string name="board_toast_required_fields">필수 항목(*)을 입력해 주세요.</string>
+    <string name="board_toast_save_failed">저장에 실패했습니다.</string>
+    <string name="board_toast_delete_failed">삭제에 실패했습니다.</string>
+    
+    <string name="post_toast_load_boards_failed">게시판 목록을 조회하지 못했습니다.</string>
+    <string name="post_toast_load_posts_failed">게시글 목록을 불러오지 못했습니다.</string>
+    <string name="post_toast_select_board_first">게시판을 먼저 선택하거나 생성해주세요.</string>
+    <string name="post_toast_load_detail_failed">게시글 정보를 가져오지 못했습니다.</string>
+    <string name="post_toast_save_success_create">게시글이 등록되었습니다.</string>
+    <string name="post_toast_save_success_edit">게시글이 수정되었습니다.</string>
+    <string name="post_toast_delete_success">게시글이 삭제되었습니다.</string>
+
+    <string name="board_dialog_delete_title">게시판 삭제</string>
+    <string name="board_dialog_delete_message">\'%1$s\' 게시판을 삭제하시겠습니까?\n삭제된 게시판은 복구할 수 없습니다.</string>
+    <string name="post_dialog_delete_title">게시글 삭제</string>
+    <string name="post_dialog_delete_message">이 게시글을 삭제하시겠습니까?\n삭제된 게시글은 목록에서 제외됩니다.</string>
+
+    <!-- 게시글 수정 추가 -->
+    <string name="post_title_edit">게시글 수정</string>
+    <string name="post_label_dates_format">등록일: %1$s   /   수정일: %2$s</string>
+
+    <!-- 상담 상태 추가/수정 -->
+    <string name="status_title_detail">상태 상세 정보</string>
+    <string name="status_title_create">새로운 진행 단계를\n추가할 수 있어요.</string>
+    <string name="status_btn_create">추가하기</string>
+    <string name="status_label_dates_format">등록일: %1$s   /   수정일: %2$s</string>
+    <string name="status_hint_select_group">그룹 선택</string>
+
+    <!-- 금칙어 상세 -->
+    <string name="block_keyword_label_id_format">차단 ID: %1$d</string>
+    <string name="block_keyword_label_created_by_format">등록자 ID: %1$s</string>
+    <string name="block_keyword_label_created_at_format">등록: %1$s</string>
+    <string name="block_keyword_label_updated_at_format">수정: %1$s</string>
+    <string name="block_keyword_status_blocking">차단 중</string>
+    <string name="block_keyword_status_released">해제됨</string>
+    <string name="block_keyword_dialog_delete_title">금칙어 차단 해제</string>
+    <string name="block_keyword_dialog_delete_message">\'%1$s\' 단어의 차단을 해제하시겠습니까?\n해제하면 즉시 해당 단어 사용이 허용됩니다.</string>
 </resources>

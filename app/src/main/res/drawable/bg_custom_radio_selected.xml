@@ -7,6 +7,6 @@
     <stroke
         android:width="1.5dp"
         android:color="#3B82F6" />
-    <!-- 둥근 모서리 -->
-    <corners android:radius="10dp" />
+    <!-- 둥근 모서리 (알약 모양) -->
+    <corners android:radius="100dp" />
 </shape>

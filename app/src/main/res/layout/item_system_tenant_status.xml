@@ -1,97 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:layout_marginHorizontal="4dp"
     android:layout_marginVertical="5dp"
     android:background="@drawable/bg_white_rounded_12dp"
-    android:padding="16dp"
     android:clickable="true"
     android:focusable="true">
 
-    <!-- Status Color Indicator Dot -->
-    <View
-        android:id="@+id/view_status_dot"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
-        android:background="@drawable/bg_circle_blue"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_status_name"
-        app:layout_constraintBottom_toBottomOf="@id/tv_status_name" />
-
-    <!-- Status Name -->
-    <TextView
-        android:id="@+id/tv_status_name"
-        android:layout_width="wrap_content"
+    <!-- 카드 상단 메인 영역 -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        tools:text="신규접수"
-        android:textColor="@color/text_primary"
-        android:textSize="15sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@id/view_status_dot"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:padding="16dp">
 
-    <!-- Status Key (NEW, TRY_CONTACT, etc.) -->
-    <TextView
-        android:id="@+id/tv_status_key"
-        android:layout_width="wrap_content"
+        <!-- Status Color Indicator Dot -->
+        <View
+            android:id="@+id/view_status_dot"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:background="@drawable/bg_circle_blue"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_status_name"
+            app:layout_constraintBottom_toBottomOf="@id/tv_status_name" />
+
+        <!-- Status Name -->
+        <TextView
+            android:id="@+id/tv_status_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="4dp"
+            tools:text="신규접수"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintStart_toEndOf="@id/view_status_dot"
+            app:layout_constraintEnd_toStartOf="@id/tv_status_key"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Status Key (NEW, TRY_CONTACT, etc.) -->
+        <TextView
+            android:id="@+id/tv_status_key"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="NEW"
+            android:textColor="@color/text_tertiary"
+            android:background="@drawable/bg_rect_rounded_light_gray"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="2dp"
+            app:layout_constraintEnd_toStartOf="@id/tv_active_status"
+            app:layout_constraintTop_toTopOf="@id/tv_status_name"
+            app:layout_constraintBottom_toBottomOf="@id/tv_status_name" />
+
+        <!-- Active Status Label (• 활성 / • 비활성) -->
+        <TextView
+            android:id="@+id/tv_active_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="• 활성"
+            android:textColor="@color/color_success_active"
+            android:textSize="12sp"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintEnd_toStartOf="@id/iv_more"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/tv_status_name" />
+
+        <!-- More Menu Button -->
+        <ImageView
+            android:id="@+id/iv_more"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_more_vert"
+            app:tint="@color/text_hint"
+            android:padding="2dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/tv_status_name" />
+
+        <!-- Description -->
+        <TextView
+            android:id="@+id/tv_status_desc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            tools:text="상담이 새로 접수된 상태"
+            android:textColor="@color/gray_text"
+            android:textSize="13sp"
+            app:layout_constraintStart_toStartOf="@id/view_status_dot"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_status_name" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- ─── 히든 메뉴 (더보기 클릭 시 확장되는 아코디언 메뉴) ─── -->
+    <LinearLayout
+        android:id="@+id/ll_hidden_menu"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        tools:text="NEW"
-        android:textColor="@color/text_tertiary"
-        android:background="@drawable/bg_rect_rounded_light_gray"
-        android:textSize="10sp"
-        android:textStyle="bold"
-        android:paddingHorizontal="6dp"
-        android:paddingVertical="2dp"
-        app:layout_constraintStart_toEndOf="@id/tv_status_name"
-        app:layout_constraintTop_toTopOf="@id/tv_status_name"
-        app:layout_constraintBottom_toBottomOf="@id/tv_status_name" />
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:visibility="gone"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="12dp">
 
-    <!-- Active Status Label (• 활성 / • 비활성) -->
-    <TextView
-        android:id="@+id/tv_active_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="• 활성"
-        android:textColor="@color/color_success_active"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toStartOf="@id/iv_more"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/tv_status_name" />
+        <!-- 활성화/비활성화 버튼 -->
+        <TextView
+            android:id="@+id/btn_toggle_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="비활성화"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true" />
 
-    <!-- More Menu Button -->
-    <ImageView
-        android:id="@+id/iv_more"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:src="@drawable/ic_more_vert"
-        app:tint="@color/text_hint"
-        android:padding="2dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/tv_status_name" />
+        <!-- 세로 구분선 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="|"
+            android:textColor="#D1D5DB"
+            android:textSize="11sp"
+            android:layout_gravity="center_vertical" />
 
-    <!-- Description -->
-    <TextView
-        android:id="@+id/tv_status_desc"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        tools:text="상담이 새로 접수된 상태"
-        android:textColor="@color/gray_text"
-        android:textSize="13sp"
-        app:layout_constraintStart_toStartOf="@id/view_status_dot"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_status_name" />
+        <!-- 삭제 버튼 -->
+        <TextView
+            android:id="@+id/btn_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="삭제"
+            android:textColor="@color/color_error"
+            android:textSize="13sp"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+</LinearLayout>

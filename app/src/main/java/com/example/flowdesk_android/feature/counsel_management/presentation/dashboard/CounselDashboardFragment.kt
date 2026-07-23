@@ -61,6 +61,9 @@ class CounselDashboardFragment : Fragment() {
 
     private val viewModel: CounselDashboardViewModel by viewModels()
 
+    private lateinit var tvHeaderTitle: TextView
+    private lateinit var tvHeaderSubtitle: TextView
+
     // ── 파이프라인 분석 ──
     private lateinit var btnSummaryInfo: View
     private lateinit var btnDailyTrendInfo: View
@@ -122,6 +125,8 @@ class CounselDashboardFragment : Fragment() {
     }
 
     private fun bindViews(view: View) {
+        tvHeaderTitle           = view.findViewById(R.id.tv_header_title)
+        tvHeaderSubtitle        = view.findViewById(R.id.tv_header_subtitle)
         llStatusDistribution    = view.findViewById(R.id.ll_status_distribution)
         lineChartEmployee       = view.findViewById(R.id.line_chart_employee)
         barChartDaily           = view.findViewById(R.id.bar_chart_daily)
@@ -215,6 +220,11 @@ class CounselDashboardFragment : Fragment() {
                         is CounselDashboardUiState.Success -> {
                             showLoading(false)
                             bindData(state.data)
+                            
+                            // canAdmin에 따른 화면 제어 적용
+                            tvHeaderTitle.text = if (state.canAdmin) "상담 대시보드" else "내 상담 대시보드"
+                            val employeeCard = lineChartEmployee.parent as? View
+                            employeeCard?.visibility = if (state.canAdmin) View.VISIBLE else View.GONE
                         }
                         is CounselDashboardUiState.Error -> {
                             showLoading(false)

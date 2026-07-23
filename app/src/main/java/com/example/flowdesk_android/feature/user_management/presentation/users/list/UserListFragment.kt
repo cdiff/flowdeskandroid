@@ -14,20 +14,20 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.databinding.FragmentUserListBinding
+import com.example.flowdesk_android.databinding.FragmentUserManagementUserListBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import androidx.navigation.fragment.findNavController
 
 @AndroidEntryPoint
-class UserListFragment : Fragment(R.layout.fragment_user_list) {
-    private var _binding: FragmentUserListBinding? = null
+class UserListFragment : Fragment(R.layout.fragment_user_management_user_list) {
+    private var _binding: FragmentUserManagementUserListBinding? = null
     private val binding get() = _binding!!
     private val viewModel: UserListViewModel by viewModels()
     private lateinit var userAdapter: UserAdapter
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentUserListBinding.bind(view)
+        _binding = FragmentUserManagementUserListBinding.bind(view)
 
         parentFragmentManager.setFragmentResultListener("invite_success", viewLifecycleOwner) { _, _ ->
             viewModel.triggerRefresh()
@@ -60,10 +60,6 @@ class UserListFragment : Fragment(R.layout.fragment_user_list) {
     }
 
     private fun setupListeners() {
-        binding.btnCloseBanner.setOnClickListener {
-            binding.bannerInfo.visibility = View.GONE
-        }
-
         binding.btnInviteTeam.setOnClickListener {
             findNavController().navigate(R.id.inviteTeamFragment)
         }
@@ -72,9 +68,14 @@ class UserListFragment : Fragment(R.layout.fragment_user_list) {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 viewModel.search(s.toString())
+                binding.btnClear.isVisible = !s.isNullOrEmpty()
             }
             override fun afterTextChanged(s: Editable?) {}
         })
+
+        binding.btnClear.setOnClickListener {
+            binding.etSearch.text.clear()
+        }
     }
 
     private fun observeViewModel() {
@@ -85,15 +86,7 @@ class UserListFragment : Fragment(R.layout.fragment_user_list) {
                     viewModel.uiState.collect { state ->
                         binding.progressBar.isVisible = state is UserListUiState.Loading
                         if (state is UserListUiState.Error) {
-                            binding.tvTotalTitle.text = "Error: ${state.message}"
-                            binding.tvTotalTitle.setTextColor(
-                                androidx.core.content.ContextCompat.getColor(requireContext(), R.color.red)
-                            )
-                        } else {
-                            binding.tvTotalTitle.text = "전체 사용자"
-                            binding.tvTotalTitle.setTextColor(
-                                androidx.core.content.ContextCompat.getColor(requireContext(), R.color.gray_text)
-                            )
+                            Toast.makeText(requireContext(), state.message, Toast.LENGTH_LONG).show()
                         }
                     }
                 }
@@ -122,6 +115,9 @@ class UserListFragment : Fragment(R.layout.fragment_user_list) {
                         when (event) {
                             is UserListEvent.TokensInvalidated -> {
                                 Toast.makeText(requireContext(), getString(R.string.success_tokens_invalidated), Toast.LENGTH_SHORT).show()
+                            }
+                            is UserListEvent.StatusToggled -> {
+                                Toast.makeText(requireContext(), getString(R.string.success_user_status_changed), Toast.LENGTH_SHORT).show()
                             }
                         }
                     }

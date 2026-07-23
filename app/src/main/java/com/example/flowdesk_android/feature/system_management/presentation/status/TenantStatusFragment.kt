@@ -6,12 +6,8 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.lifecycle.Lifecycle
@@ -19,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.flowdesk_android.R
+import com.example.flowdesk_android.databinding.DialogCommonConfirmBinding
 import com.example.flowdesk_android.databinding.FragmentSystemTenantStatusBinding
 import com.example.flowdesk_android.databinding.ItemStatusGroupAccordionBinding
 import com.example.flowdesk_android.databinding.ItemStatusGroupChipBinding
@@ -113,7 +110,7 @@ class TenantStatusFragment : Fragment() {
     }
 
     // ─── Accordion 렌더링 ────────────────────────────────────────────────────
-    private fun renderAccordionGroups(groups: List<TenantStatusGroup>) {
+    private fun renderAccordionGroups(groups: List<TenantStatusGroup>, canUpdate: Boolean, canDelete: Boolean) {
         binding.layoutAccordionContainer.removeAllViews()
         val inflater = LayoutInflater.from(requireContext())
 
@@ -140,11 +137,15 @@ class TenantStatusFragment : Fragment() {
                         val bundle = Bundle().apply { putLong("tenantStatusId", item.tenantStatusId) }
                         findNavController().navigate(R.id.statusEditFragment, bundle)
                     },
-                    onMoreClicked = { item, anchorView ->
-                        showStatusItemMenu(item, anchorView)
+                    onToggleStatusClicked = { item ->
+                        viewModel.toggleStatusActive(item.tenantStatusId, item.isActive)
+                    },
+                    onDeleteClicked = { item ->
+                        showDeleteConfirmDialog(item)
                     }
                 )
             }
+            adapter.setPermissions(canUpdate, canDelete)
             accordionBinding.rvTenantStatuses.adapter = adapter
             adapter.submitList(groupData.items)
 
@@ -170,9 +171,14 @@ class TenantStatusFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 viewModel.updateSearchQuery(s?.toString() ?: "")
+                binding.btnClear.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
             }
             override fun afterTextChanged(s: Editable?) {}
         })
+
+        binding.btnClear.setOnClickListener {
+            binding.etStatusSearch.text.clear()
+        }
 
         binding.btnAddStatus.setOnClickListener {
             val bundle = Bundle().apply {
@@ -182,34 +188,29 @@ class TenantStatusFragment : Fragment() {
         }
     }
 
-    // ─── 팝업 메뉴 ──────────────────────────────────────────────────────────
-    private fun showStatusItemMenu(item: TenantStatus, anchorView: View) {
-        val popup = PopupMenu(requireContext(), anchorView)
-        popup.menu.add("상태 수정")
-        popup.menu.add(if (item.isActive) "상태 비활성화" else "상태 활성화")
-        popup.menu.add("상태 삭제")
+    // ─── 커스텀 삭제 확인 다이얼로그 ────────────────────────────────────────
+    private fun showDeleteConfirmDialog(item: TenantStatus) {
+        val dialogBinding = DialogCommonConfirmBinding.inflate(layoutInflater)
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogBinding.root)
+            .create()
 
-        popup.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.title) {
-                "상태 수정" -> {
-                    val bundle = Bundle().apply { putLong("tenantStatusId", item.tenantStatusId) }
-                    findNavController().navigate(R.id.statusEditFragment, bundle)
-                }
-                "상태 비활성화", "상태 활성화" -> {
-                    viewModel.toggleStatusActive(item.tenantStatusId, item.isActive)
-                }
-                "상태 삭제" -> {
-                    AlertDialog.Builder(requireContext())
-                        .setTitle("상태 삭제")
-                        .setMessage("정말로 이 상태를 삭제하시겠습니까?\n삭제된 상태는 복구할 수 없습니다.")
-                        .setPositiveButton("삭제") { _, _ -> viewModel.deleteStatus(item.tenantStatusId) }
-                        .setNegativeButton("취소", null)
-                        .show()
-                }
-            }
-            true
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        dialogBinding.tvTitle.text = "상태 삭제"
+        dialogBinding.tvMessage.text = "'${item.statusName}' 상태를 삭제하시겠습니까?\n삭제된 상태는 복구할 수 없습니다."
+        dialogBinding.cbConfirm.visibility = View.GONE
+
+        dialogBinding.btnCancel.setOnClickListener {
+            dialog.dismiss()
         }
-        popup.show()
+
+        dialogBinding.btnConfirm.setOnClickListener {
+            dialog.dismiss()
+            viewModel.deleteStatus(item.tenantStatusId)
+        }
+
+        dialog.show()
     }
 
     // ─── 상태 관찰 ──────────────────────────────────────────────────────────
@@ -221,27 +222,20 @@ class TenantStatusFragment : Fragment() {
                     viewModel.uiState.collectLatest { state ->
                         renderGroupChips(state.statusGroups)
                         updateChipSelection(state.selectedGroup)
-                        renderAccordionGroups(state.filteredGroups)
+                        renderAccordionGroups(state.filteredGroups, state.canUpdate, state.canDelete)
 
                         binding.tvStatTotalGroups.text = state.totalGroups.toString()
                         binding.tvStatTotalStatuses.text = state.totalStatuses.toString()
                         binding.tvStatActiveStatuses.text = state.activeStatuses.toString()
                         binding.tvStatInactiveStatuses.text = state.inactiveStatuses.toString()
+                        
+                        binding.btnAddStatus.visibility = if (state.canWrite) View.VISIBLE else View.GONE
                     }
                 }
 
                 launch {
                     viewModel.errorMessage.collectLatest { msg ->
                         showTopToast(msg)
-                    }
-                }
-
-                launch {
-                    dashboardViewModel.dashboardState.collect { state ->
-                        if (state is DashboardState.Success) {
-                            val hasCreate = state.data.permissions["tenants.status.create"] == true
-                            binding.btnAddStatus.visibility = if (hasCreate) View.VISIBLE else View.GONE
-                        }
                     }
                 }
             }

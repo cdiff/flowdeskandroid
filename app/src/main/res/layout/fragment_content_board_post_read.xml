@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:clipChildren="false"
+    android:background="@color/white">
+
+    <!-- 상단 커스텀 툴바 -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingHorizontal="4dp">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_chevron_left"
+            android:padding="12dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:tint="@color/text_primary" />
+
+        <TextView
+            android:id="@+id/tv_toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#0F172A"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginStart="56dp"
+            android:layout_marginEnd="56dp"
+            tools:text="공지사항"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <ImageView
+            android:id="@+id/btn_more"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_more_vert"
+            android:padding="12dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:visibility="gone"
+            tools:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:tint="@color/text_primary" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- 스크롤 뷰 콘텐츠 영역 (하단 닫기 버튼 영역을 침범하지 않음) -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:visibility="invisible"
+        tools:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@id/layout_toolbar"
+        app:layout_constraintBottom_toTopOf="@id/btn_close">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- 헤더 정보 영역 (배지, 제목, 등록일/작성자) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="12dp">
+
+                <!-- 카테고리/게시판 명칭 배지 -->
+                <TextView
+                    android:id="@+id/tv_board_badge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="공지사항"
+                    android:textColor="@color/brand_primary"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_badge_rounded_blue_border"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="4dp" />
+
+                <!-- 게시글 제목 -->
+                <TextView
+                    android:id="@+id/tv_post_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:textColor="#0F172A"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:lineSpacingMultiplier="1.2"
+                    tools:text="시스템 운영 정책 안내 및 보안 정책 준수 사항 고지" />
+
+                <!-- 작성일시 / 작성자 정보 -->
+                <TextView
+                    android:id="@+id/tv_post_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textColor="#94A3B8"
+                    android:textSize="13sp"
+                    tools:text="작성자: 관리자 (ID: 1)   /   2026. 03. 23." />
+            </LinearLayout>
+
+            <!-- 구분선 (부모 패딩이 없어 가로 끝까지 꽉 차게 표시됨) -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E2E8F0"
+                android:layout_marginTop="18dp"
+                android:layout_marginBottom="18dp" />
+
+            <!-- 본문 영역 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingBottom="20dp">
+
+                <!-- 본문 내용 -->
+                <TextView
+                    android:id="@+id/tv_post_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#334155"
+                    android:textSize="15sp"
+                    android:lineSpacingMultiplier="1.4"
+                    tools:text="안녕하세요. Flowdesk 운영팀입니다.\n\n원활한 시스템 운영과 보안 강화를 위하여 테넌트 및 업무 분류 관리 정책이 아래와 같이 변경 및 시행될 예정이오니 서비스 이용에 참고하시기 바랍니다.\n\n[주요 개정 내용]\n1. 사용자 권한 세분화 및 세션 기반 실시간 반응형 권한 시스템 고도화\n2. 시스템 차단 목록(IP, 전화번호, 키워드) 관리 기준 정립\n3. 게시판 타입 및 게시글 등록 관리 가이드 신설\n\n본 정책은 공지 즉시 시행되며, 관련 문의사항은 고객센터 또는 1:1 문의를 통해 접수해 주시기 바랍니다.\n\n감사합니다." />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- 하단 고정 닫기 버튼 (그림자 16dp 라운드 MaterialButton 적용) -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_close"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="28dp"
+        android:text="닫기"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:backgroundTint="#3B82F6"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:insetLeft="0dp"
+        android:insetRight="0dp"
+        app:cornerRadius="16dp"
+        app:elevation="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 로딩 프로그레스 바 -->
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -31,9 +31,7 @@
                 android:text="그룹 선택"
                 android:textColor="@color/text_strong"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="8dp" />
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -41,7 +39,6 @@
                 android:text="원하는 그룹을 선택하세요"
                 android:textColor="@color/text_tertiary"
                 android:textSize="14sp"
-                android:layout_marginStart="4dp"
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="12dp" />
 
@@ -211,16 +208,29 @@
 
                 <EditText
                     android:id="@+id/et_status_search"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    android:layout_weight="1"
                     android:background="@null"
-                    android:hint="상담 상태를 입력 하세요."
+                    android:hint="상담 상태를 입력하세요."
                     android:textColorHint="@color/text_hint"
                     android:textSize="15sp"
                     android:textColor="@color/text_primary"
                     android:maxLines="1"
                     android:inputType="text"
                     android:gravity="center_vertical" />
+
+                <ImageView
+                    android:id="@+id/btn_clear"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_close_clear_cancel"
+                    app:tint="@color/text_hint"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true" />
             </LinearLayout>
 
             <!-- ─── 리스트 헤더 ─── -->
@@ -237,7 +247,6 @@
                     android:textColor="@color/text_strong"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:layout_marginStart="4dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent" />

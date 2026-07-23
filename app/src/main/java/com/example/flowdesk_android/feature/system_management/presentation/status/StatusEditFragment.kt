@@ -23,6 +23,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.databinding.FragmentStatusEditBinding
 import com.example.flowdesk_android.feature.system_management.domain.model.TenantStatus
@@ -30,8 +32,8 @@ import com.example.flowdesk_android.core.extension.showTopToast
 import com.example.flowdesk_android.core.extension.showCustomDropdown
 import com.example.flowdesk_android.core.extension.setReadOnly
 import com.example.flowdesk_android.core.extension.setupFocusHighlight
+import com.example.flowdesk_android.core.extension.toFormattedDateString
 import com.example.flowdesk_android.core.extension.updateColorIndicator
-import com.example.flowdesk_android.core.util.DateUtils
 import androidx.core.content.ContextCompat
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -196,12 +198,12 @@ class StatusEditFragment : Fragment() {
     private fun setupDataBinding() {
         if (tenantStatusId != -1L) {
             binding.tvTitle.visibility = View.GONE
-            binding.btnSave.text = "저장하기"
+            binding.btnSave.text = getString(R.string.board_btn_save)
             binding.tvHeaderTitle.visibility = View.VISIBLE
-            binding.tvHeaderTitle.text = "상태 상세페이지"
+            binding.tvHeaderTitle.text = getString(R.string.status_title_detail)
             binding.scrollView.visibility = View.INVISIBLE
         } else {
-            binding.tvTitle.text = "새로운 진행 단계를\n추가할 수 있어요."
+            binding.tvTitle.text = getString(R.string.status_title_create)
             binding.tvHeaderTitle.visibility = View.GONE
             binding.scrollView.visibility = View.VISIBLE
         }
@@ -209,21 +211,24 @@ class StatusEditFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.isLoading.collect { loading ->
-                        binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
-                        binding.btnSave.isEnabled = !loading
+                    viewModel.uiState.collectLatest { state ->
+                        binding.progressBar.visibility = if (state.isLoading) View.VISIBLE else View.GONE
+                        binding.btnSave.isEnabled = !state.isLoading && state.canUpdate
+                        binding.btnSave.visibility = if (state.canUpdate) View.VISIBLE else View.GONE
                     }
                 }
 
                 launch {
-                    viewModel.selectedStatusDetail.collect { detail ->
+                    combine(viewModel.selectedStatusDetail, viewModel.uiState) { detail, state ->
+                        Pair(detail, state.canUpdate)
+                    }.collectLatest { (detail, canUpdate) ->
                         if (tenantStatusId != -1L) {
                             if (detail != null) {
-                                bindData(detail)
+                                bindData(detail, canUpdate)
                                 binding.scrollView.visibility = View.VISIBLE
                             }
                         } else {
-                            bindData(null)
+                            bindData(null, true)
                         }
                     }
                 }
@@ -233,16 +238,16 @@ class StatusEditFragment : Fragment() {
         if (tenantStatusId != -1L) {
             viewModel.loadStatusDetail(tenantStatusId)
         } else {
-            bindData(null)
+            bindData(null, true)
         }
     }
 
-    private fun bindData(detail: TenantStatus?) {
+    private fun bindData(detail: TenantStatus?, canUpdate: Boolean) {
         if (detail != null) {
             binding.tvTitle.visibility = View.GONE
-            binding.btnSave.text = "저장하기"
+            binding.btnSave.text = getString(R.string.board_btn_save)
             binding.tvHeaderTitle.visibility = View.VISIBLE
-            binding.tvHeaderTitle.text = "상태 상세페이지"
+            binding.tvHeaderTitle.text = getString(R.string.status_title_detail)
 
             binding.layoutStatusGroup.visibility = View.VISIBLE
             binding.layoutGroupSelector.setReadOnly(true, binding.btnGroupDropdown)
@@ -262,14 +267,21 @@ class StatusEditFragment : Fragment() {
             binding.cbStatusActive.isChecked = detail.isActive
             binding.viewColorPreview.updateColorIndicator(detail.color ?: "#3B82F6")
 
-            val created = DateUtils.formatIsoDate(detail.createdAt)
-            val updated = DateUtils.formatIsoDate(detail.updatedAt)
-            binding.tvStatusDates.text = "등록일: $created   /   수정일: $updated"
+            // 권한 제어 연동
+            binding.etStatusName.isEnabled = canUpdate
+            binding.etStatusDesc.isEnabled = canUpdate
+            binding.etStatusSort.isEnabled = canUpdate
+            binding.cbStatusActive.isEnabled = canUpdate
+            binding.layoutColorSelector.isEnabled = canUpdate
+
+            val created = detail.createdAt?.toFormattedDateString() ?: "-"
+            val updated = detail.updatedAt?.toFormattedDateString() ?: "-"
+            binding.tvStatusDates.text = getString(R.string.status_label_dates_format, created, updated)
             binding.tvStatusDates.visibility = View.VISIBLE
         } else {
-            binding.tvTitle.text = "새로운 진행 단계를\n추가할 수 있어요."
+            binding.tvTitle.text = getString(R.string.status_title_create)
             binding.tvTitle.visibility = View.VISIBLE
-            binding.btnSave.text = "추가하기"
+            binding.btnSave.text = getString(R.string.status_btn_create)
             binding.tvHeaderTitle.visibility = View.GONE
 
             binding.layoutStatusGroup.visibility = View.VISIBLE
@@ -289,7 +301,7 @@ class StatusEditFragment : Fragment() {
                 binding.tvStatusGroupSelected.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_primary))
                 binding.etStatusGroup.setText(defaultGroup)
             } else {
-                binding.tvStatusGroupSelected.text = "그룹 선택"
+                binding.tvStatusGroupSelected.text = getString(R.string.status_hint_select_group)
                 binding.tvStatusGroupSelected.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_disabled))
                 binding.etStatusGroup.setText("")
             }

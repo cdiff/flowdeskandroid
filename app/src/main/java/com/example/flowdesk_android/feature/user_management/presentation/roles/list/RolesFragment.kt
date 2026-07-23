@@ -16,7 +16,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.databinding.DialogRoleDeleteBinding
-import com.example.flowdesk_android.databinding.FragmentRoleListBinding
+import com.example.flowdesk_android.databinding.FragmentUserManagementRoleListBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import com.example.flowdesk_android.core.extension.showTopToast
@@ -27,14 +27,14 @@ class RolesFragment : Fragment() {
     private val viewModel: RolesViewModel by viewModels()
     private lateinit var roleAdapter: RoleAdapter
 
-    private var _binding: FragmentRoleListBinding? = null
+    private var _binding: FragmentUserManagementRoleListBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentRoleListBinding.inflate(inflater, container, false)
+        _binding = FragmentUserManagementRoleListBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -49,10 +49,6 @@ class RolesFragment : Fragment() {
 
     private fun setupRecyclerView() {
         roleAdapter = RoleAdapter(
-            onManagePermissionsClick = { role ->
-                val bundle = Bundle().apply { putInt("role_id", role.roleId) }
-                findNavController().navigate(R.id.managePermissionsFragment, bundle)
-            },
             onEditRoleClick = { role ->
                 val bundle = Bundle().apply {
                     putInt("roleId", role.roleId)
@@ -91,10 +87,6 @@ class RolesFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        binding.btnCloseBanner.setOnClickListener {
-            binding.bannerInfo.visibility = View.GONE
-        }
-
         binding.btnCreateRole.setOnClickListener {
             val bottomSheet = CreateRoleBottomSheetFragment().apply {
                 onSuccess = {
@@ -108,9 +100,14 @@ class RolesFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 viewModel.search(s?.toString() ?: "")
+                binding.btnClear.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
             }
             override fun afterTextChanged(s: Editable?) {}
         })
+
+        binding.btnClear.setOnClickListener {
+            binding.etSearch.text.clear()
+        }
     }
 
     private fun observeViewModel() {
@@ -132,9 +129,9 @@ class RolesFragment : Fragment() {
                                 val active = state.roles.count { it.isActive }
                                 val inactive = total - active
 
-                                binding.tvTotalCount.text = "총 ${total}개"
-                                binding.tvActiveCount.text = "활성 ${active}개"
-                                binding.tvInactiveCount.text = "비활성 ${inactive}개"
+                                binding.tvTotalCount.text = "${total}"
+                                binding.tvActiveCount.text = "${active}"
+                                binding.tvInactiveCount.text = "${inactive}"
 
                                 if (state.roles.isEmpty()) {
                                     binding.llEmpty.visibility = View.VISIBLE
@@ -158,6 +155,25 @@ class RolesFragment : Fragment() {
                 launch {
                     viewModel.filteredRoles.collect { roles ->
                         roleAdapter.submitList(roles)
+                    }
+                }
+
+                launch {
+                    viewModel.event.collect { event ->
+                        when(event) {
+                            is RoleListEvent.RoleCreated -> {
+                                // 생성은 CreateRoleBottomSheetFragment 내에서 처리
+                            }
+                            is RoleListEvent.RoleDeleted -> {
+                                showTopToast(getString(R.string.toast_role_deleted))
+                            }
+                            is RoleListEvent.StatusToggled -> {
+                                showTopToast(getString(R.string.toast_status_changed))
+                            }
+                            is RoleListEvent.Error -> {
+                                showTopToast(event.message)
+                            }
+                        }
                     }
                 }
             }

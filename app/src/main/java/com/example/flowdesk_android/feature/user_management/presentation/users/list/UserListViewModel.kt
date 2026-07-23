@@ -33,6 +33,7 @@ sealed class UserListUiState {
 
 sealed class UserListEvent {
     object TokensInvalidated : UserListEvent()
+    object StatusToggled : UserListEvent()
 }
 
 @HiltViewModel
@@ -40,45 +41,31 @@ class UserListViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : BaseViewModel() {
 
-    // 1. 수동 리프레시 트리거
-    private val _refreshTrigger = MutableStateFlow(0)
+    // 1. 상태 보관용 MutableStateFlow 정의
+    private val _allUsers = MutableStateFlow<List<User>>(emptyList())
+    private val allUsers: StateFlow<List<User>> = _allUsers.asStateFlow()
 
-    // 2. 서버에서 전체 유저를 가져오는 흐름
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val usersFlow: Flow<Result<List<User>>> = _refreshTrigger
-        .flatMapLatest {
-            flow {
-                emit(Result.success(emptyList())) // 로딩 상태 전이를 위해 발행
-                val res = userRepository.getUsers()
-                emit(res)
-            }
-        }
+    private val _isLoading = MutableStateFlow(false)
+    private val _errorMessage = MutableStateFlow<String?>(null)
 
-    // 3. UI 로딩/에러/성공 상태를 방출하는 uiState
-    val uiState: StateFlow<UserListUiState> = usersFlow.map { result ->
-        if (_refreshTrigger.value > 0 && result.getOrNull() == null) {
-            // 리프레시 시도 시 에러가 났을 때 처리
-            UserListUiState.Error(result.exceptionOrNull()?.message ?: "알 수 없는 오류")
+    // 2. UI 로딩/에러/성공 상태 uiState 정의 (리액티브 결합)
+    val uiState: StateFlow<UserListUiState> = combine(
+        _allUsers,
+        _isLoading,
+        _errorMessage
+    ) { users, loading, error ->
+        if (error != null) {
+            UserListUiState.Error(error)
+        } else if (loading && users.isEmpty()) {
+            UserListUiState.Loading
+        } else if (users.isEmpty()) {
+            UserListUiState.Empty
         } else {
-            result.fold(
-                onSuccess = { users ->
-                    if (users.isEmpty() && _refreshTrigger.value == 0) UserListUiState.Loading // 최초 로딩
-                    else if (users.isEmpty()) UserListUiState.Empty
-                    else UserListUiState.Success(users)
-                },
-                onFailure = { e ->
-                    UserListUiState.Error(e.message ?: "알 수 없는 오류")
-                }
-            )
+            UserListUiState.Success(users)
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UserListUiState.Loading)
 
-    // 4. 전체 유저 목록 캐시 StateFlow
-    private val allUsers: StateFlow<List<User>> = usersFlow.map { result ->
-        result.getOrDefault(emptyList())
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
-
-    // 5. 검색 쿼리 상태
+    // 3. 검색 쿼리 상태
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
@@ -87,7 +74,7 @@ class UserListViewModel @Inject constructor(
         .debounce(300)
         .distinctUntilChanged()
 
-    // 6. 실시간 필터링된 유저 목록
+    // 4. 실시간 필터링된 유저 목록
     val filteredUsers: StateFlow<List<User>> = combine(allUsers, debouncedQuery) { users, query ->
         if (query.isBlank()) {
             users
@@ -113,15 +100,36 @@ class UserListViewModel @Inject constructor(
         _searchQuery.value = query
     }
 
+    // 5. 서버로부터 전체 데이터 가져오기 (초기 진입/새로고침 시에만 사용)
     fun triggerRefresh() {
-        _refreshTrigger.value = _refreshTrigger.value + 1
+        viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
+            userRepository.getUsers()
+                .onSuccess { users ->
+                    _allUsers.value = users
+                }
+                .onFailure { e ->
+                    _errorMessage.value = e.message ?: "알 수 없는 오류"
+                }
+            _isLoading.value = false
+        }
     }
 
     fun toggleUserStatus(userId: Int, currentStatus: Boolean) {
         viewModelScope.launch {
-            userRepository.updateUserStatus(userId, !currentStatus)
+            val newStatus = !currentStatus
+            userRepository.updateUserStatus(userId, newStatus)
                 .onSuccess {
-                    triggerRefresh()
+                    // 🚀 로컬 상태 직접 변경 (상태값 토글 반영)
+                    _allUsers.value = _allUsers.value.map { user ->
+                        if (user.userSeq == userId) {
+                            user.copy(isActive = newStatus)
+                        } else {
+                            user
+                        }
+                    }
+                    _event.send(UserListEvent.StatusToggled)
                 }
                 .onFailure { e ->
                     sendError(e.message ?: "상태 변경 실패")
@@ -133,7 +141,7 @@ class UserListViewModel @Inject constructor(
         viewModelScope.launch {
             userRepository.invalidateUserTokens(userId)
                 .onSuccess {
-                    triggerRefresh()
+                    triggerRefresh() // 토큰 무효화는 보안/세션 갱신이므로 전체 목록 갱신 수행
                     _event.send(UserListEvent.TokensInvalidated)
                 }
                 .onFailure { e ->

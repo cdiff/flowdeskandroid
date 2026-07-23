@@ -18,150 +18,193 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="24dp">
+            android:paddingBottom="40dp">
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideStart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.08" />
+                app:layout_constraintGuide_percent="0.05" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideEnd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.92" />
+                app:layout_constraintGuide_percent="0.95" />
 
+            <!-- 상단 타이틀 (시원한 여백과 세련된 서체) -->
             <TextView
                 android:id="@+id/tvTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="60dp"
+                android:layout_marginTop="70dp"
                 android:gravity="center"
+                android:lineSpacingExtra="4dp"
                 android:text="@string/login_title"
-                android:textColor="@color/black"
-                android:textSize="24sp"
+                android:textColor="#0F172A"
+                android:textSize="22sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="@id/guideEnd"
                 app:layout_constraintStart_toStartOf="@id/guideStart"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <EditText
-                android:id="@+id/etTenant"
+            <!-- 1. 회사명 / 테넌트 (사진과 동일한 OutlinedBox 아웃라인 라벨 스타일) -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layoutTenant"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="40dp"
-                android:background="@drawable/bg_edit_text"
-                android:gravity="center_vertical"
-                android:hint="@string/hint_tenant"
-                android:inputType="text"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:textColor="@color/black"
-                android:textSize="14sp"
-                android:textColorHint="@color/gray_text"
-                app:layout_constraintEnd_toEndOf="@id/guideEnd"
-                app:layout_constraintStart_toStartOf="@id/guideStart"
-                app:layout_constraintTop_toBottomOf="@id/tvTitle" />
-
-            <EditText
-                android:id="@+id/etUserId"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_edit_text"
-                android:gravity="center_vertical"
-                android:hint="@string/hint_user_id"
-                android:inputType="textEmailAddress"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:textColor="@color/black"
-                android:textSize="14sp"
-                android:textColorHint="@color/gray_text"
-                app:layout_constraintEnd_toEndOf="@id/guideEnd"
-                app:layout_constraintStart_toStartOf="@id/guideStart"
-                app:layout_constraintTop_toBottomOf="@id/etTenant" />
-
-            <EditText
-                android:id="@+id/etPassword"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_edit_text"
-                android:gravity="center_vertical"
-                android:hint="@string/hint_password"
-                android:inputType="textPassword"
-                android:paddingStart="16dp"
-                android:paddingEnd="48dp"
-                android:textColor="@color/black"
-                android:textSize="14sp"
-                android:textColorHint="@color/gray_text"
-                app:layout_constraintEnd_toEndOf="@id/guideEnd"
-                app:layout_constraintStart_toStartOf="@id/guideStart"
-                app:layout_constraintTop_toBottomOf="@id/etUserId" />
-
-            <ImageView
-                android:id="@+id/ivPasswordToggle"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="12dp"
-                android:src="@drawable/ic_visibility_off"
-                app:layout_constraintBottom_toBottomOf="@id/etPassword"
-                app:layout_constraintEnd_toEndOf="@id/etPassword"
-                app:layout_constraintTop_toTopOf="@id/etPassword" />
+                android:layout_marginTop="48dp"
+                android:hint="@string/hint_tenant"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxStrokeColor="@color/selector_outlined_box_stroke"
+                app:boxStrokeWidth="1dp"
+                app:boxStrokeWidthFocused="1.5dp"
+                android:textColorHint="#94A3B8"
+                app:hintTextColor="@color/login_blue"
+                app:layout_constraintEnd_toEndOf="@id/guideEnd"
+                app:layout_constraintStart_toStartOf="@id/guideStart"
+                app:layout_constraintTop_toBottomOf="@id/tvTitle">
 
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etTenant"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:inputType="text"
+                    android:paddingHorizontal="16dp"
+                    android:textColor="#0F172A"
+                    android:textSize="14sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 2. 이메일 / 아이디 (OutlinedBox 아웃라인 라벨 스타일) -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layoutUserId"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:hint="@string/hint_user_id"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxStrokeColor="@color/selector_outlined_box_stroke"
+                app:boxStrokeWidth="1dp"
+                app:boxStrokeWidthFocused="1.5dp"
+                android:textColorHint="#94A3B8"
+                app:hintTextColor="@color/login_blue"
+                app:layout_constraintEnd_toEndOf="@id/guideEnd"
+                app:layout_constraintStart_toStartOf="@id/guideStart"
+                app:layout_constraintTop_toBottomOf="@id/layoutTenant">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etUserId"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:inputType="textEmailAddress"
+                    android:paddingHorizontal="16dp"
+                    android:textColor="#0F172A"
+                    android:textSize="14sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 3. 비밀번호 (OutlinedBox 아웃라인 라벨 + 비밀번호 토글) -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layoutPassword"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:hint="@string/hint_password"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxStrokeColor="@color/selector_outlined_box_stroke"
+                app:boxStrokeWidth="1dp"
+                app:boxStrokeWidthFocused="1.5dp"
+                app:endIconMode="password_toggle"
+                android:textColorHint="#94A3B8"
+                app:hintTextColor="@color/login_blue"
+                app:layout_constraintEnd_toEndOf="@id/guideEnd"
+                app:layout_constraintStart_toStartOf="@id/guideStart"
+                app:layout_constraintTop_toBottomOf="@id/layoutUserId">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:inputType="textPassword"
+                    android:paddingHorizontal="16dp"
+                    android:textColor="#0F172A"
+                    android:textSize="14sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 사진과 동일한 비율의 아이디 저장 체크박스 -->
             <CheckBox
                 android:id="@+id/cbAutoLogin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="0dp"
+                android:layout_marginTop="8dp"
+                android:buttonTint="#CBD5E1"
+                android:paddingStart="4dp"
                 android:text="@string/auto_login"
-                android:textColor="@color/gray_text"
+                android:textColor="#64748B"
+                android:textSize="13sp"
                 app:layout_constraintStart_toStartOf="@id/guideStart"
-                app:layout_constraintTop_toBottomOf="@id/etPassword" />
+                app:layout_constraintTop_toBottomOf="@id/layoutPassword" />
 
+            <!-- 사진과 동일한 비율의 대형 둥근 로그인 버튼 -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLogin"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="28dp"
                 android:backgroundTint="@color/login_blue"
-                android:padding="12dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
                 android:text="@string/btn_login"
+                android:textColor="@color/white"
                 android:textSize="16sp"
-                app:cornerRadius="8dp"
+                android:textStyle="bold"
+                app:cornerRadius="14dp"
+                app:elevation="0dp"
                 app:layout_constraintEnd_toEndOf="@id/guideEnd"
                 app:layout_constraintStart_toStartOf="@id/guideStart"
                 app:layout_constraintTop_toBottomOf="@id/cbAutoLogin" />
 
-            <TextView
-                android:id="@+id/tvNotMember"
+            <!-- 사진 스타일의 하단 회원가입 안내 (사진 위치) -->
+            <LinearLayout
+                android:id="@+id/layoutSignUpLink"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="100dp"
-                android:text="@string/not_member_yet"
-                android:textColor="@color/gray_text"
+                android:layout_marginTop="140dp"
+                android:gravity="center"
+                android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/btnLogin" />
+                app:layout_constraintTop_toBottomOf="@id/btnLogin">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSignUp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:padding="12dp"
-                android:text="@string/sign_up"
-                android:textColor="@color/login_blue"
-                android:textSize="16sp"
-                app:cornerRadius="8dp"
-                app:layout_constraintEnd_toEndOf="@id/guideEnd"
-                app:layout_constraintStart_toStartOf="@id/guideStart"
-                app:layout_constraintTop_toBottomOf="@id/tvNotMember"
-                app:strokeColor="@color/login_blue" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="계정이 없으신가요? "
+                    android:textColor="#94A3B8"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvSignUpLink"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sign_up"
+                    android:textColor="@color/login_blue"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

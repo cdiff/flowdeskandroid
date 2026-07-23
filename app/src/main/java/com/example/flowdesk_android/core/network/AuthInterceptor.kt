@@ -14,9 +14,11 @@ class AuthInterceptor @Inject constructor(
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val original = chain.request()
+        val path = original.url.encodedPath
         val token = tokenManager.getToken()
 
-        val request = if (token != null) {
+        // 로그인(/auth/login) 및 회원가입(/auth/signup) 경로는 토큰 헤더 추가에서 제외합니다.
+        val request = if (token != null && !path.contains("/auth/login") && !path.contains("/auth/signup")) {
             original.newBuilder()
                 .header("Authorization", "Bearer $token")
                 .build()

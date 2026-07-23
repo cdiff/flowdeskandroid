@@ -5,6 +5,7 @@ import com.example.flowdesk_android.core.base.BaseViewModel
 import com.example.flowdesk_android.feature.user_management.domain.model.PermissionCatalog
 import com.example.flowdesk_android.feature.user_management.domain.model.RoleDetail
 import com.example.flowdesk_android.feature.user_management.domain.repository.RoleRepository
+import com.example.flowdesk_android.feature.user_management.domain.usecase.UpdateRolePermissionsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -34,7 +35,8 @@ sealed class ManagePermissionsEvent {
 
 @HiltViewModel
 class ManagePermissionsViewModel @Inject constructor(
-    private val roleRepository: RoleRepository
+    private val roleRepository: RoleRepository,
+    private val updateRolePermissionsUseCase: UpdateRolePermissionsUseCase
 ) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow<ManagePermissionsUiState>(ManagePermissionsUiState.Loading)
@@ -82,7 +84,7 @@ class ManagePermissionsViewModel @Inject constructor(
         val toRemove = (originalPermissionIds - newSelectedIds).toList()
 
         viewModelScope.launch {
-            roleRepository.updateRolePermissions(currentRoleId, toAdd.ifEmpty { null }, toRemove.ifEmpty { null })
+            updateRolePermissionsUseCase(currentRoleId, toAdd.ifEmpty { null }, toRemove.ifEmpty { null })
                 .onSuccess {
                     _event.send(ManagePermissionsEvent.PermissionsSaved)
                     load(currentRoleId)

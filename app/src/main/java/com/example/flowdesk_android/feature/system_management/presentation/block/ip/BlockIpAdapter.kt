@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flowdesk_android.R
-import com.example.flowdesk_android.core.util.DateUtils
+import com.example.flowdesk_android.core.extension.toFormattedDateString
 import com.example.flowdesk_android.databinding.ItemBlockListBinding
 import com.example.flowdesk_android.feature.system_management.domain.model.BlockIpItem
 
@@ -35,7 +35,7 @@ class BlockIpAdapter(
             // IP 주소 렌더링
             binding.tvTargetValue.text = item.blockIp
             binding.tvTargetValue.typeface = android.graphics.Typeface.MONOSPACE // monospace 적용
-            binding.tvBlockedAt.text = DateUtils.formatIsoDate(item.createdAt)
+            binding.tvBlockedAt.text = item.createdAt?.toFormattedDateString() ?: "-"
             binding.tvBlockReason.text = item.reason ?: "사유 없음"
 
             // 뷰 가시성 및 색상 조정

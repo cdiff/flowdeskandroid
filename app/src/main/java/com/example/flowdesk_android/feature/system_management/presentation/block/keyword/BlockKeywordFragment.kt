@@ -26,7 +26,7 @@ class BlockKeywordFragment : BaseBlockListFragment<BlockWordItem>() {
 
     // UI Configuration
     override val titleText: String = "금칙어 목록"
-    override val searchHint: String = "금칙어 검색..."
+    override val searchHint: String = "금칙어를 검색하세요."
     override val emptyTitleText: String = "등록된 금칙어가 없습니다"
     override val emptySubtitleText: String = "금칙어 추가 버튼으로 필터 단어를 등록하세요"
     override val bannerText: String = "금칙어는 채팅·상담 등 고객 입력 필드에서 자동으로 필터링됩니다."
@@ -65,6 +65,7 @@ class BlockKeywordFragment : BaseBlockListFragment<BlockWordItem>() {
                             }
                             is BlockWordUiState.Success -> {
                                 showSuccess(state.items, state.totalCount)
+                                updateWritePermission(state.canWrite)
                             }
                             is BlockWordUiState.Error -> {
                                 showError(state.message)
