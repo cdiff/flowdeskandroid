@@ -51,7 +51,7 @@ class UserDetailFragment : BaseFragment(R.layout.fragment_user_management_user_d
         }
     }
 
-    override fun getToolbarView(view: View): View? = view.findViewById(R.id.toolbar)
+    override fun getToolbarView(view: View): View? = null
  
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentUserManagementUserDetailBinding.bind(view)
@@ -82,11 +82,6 @@ class UserDetailFragment : BaseFragment(R.layout.fragment_user_management_user_d
     }
 
     private fun setupListeners() {
-        binding.btnBack.setOnClickListener {
-            if (!findNavController().navigateUp()) {
-                requireActivity().onBackPressedDispatcher.onBackPressed()
-            }
-        }
 
         binding.btnSaveRoles.setOnClickListener {
             val name = binding.etInfoName.text.toString().trim()
@@ -111,40 +106,6 @@ class UserDetailFragment : BaseFragment(R.layout.fragment_user_management_user_d
                 roleIds = roles
             )
         }
-
-        binding.btnMore.setOnClickListener { view ->
-            val popup = androidx.appcompat.widget.PopupMenu(requireContext(), view)
-            val isActive = currentUserData?.isActive == true
-            val activeText = if (isActive) "비활성화" else "활성화"
-            
-            popup.menu.add(0, 1, 0, "비밀번호 변경")
-            popup.menu.add(0, 2, 1, activeText)
-            popup.menu.add(0, 3, 2, "강제 로그아웃")
-            
-            popup.setOnMenuItemClickListener { item ->
-                when (item.itemId) {
-                    1 -> {
-                        val bottomSheet = UserChangePasswordBottomSheet { newPassword ->
-                            viewModel.changePassword(userId, newPassword)
-                        }
-                        bottomSheet.show(childFragmentManager, "UserChangePasswordBottomSheet")
-                        true
-                    }
-                    2 -> {
-                        currentUserData?.let { user ->
-                            viewModel.updateStatus(userId, !user.isActive)
-                        }
-                        true
-                    }
-                    3 -> {
-                        viewModel.invalidateTokens(userId)
-                        true
-                    }
-                    else -> false
-                }
-            }
-            popup.show()
-        }
     }
 
     override fun observeViewModel() {
@@ -155,14 +116,11 @@ class UserDetailFragment : BaseFragment(R.layout.fragment_user_management_user_d
                         binding.progressBar.isVisible = state is UserDetailUiState.Loading
 
                         when (state) {
-                            is UserDetailUiState.Loading -> {
-                                binding.tvTitle.text = "로딩 중..."
-                            }
+                            is UserDetailUiState.Loading -> {}
                             is UserDetailUiState.Success -> {
                                 bindUserData(state.user)
                             }
                             is UserDetailUiState.Error -> {
-                                binding.tvTitle.text = "팀원 상세"
                                 Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
                             }
                         }
@@ -204,21 +162,6 @@ class UserDetailFragment : BaseFragment(R.layout.fragment_user_management_user_d
     private fun bindUserData(user: UserDetail) {
         currentUserData = user
         
-        // Status Dot + Name in Toolbar Title
-        val dotColor = if (user.isActive) {
-            ContextCompat.getColor(requireContext(), R.color.green_500)
-        } else {
-            ContextCompat.getColor(requireContext(), R.color.red_500)
-        }
-        val spannableTitle = android.text.SpannableStringBuilder("●  ${user.userName}").apply {
-            setSpan(
-                android.text.style.ForegroundColorSpan(dotColor),
-                0,
-                1,
-                android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-        }
-        binding.tvTitle.text = spannableTitle
         binding.tvId.text = user.userId
 
         // Basic Info

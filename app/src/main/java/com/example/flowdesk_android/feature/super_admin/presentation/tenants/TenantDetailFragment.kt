@@ -30,7 +30,7 @@ class TenantDetailFragment : BaseFragment(R.layout.fragment_super_admin_tenant_d
     private var tenantId: Int = -1
     private var currentTenant: TenantDetail? = null
 
-    override fun getToolbarView(view: View): View = binding.clHeader
+    override fun getToolbarView(view: View): View? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentSuperAdminTenantDetailBinding.bind(view)
@@ -49,10 +49,6 @@ class TenantDetailFragment : BaseFragment(R.layout.fragment_super_admin_tenant_d
     }
 
     private fun setupListeners() {
-        binding.btnBack.setOnClickListener {
-            findNavController().popBackStack()
-        }
-
         binding.btnAction.setOnClickListener {
             if (isEditMode) {
                 val tenant = currentTenant ?: return@setOnClickListener

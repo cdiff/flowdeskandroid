@@ -3,13 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_main"
-    app:startDestination="@id/homeFragment">
-
-    <fragment
-        android:id="@+id/homeFragment"
-        android:name="com.example.flowdesk_android.feature.main.home.HomeFragment"
-        android:label="Home"
-        tools:layout="@layout/fragment_main_home" />
+    app:startDestination="@id/usersFragment">
 
     <fragment
         android:id="@+id/myPageFragment"
@@ -20,13 +14,13 @@
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="com.example.flowdesk_android.feature.mypage.presentation.edit_profile.EditProfileFragment"
-        android:label="EditProfile"
+        android:label="프로필 수정"
         tools:layout="@layout/fragment_mypage_edit_profile" />
 
     <fragment
         android:id="@+id/changePasswordFragment"
         android:name="com.example.flowdesk_android.feature.mypage.presentation.change_password.ChangePasswordFragment"
-        android:label="ChangePassword"
+        android:label="비밀번호 변경"
         tools:layout="@layout/fragment_mypage_change_password" />
 
     <fragment
@@ -38,7 +32,7 @@
     <fragment
         android:id="@+id/userDetailFragment"
         android:name="com.example.flowdesk_android.feature.user_management.presentation.users.detail.UserDetailFragment"
-        android:label="UserDetail"
+        android:label="사용자 상세 정보"
         tools:layout="@layout/fragment_user_management_user_detail" />
 
     <fragment
@@ -50,7 +44,7 @@
     <fragment
         android:id="@+id/roleDetailFragment"
         android:name="com.example.flowdesk_android.feature.user_management.presentation.roles.detail.RoleDetailFragment"
-        android:label="RoleDetail"
+        android:label="역할 상세 정보"
         tools:layout="@layout/fragment_user_management_role_detail">
         <argument
             android:name="roleId"
@@ -60,7 +54,7 @@
     <fragment
         android:id="@+id/tenantDetailFragment"
         android:name="com.example.flowdesk_android.feature.super_admin.presentation.tenants.TenantDetailFragment"
-        android:label="TenantDetail"
+        android:label="테넌트 상세 정보"
         tools:layout="@layout/fragment_super_admin_tenant_detail">
         <argument
             android:name="tenant_id"
@@ -70,7 +64,7 @@
     <fragment
         android:id="@+id/managePermissionsFragment"
         android:name="com.example.flowdesk_android.feature.user_management.presentation.roles.permissions.ManagePermissionsFragment"
-        android:label="ManagePermissions"
+        android:label="권한 관리"
         tools:layout="@layout/fragment_user_management_role_manage_permissions">
         <argument
             android:name="role_id"
@@ -92,7 +86,7 @@
     <fragment
         android:id="@+id/counselDetailFragment"
         android:name="com.example.flowdesk_android.feature.counsel_management.presentation.detail.CounselDetailFragment"
-        android:label="CounselDetail"
+        android:label="상담 상세 정보"
         tools:layout="@layout/fragment_counsel_detail">
         <argument
             android:name="counselSeq"
@@ -102,7 +96,7 @@
     <fragment
         android:id="@+id/statusEditFragment"
         android:name="com.example.flowdesk_android.feature.system_management.presentation.status.StatusEditFragment"
-        android:label="StatusEdit"
+        android:label="상태 상세 정보"
         tools:layout="@layout/fragment_status_edit">
         <argument
             android:name="tenantStatusId"
@@ -118,7 +112,7 @@
     <fragment
         android:id="@+id/blockIpDetailFragment"
         android:name="com.example.flowdesk_android.feature.system_management.presentation.block.ip.BlockIpDetailFragment"
-        android:label="BlockIpDetail"
+        android:label="IP 차단 상세 정보"
         tools:layout="@layout/fragment_block_ip_detail">
         <argument
             android:name="blockIpId"
@@ -128,7 +122,7 @@
     <fragment
         android:id="@+id/blockPhoneDetailFragment"
         android:name="com.example.flowdesk_android.feature.system_management.presentation.block.phone.BlockPhoneDetailFragment"
-        android:label="BlockPhoneDetail"
+        android:label="전화번호 차단 상세 정보"
         tools:layout="@layout/fragment_block_phone_detail">
         <argument
             android:name="blockHpId"
@@ -138,7 +132,7 @@
     <fragment
         android:id="@+id/blockKeywordDetailFragment"
         android:name="com.example.flowdesk_android.feature.system_management.presentation.block.keyword.BlockKeywordDetailFragment"
-        android:label="BlockKeywordDetail"
+        android:label="금칙어 차단 상세 정보"
         tools:layout="@layout/fragment_block_keyword_detail">
         <argument
             android:name="blockWordId"
@@ -148,7 +142,7 @@
     <fragment
         android:id="@+id/inviteTeamFragment"
         android:name="com.example.flowdesk_android.feature.user_management.presentation.users.invite.InviteTeamFragment"
-        android:label="InviteTeam"
+        android:label="팀원 초대"
         tools:layout="@layout/fragment_user_management_user_invite">
         <action
             android:id="@+id/action_inviteTeamFragment_to_invitePasswordFragment"
@@ -162,7 +156,7 @@
     <fragment
         android:id="@+id/invitePasswordFragment"
         android:name="com.example.flowdesk_android.feature.user_management.presentation.users.invite.InvitePasswordFragment"
-        android:label="InvitePassword"
+        android:label="비밀번호 설정"
         tools:layout="@layout/fragment_invite_password">
         <action
             android:id="@+id/action_invitePasswordFragment_to_inviteRoleFragment"
@@ -176,7 +170,7 @@
     <fragment
         android:id="@+id/inviteRoleFragment"
         android:name="com.example.flowdesk_android.feature.user_management.presentation.users.invite.InviteRoleFragment"
-        android:label="InviteRole"
+        android:label="역할 설정"
         tools:layout="@layout/fragment_invite_role" />
 
     <fragment
@@ -188,7 +182,7 @@
     <fragment
         android:id="@+id/websiteDetailFragment"
         android:name="com.example.flowdesk_android.feature.system_management.presentation.website.WebsiteDetailFragment"
-        android:label="WebsiteDetail"
+        android:label="웹사이트 상세 정보"
         tools:layout="@layout/fragment_system_website_detail">
         <argument
             android:name="webCode"
@@ -198,7 +192,7 @@
     <fragment
         android:id="@+id/websiteCreateFragment"
         android:name="com.example.flowdesk_android.feature.system_management.presentation.website.WebsiteCreateFragment"
-        android:label="WebsiteCreate"
+        android:label="웹사이트 등록"
         tools:layout="@layout/fragment_system_website_create" />
 
     <!-- 게시판 타입 관리 -->
@@ -211,7 +205,7 @@
     <fragment
         android:id="@+id/boardTypeDetailFragment"
         android:name="com.example.flowdesk_android.feature.system_management.presentation.board_type.BoardTypeDetailFragment"
-        android:label="BoardTypeDetail"
+        android:label="게시판 타입 상세"
         tools:layout="@layout/fragment_system_board_type_detail">
         <argument
             android:name="boardId"
@@ -228,7 +222,7 @@
     <fragment
         android:id="@+id/boardPostDetailFragment"
         android:name="com.example.flowdesk_android.feature.content_management.presentation.board_post.BoardPostDetailFragment"
-        android:label="BoardPostDetail"
+        android:label="게시글 수정"
         tools:layout="@layout/fragment_content_board_post_detail">
         <argument
             android:name="boardId"
@@ -241,7 +235,7 @@
     <fragment
         android:id="@+id/boardPostReadFragment"
         android:name="com.example.flowdesk_android.feature.content_management.presentation.board_post.BoardPostReadFragment"
-        android:label="BoardPostRead"
+        android:label="게시글 상세"
         tools:layout="@layout/fragment_content_board_post_read">
         <argument
             android:name="boardId"

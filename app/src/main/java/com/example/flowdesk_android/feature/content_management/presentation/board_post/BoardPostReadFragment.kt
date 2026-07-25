@@ -56,13 +56,6 @@ class BoardPostReadFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Window insets 처리 (상태바/카메라 홀 침범 예방)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(top = systemBars.top)
-            insets
-        }
-
         setupListeners()
         observeViewModel()
 
@@ -75,9 +68,6 @@ class BoardPostReadFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        binding.btnBack.setOnClickListener {
-            findNavController().popBackStack()
-        }
         binding.btnClose.setOnClickListener {
             findNavController().popBackStack()
         }
@@ -130,7 +120,6 @@ class BoardPostReadFragment : Fragment() {
 
     private fun bindData(post: BoardPost) {
         val boardName = post.boardName ?: "게시판"
-        binding.tvToolbarTitle.text = boardName
         
         // 중요글 여부에 따른 뱃지 텍스트 분기 ("중요 [게시판명]" vs "[게시판명]")
         if (post.isNotice) {
@@ -189,41 +178,7 @@ class BoardPostReadFragment : Fragment() {
     }
 
     private fun setupOptionsMenu(canUpdate: Boolean, canDelete: Boolean) {
-        if (!canUpdate && !canDelete) {
-            binding.btnMore.visibility = View.GONE
-            return
-        }
-
-        binding.btnMore.visibility = View.VISIBLE
-        binding.btnMore.setOnClickListener { view ->
-            val popup = PopupMenu(requireContext(), view)
-            
-            // 메뉴 옵션 동적 추가
-            if (canUpdate) {
-                popup.menu.add(0, 1, 0, "수정")
-            }
-            if (canDelete) {
-                popup.menu.add(0, 2, 1, "삭제")
-            }
-
-            popup.setOnMenuItemClickListener { menuItem ->
-                when (menuItem.itemId) {
-                    1 -> {
-                        // 수정 페이지(BoardPostDetailFragment)로 이동
-                        val bundle = Bundle().apply {
-                            putLong("boardId", boardId)
-                            putLong("postId", postId)
-                        }
-                        findNavController().navigate(R.id.boardPostDetailFragment, bundle)
-                    }
-                    2 -> {
-                        showDeleteConfirmDialog()
-                    }
-                }
-                true
-            }
-            popup.show()
-        }
+        // 옵션 메뉴 처리 (필요시 하단 버튼/액션으로 제공)
     }
 
     private fun showDeleteConfirmDialog() {

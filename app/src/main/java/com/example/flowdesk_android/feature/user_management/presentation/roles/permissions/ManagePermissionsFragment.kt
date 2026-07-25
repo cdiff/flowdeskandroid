@@ -33,7 +33,7 @@ class ManagePermissionsFragment : BaseFragment(R.layout.fragment_user_management
         readOnly = arguments?.getBoolean("read_only", false) ?: false
     }
 
-    override fun getToolbarView(view: View): View? = binding.toolbar
+    override fun getToolbarView(view: View): View? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentUserManagementRoleManagePermissionsBinding.bind(view)
@@ -41,7 +41,7 @@ class ManagePermissionsFragment : BaseFragment(R.layout.fragment_user_management
     }
 
     override fun initView() {
-        setupToolbar()
+        setupListeners()
         setupPermissionsList()
         if (roleId != -1) {
             viewModel.load(roleId)
@@ -50,10 +50,7 @@ class ManagePermissionsFragment : BaseFragment(R.layout.fragment_user_management
         binding.btnSave.visibility = if (readOnly) View.GONE else View.VISIBLE
     }
 
-    private fun setupToolbar() {
-        binding.btnBack.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
+    private fun setupListeners() {
         binding.btnSave.setOnClickListener {
             savePermissions()
         }

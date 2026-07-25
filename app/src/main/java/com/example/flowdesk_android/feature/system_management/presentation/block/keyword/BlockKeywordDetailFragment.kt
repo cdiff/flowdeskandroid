@@ -44,7 +44,7 @@ class BlockKeywordDetailFragment : BaseFragment(R.layout.fragment_block_keyword_
         }
     }
 
-    override fun getToolbarView(view: View): View = binding.layoutToolbar
+    override fun getToolbarView(view: View): View? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentBlockKeywordDetailBinding.bind(view)
@@ -59,10 +59,6 @@ class BlockKeywordDetailFragment : BaseFragment(R.layout.fragment_block_keyword_
     }
 
     private fun setupListeners() {
-        binding.btnBack.setOnClickListener {
-            findNavController().navigateUp()
-        }
-
         binding.btnSaveInfo.setOnClickListener {
             val newReason = binding.etReason.text.toString().trim()
             if (newReason.isEmpty()) {

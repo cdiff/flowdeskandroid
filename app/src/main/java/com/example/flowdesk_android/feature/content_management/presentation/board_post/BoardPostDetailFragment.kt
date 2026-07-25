@@ -61,13 +61,6 @@ class BoardPostDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Window insets 처리 (상태바/카메라 홀 침범 예방)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(top = systemBars.top)
-            insets
-        }
-
         setupUI()
         setupListeners()
         observeViewModel()
@@ -81,7 +74,6 @@ class BoardPostDetailFragment : Fragment() {
         if (postId == -1L) {
             // 신규 등록 모드
             binding.tvTitle.visibility = View.VISIBLE
-            binding.tvHeaderTitle.visibility = View.GONE
             binding.tvDates.visibility = View.GONE
             binding.btnDelete.visibility = View.GONE
             binding.btnSave.text = getString(R.string.board_btn_save)
@@ -91,11 +83,9 @@ class BoardPostDetailFragment : Fragment() {
         } else {
             // 수정 모드
             binding.tvTitle.visibility = View.GONE
-            binding.tvHeaderTitle.visibility = View.VISIBLE
-            binding.tvHeaderTitle.text = getString(R.string.post_title_edit)
             binding.btnDelete.visibility = View.GONE // 삭제는 상세조회(Read) 화면의 더보기 메뉴에서 처리
             binding.btnSave.text = getString(R.string.board_btn_edit)
- 
+
             // 로딩 전 숨김
             binding.scrollView.visibility = View.INVISIBLE
             binding.layoutButtons.visibility = View.INVISIBLE
@@ -103,10 +93,6 @@ class BoardPostDetailFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        binding.btnBack.setOnClickListener {
-            findNavController().popBackStack()
-        }
-
         binding.btnSave.setOnClickListener {
             performSave()
         }

@@ -9,62 +9,6 @@
     <!-- ═══════════════════════════════════════
          Header / Toolbar
     ═══════════════════════════════════════ -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="60dp"
-        android:background="@color/white"
-        android:elevation="4dp"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/btn_back"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_chevron_left"
-            android:padding="12dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_header_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="테넌트 상세"
-            android:textColor="@color/black"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
-
-        <!-- 수정 / 저장 버튼 -->
-        <TextView
-            android:id="@+id/btn_action"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="수정"
-            android:textColor="@color/login_blue"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="10dp"
-            android:layout_marginEnd="4dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackground"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
     <!-- ═══════════════════════════════════════
          Scrollable Body
     ═══════════════════════════════════════ -->
@@ -73,7 +17,7 @@
         android:layout_height="0dp"
         android:fillViewport="true"
         android:overScrollMode="never"
-        app:layout_constraintTop_toBottomOf="@id/cl_header"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
@@ -103,25 +47,54 @@
                 android:padding="20dp"
                 android:visibility="gone">
 
-                <!-- ── 테넌트 ID (읽기 전용) ── -->
-                <TextView
-                    android:layout_width="wrap_content"
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="테넌트 ID"
-                    android:textColor="@color/gray_text"
-                    android:textSize="11sp"
-                    android:letterSpacing="0.05" />
+                    android:layout_marginBottom="16dp">
 
-                <TextView
-                    android:id="@+id/tv_tenant_id"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    tools:text="#1"
-                    android:textColor="#374151"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginBottom="20dp" />
+                    <!-- ── 테넌트 ID (읽기 전용) ── -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_alignParentStart="true">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="테넌트 ID"
+                            android:textColor="@color/gray_text"
+                            android:textSize="11sp"
+                            android:letterSpacing="0.05" />
+
+                        <TextView
+                            android:id="@+id/tv_tenant_id"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            tools:text="#1"
+                            android:textColor="#374151"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+
+                    <!-- 수정 / 저장 버튼 -->
+                    <TextView
+                        android:id="@+id/btn_action"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="수정"
+                        android:textColor="@color/login_blue"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="10dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true" />
+                </RelativeLayout>
 
                 <!-- ── 구분선 ── -->
                 <View
