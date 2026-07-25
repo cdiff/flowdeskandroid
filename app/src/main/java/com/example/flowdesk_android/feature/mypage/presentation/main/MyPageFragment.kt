@@ -36,6 +36,10 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage_main) {
 
 
 
+        binding.btnMypageHamburger.setOnClickListener {
+            (activity as? com.example.flowdesk_android.feature.main.MainActivity)?.openDrawer()
+        }
+
         binding.clProfileSection.setOnClickListener {
             findNavController().navigate(R.id.editProfileFragment)
         }
