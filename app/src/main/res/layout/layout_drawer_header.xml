@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#0F172A"
+    android:background="@color/slate_900"
     android:orientation="vertical"
-    android:paddingHorizontal="20dp"
+    android:paddingHorizontal="@dimen/spacing_xl"
     android:paddingTop="48dp"
-    android:paddingBottom="24dp">
+    android:paddingBottom="@dimen/spacing_2xl">
 
     <!-- Profile Header Top Row: User Name & Close Button (X) side-by-side -->
     <RelativeLayout
@@ -22,23 +22,23 @@
             android:layout_alignParentStart="true"
             android:layout_toStartOf="@id/btn_close_drawer"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="@dimen/spacing_sm"
             android:text="사용자 이름"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_xl"
             android:textStyle="bold" />
 
         <!-- Close Drawer Button (X) -->
         <ImageView
             android:id="@+id/btn_close_drawer"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="@dimen/icon_size_md"
+            android:layout_height="@dimen/icon_size_md"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="6dp"
             android:src="@drawable/ic_close"
-            app:tint="#94A3B8" />
+            app:tint="@color/slate_400" />
 
     </RelativeLayout>
 
@@ -47,16 +47,16 @@
         android:id="@+id/tv_drawer_user_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="@dimen/spacing_xs"
         android:text="user@flowdesk.com"
-        android:textColor="#94A3B8"
+        android:textColor="@color/slate_400"
         android:textSize="13sp" />
 
     <!-- Action Buttons Row: My Page & Logout Chips -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="@dimen/spacing_xl"
         android:orientation="horizontal">
 
         <!-- My Page Button -->
@@ -67,24 +67,24 @@
             android:layout_weight="1"
             android:layout_marginEnd="6dp"
             android:background="@drawable/bg_rect_rounded_light_gray"
-            android:backgroundTint="#1E293B"
+            android:backgroundTint="@color/slate_800"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
+                android:layout_width="@dimen/spacing_lg"
+                android:layout_height="@dimen/spacing_lg"
                 android:src="@drawable/ic_user"
-                app:tint="#38BDF8" />
+                app:tint="@color/sky_400" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
                 android:text="마이페이지"
-                android:textColor="#F1F5F9"
+                android:textColor="@color/slate_100"
                 android:textSize="13sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -97,24 +97,24 @@
             android:layout_weight="1"
             android:layout_marginStart="6dp"
             android:background="@drawable/bg_rect_rounded_light_gray"
-            android:backgroundTint="#1E293B"
+            android:backgroundTint="@color/slate_800"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
+                android:layout_width="@dimen/spacing_lg"
+                android:layout_height="@dimen/spacing_lg"
                 android:src="@drawable/ic_logout_red"
-                app:tint="#EF4444" />
+                app:tint="@color/red_500" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
                 android:text="로그아웃"
-                android:textColor="#FCA5A5"
+                android:textColor="@color/red_300"
                 android:textSize="13sp"
                 android:textStyle="bold" />
         </LinearLayout>

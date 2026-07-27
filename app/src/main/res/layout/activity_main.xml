@@ -17,10 +17,10 @@
             android:id="@+id/top_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="56dp"
-            android:background="#F8FAFC"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="10dp"
+            android:minHeight="@dimen/topbar_min_height"
+            android:background="@color/bg_page"
+            android:paddingHorizontal="@dimen/spacing_lg"
+            android:paddingVertical="@dimen/spacing_md"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -28,13 +28,13 @@
             <!-- Sub Screen Back Button (서브 상세 화면에서만 표출: ←) -->
             <ImageView
                 android:id="@+id/btn_nav_back"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="@dimen/icon_size_md"
+                android:layout_height="@dimen/icon_size_md"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="4dp"
+                android:padding="@dimen/spacing_xs"
                 android:src="@drawable/ic_chevron_left"
                 android:visibility="gone"
-                app:tint="#0F172A"
+                app:tint="@color/text_primary"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
@@ -44,11 +44,11 @@
                 android:id="@+id/tv_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="12dp"
+                android:layout_marginStart="@dimen/spacing_md"
+                android:layout_marginEnd="@dimen/spacing_md"
                 android:text="사용자 · 권한"
                 android:textColor="@color/black"
-                android:textSize="18sp"
+                android:textSize="@dimen/text_size_lg"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@id/btn_nav_back"
                 app:layout_constraintEnd_toStartOf="@id/ll_right_actions"
@@ -69,23 +69,23 @@
                 <!-- MyPage Profile Icon -->
                 <ImageView
                     android:id="@+id/iv_person"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_width="@dimen/icon_size_md"
+                    android:layout_height="@dimen/icon_size_md"
+                    android:layout_marginEnd="@dimen/spacing_sm"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:padding="5dp"
                     android:src="@drawable/ic_user"
-                    app:tint="#0F172A" />
+                    app:tint="@color/text_primary" />
 
                 <!-- Hamburger Menu Icon (≡) -->
                 <ImageView
                     android:id="@+id/btn_menu_hamburger"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="@dimen/icon_size_md"
+                    android:layout_height="@dimen/icon_size_md"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:padding="4dp"
+                    android:padding="@dimen/spacing_xs"
                     android:src="@drawable/ic_menu_hamburger"
-                    app:tint="#0F172A" />
+                    app:tint="@color/text_primary" />
 
             </LinearLayout>
 
@@ -110,7 +110,7 @@
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/drawer_fragment_container"
         android:name="com.example.flowdesk_android.feature.main.drawer.MainDrawerFragment"
-        android:layout_width="290dp"
+        android:layout_width="@dimen/drawer_width"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         tools:layout="@layout/fragment_main_drawer" />

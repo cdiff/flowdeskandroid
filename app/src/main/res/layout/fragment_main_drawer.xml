@@ -16,12 +16,12 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="8dp"
-        android:text="메인 메뉴"
+        android:layout_marginStart="@dimen/spacing_xl"
+        android:layout_marginTop="@dimen/spacing_xl"
+        android:layout_marginBottom="@dimen/spacing_sm"
+        android:text="@string/label_main_menu"
         android:textColor="@color/slate_400"
-        android:textSize="12sp"
+        android:textSize="@dimen/text_size_sm"
         android:textStyle="bold" />
 
     <!-- Dynamic Menu RecyclerView -->
@@ -32,7 +32,7 @@
         android:layout_weight="1"
         android:clipToPadding="false"
         android:overScrollMode="never"
-        android:paddingBottom="24dp"
+        android:paddingBottom="@dimen/spacing_2xl"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
     <!-- Footer / Version info -->
@@ -41,9 +41,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:paddingVertical="16dp"
+        android:paddingVertical="@dimen/spacing_lg"
         android:text="Flowdesk Android v1.0.0"
         android:textColor="@color/slate_300"
-        android:textSize="11sp" />
+        android:textSize="@dimen/text_size_xs" />
 
 </LinearLayout>
