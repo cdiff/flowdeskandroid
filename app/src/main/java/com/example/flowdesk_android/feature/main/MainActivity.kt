@@ -24,7 +24,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MainNavigator {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
@@ -198,7 +198,7 @@ class MainActivity : AppCompatActivity() {
                     binding.drawerLayout.closeDrawer(GravityCompat.START)
                     expandedMenuPageNames.clear()
                     setupDrawerMenu(currentMenuTree)
-                    navigateToMenu(menuDto)
+                    navigateToTab(menuDto.pageName)
                 }
             }
 
@@ -239,7 +239,7 @@ class MainActivity : AppCompatActivity() {
                         currentSelectedPageName = menuDto.pageName
                         currentSelectedSubId = subItem.id
                         setupDrawerMenu(currentMenuTree)
-                        navigateToSubMenu(menuDto.pageName, subItem)
+                        navigateToSubTab(menuDto.pageName, subItem.id, subItem.tabIndex)
                     }
 
                     container.addView(subBinding.root)
@@ -274,39 +274,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun navigateToSubMenu(parentPageName: String, subItem: SubMenuItem) {
-        try {
-            val navOptions = androidx.navigation.NavOptions.Builder()
-                .setPopUpTo(navController.graph.startDestinationId, false)
-                .setLaunchSingleTop(true)
-                .build()
+    // ── MainNavigator 구현 ──────────────────────────────────────────────
 
+    override fun navigateToTab(pageName: String, tabIndex: Int) {
+        try {
             val bundle = Bundle().apply {
-                putString("parent_page_name", parentPageName)
-                putInt("initial_tab_index", subItem.tabIndex)
+                putString("parent_page_name", pageName)
+                putInt("initial_tab_index", tabIndex)
             }
-
-            navController.navigate(R.id.usersFragment, bundle, navOptions)
+            navController.navigate(R.id.usersFragment, bundle, buildNavOptions())
         } catch (e: Exception) {
             android.widget.Toast.makeText(this, "화면 이동 오류: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun navigateToMenu(selectedMenu: Menu) {
+    override fun navigateToSubTab(pageName: String, subId: String, tabIndex: Int) {
         try {
-            val navOptions = androidx.navigation.NavOptions.Builder()
-                .setPopUpTo(navController.graph.startDestinationId, false)
-                .setLaunchSingleTop(true)
-                .build()
-
-            val pageName = selectedMenu.pageName
-            val bundle = Bundle().apply { putString("parent_page_name", pageName) }
-
-            navController.navigate(R.id.usersFragment, bundle, navOptions)
+            val bundle = Bundle().apply {
+                putString("parent_page_name", pageName)
+                putInt("initial_tab_index", tabIndex)
+            }
+            navController.navigate(R.id.usersFragment, bundle, buildNavOptions())
         } catch (e: Exception) {
             android.widget.Toast.makeText(this, "화면 이동 오류: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
         }
     }
+
+    private fun buildNavOptions() = androidx.navigation.NavOptions.Builder()
+        .setPopUpTo(navController.graph.startDestinationId, false)
+        .setLaunchSingleTop(true)
+        .build()
 
     private fun setupTopBarAndDrawerListeners() {
         // 우측 햄버거 메뉴 버튼 (≡) 클릭 ➡️ 사이드 드로어 오픈
