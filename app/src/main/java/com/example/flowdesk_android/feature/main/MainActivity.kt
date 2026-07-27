@@ -1,7 +1,6 @@
 package com.example.flowdesk_android.feature.main
 
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
@@ -49,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             statusBarTopHeight = systemBars.top
-            val extraPadding = (12 * binding.topBar.resources.displayMetrics.density).toInt()
+            val extraPadding = resources.getDimensionPixelSize(R.dimen.topbar_extra_padding_top)
             binding.topBar.updatePadding(top = systemBars.top + extraPadding)
             binding.navHostFragment.updatePadding(top = 0)
             insets
@@ -131,9 +130,9 @@ class MainActivity : AppCompatActivity() {
         val container = binding.llDrawerMenuList
         container.removeAllViews()
 
-        val primaryBlue = Color.parseColor("#2563EB")
-        val defaultSlate = Color.parseColor("#475569")
-        val textDark = Color.parseColor("#0F172A")
+        val primaryBlue = getColor(R.color.drawer_item_selected)
+        val defaultSlate = getColor(R.color.slate_600)
+        val textDark = getColor(R.color.text_primary)
 
         currentMenuTree.forEach { menuDto ->
             val itemBinding = ItemDrawerMenuBinding.inflate(layoutInflater, container, false)
@@ -231,8 +230,8 @@ class MainActivity : AppCompatActivity() {
                         subBinding.vBullet.backgroundTintList = ColorStateList.valueOf(primaryBlue)
                         subBinding.tvSubMenuName.setTextColor(primaryBlue)
                     } else {
-                        subBinding.vBullet.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#94A3B8"))
-                        subBinding.tvSubMenuName.setTextColor(Color.parseColor("#334155"))
+                        subBinding.vBullet.backgroundTintList = ColorStateList.valueOf(getColor(R.color.slate_400))
+                        subBinding.tvSubMenuName.setTextColor(getColor(R.color.slate_700))
                     }
 
                     subBinding.llDrawerSubItem.setOnClickListener {
@@ -363,7 +362,7 @@ class MainActivity : AppCompatActivity() {
                 binding.topBar.visibility = View.VISIBLE
                 binding.btnNavBack.visibility = View.VISIBLE
                 binding.llRightActions.visibility = View.GONE
-                binding.topBar.setBackgroundColor(android.graphics.Color.WHITE) // 서브 화면: 흰색
+                binding.topBar.setBackgroundColor(getColor(R.color.white)) // 서브 화면: 흰색
                 binding.tvTitle.textSize = 18f // 서브 화면: 18sp
 
                 // 추가 모드(신규 등록) 화면은 타이틀 없음, 그 외 nav_graph label 자동 바인딩
@@ -392,7 +391,7 @@ class MainActivity : AppCompatActivity() {
                 binding.topBar.visibility = View.VISIBLE
                 binding.btnNavBack.visibility = View.GONE
                 binding.llRightActions.visibility = View.VISIBLE
-                binding.topBar.setBackgroundColor(android.graphics.Color.parseColor("#F8FAFC")) // 메인 탭: 원래 색상
+                binding.topBar.setBackgroundColor(getColor(R.color.bg_page)) // 메인 탭: 원래 색상
                 binding.tvTitle.textSize = 20f // 메인 탭: 20sp
 
                 when (destination.id) {

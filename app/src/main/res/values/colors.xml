@@ -80,6 +80,9 @@
     <!-- Navigation -->
     <color name="nav_icon">@color/slate_400</color>
 
+    <!-- Drawer -->
+    <color name="drawer_item_selected">#2563EB</color>
+
     <!-- ══════════════════════════════════════
          ③ Badge Colors (Action Log)
     ══════════════════════════════════════ -->
