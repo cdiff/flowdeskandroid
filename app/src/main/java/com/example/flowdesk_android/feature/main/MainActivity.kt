@@ -29,10 +29,6 @@ class MainActivity : AppCompatActivity(), MainNavigator {
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private val viewModel: MainViewModel by viewModels()
-    private var currentMenuTree: List<Menu> = emptyList()
-    private var currentSelectedPageName: String? = null
-    private var currentSelectedSubId: String? = null
-    private val expandedMenuPageNames = mutableSetOf<String>()
     private var statusBarTopHeight: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,17 +81,24 @@ class MainActivity : AppCompatActivity(), MainNavigator {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.collect { state ->
-                    when (state) {
-                        is MainUiState.Success -> {
-                            val authInfo = state.data
-                            val menuTree = authInfo.menuTree ?: emptyList()
+                launch {
+                    viewModel.uiState.collect { state ->
+                        when (state) {
+                            is MainUiState.Success -> {
+                                val authInfo = state.data
+                                val menuTree = authInfo.menuTree ?: emptyList()
 
-                            // 드로어 프로필 및 동적 메뉴 리스트 바인딩
-                            setupDrawerHeader(authInfo)
-                            setupDrawerMenu(menuTree)
+                                // 드로어 프로필 설정 및 ViewModel에 메뉴 트리 전달
+                                setupDrawerHeader(authInfo)
+                                viewModel.setMenuTree(menuTree)
+                            }
+                            else -> {}
                         }
-                        else -> {}
+                    }
+                }
+                launch {
+                    viewModel.drawerState.collect { drawerState ->
+                        setupDrawerMenu(drawerState)
                     }
                 }
             }
@@ -125,8 +128,7 @@ class MainActivity : AppCompatActivity(), MainNavigator {
         }
     }
 
-    private fun setupDrawerMenu(menuTree: List<Menu>) {
-        currentMenuTree = menuTree.sortedBy { it.order }
+    private fun setupDrawerMenu(drawerState: MainDrawerState) {
         val container = binding.llDrawerMenuList
         container.removeAllViews()
 
@@ -134,7 +136,7 @@ class MainActivity : AppCompatActivity(), MainNavigator {
         val defaultSlate = getColor(R.color.slate_600)
         val textDark = getColor(R.color.text_primary)
 
-        currentMenuTree.forEach { menuDto ->
+        drawerState.menuTree.forEach { menuDto ->
             val itemBinding = ItemDrawerMenuBinding.inflate(layoutInflater, container, false)
 
             val cleanDisplayName = if (menuDto.displayName.trim().endsWith("관리")) {
@@ -156,10 +158,10 @@ class MainActivity : AppCompatActivity(), MainNavigator {
             }
             itemBinding.ivMenuIcon.setImageResource(iconRes)
 
-            val isSelected = (menuDto.pageName == currentSelectedPageName)
+            val isSelected = (menuDto.pageName == drawerState.selectedPageName)
             itemBinding.llDrawerMenuItem.isSelected = isSelected
 
-            // 아이콘 및 텍스트 선택 활성 색상(블루 #2563EB) 피드백
+            // 아이콘 및 텍스트 선택 활성 색상 피드백
             if (isSelected) {
                 itemBinding.ivMenuIcon.imageTintList = ColorStateList.valueOf(primaryBlue)
                 itemBinding.tvMenuName.setTextColor(primaryBlue)
@@ -170,7 +172,7 @@ class MainActivity : AppCompatActivity(), MainNavigator {
 
             // 하위 메뉴(Children) 확인 및 아코디언 처리
             val subItems = getSubMenuItems(menuDto)
-            val isExpanded = expandedMenuPageNames.contains(menuDto.pageName)
+            val isExpanded = drawerState.expandedPageNames.contains(menuDto.pageName)
 
             if (subItems.isNotEmpty()) {
                 itemBinding.ivChevron.visibility = View.VISIBLE
@@ -180,24 +182,9 @@ class MainActivity : AppCompatActivity(), MainNavigator {
             }
 
             itemBinding.llDrawerMenuItem.setOnClickListener {
-                // 사용자가 터치한 메인 메뉴에 즉시 블루 하이라이트 표시
-                currentSelectedPageName = menuDto.pageName
-                currentSelectedSubId = null
-
-                if (subItems.isNotEmpty()) {
-                    // 자식 메뉴가 있는 부모 메뉴: 클릭한 부모 메뉴 블루 강조 + 아코디언 토글 + 타 아코디언 자동 접힘
-                    if (isExpanded) {
-                        expandedMenuPageNames.remove(menuDto.pageName)
-                    } else {
-                        expandedMenuPageNames.clear() // 다른 열려있던 하위 메뉴 아코디언 자동 접힘
-                        expandedMenuPageNames.add(menuDto.pageName)
-                    }
-                    setupDrawerMenu(currentMenuTree)
-                } else {
-                    // 자식 메뉴가 없는 단일 메뉴: 클릭한 메뉴 블루 강조 + 페이지 이동 및 드로어 닫기
+                viewModel.selectMenu(menuDto.pageName, subItems.isNotEmpty())
+                if (subItems.isEmpty()) {
                     binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    expandedMenuPageNames.clear()
-                    setupDrawerMenu(currentMenuTree)
                     navigateToTab(menuDto.pageName)
                 }
             }
@@ -205,13 +192,7 @@ class MainActivity : AppCompatActivity(), MainNavigator {
             // 우측 화살표 아이콘 클릭 동일 동작
             itemBinding.ivChevron.setOnClickListener {
                 if (subItems.isNotEmpty()) {
-                    if (isExpanded) {
-                        expandedMenuPageNames.remove(menuDto.pageName)
-                    } else {
-                        expandedMenuPageNames.clear()
-                        expandedMenuPageNames.add(menuDto.pageName)
-                    }
-                    setupDrawerMenu(currentMenuTree)
+                    viewModel.toggleExpand(menuDto.pageName)
                 }
             }
 
@@ -223,7 +204,7 @@ class MainActivity : AppCompatActivity(), MainNavigator {
                     val subBinding = ItemDrawerSubMenuBinding.inflate(layoutInflater, container, false)
                     subBinding.tvSubMenuName.text = subItem.displayName
 
-                    val isSubSelected = (currentSelectedSubId == subItem.id)
+                    val isSubSelected = (drawerState.selectedSubId == subItem.id)
                     subBinding.llDrawerSubItem.isSelected = isSubSelected
 
                     if (isSubSelected) {
@@ -236,9 +217,7 @@ class MainActivity : AppCompatActivity(), MainNavigator {
 
                     subBinding.llDrawerSubItem.setOnClickListener {
                         binding.drawerLayout.closeDrawer(GravityCompat.START)
-                        currentSelectedPageName = menuDto.pageName
-                        currentSelectedSubId = subItem.id
-                        setupDrawerMenu(currentMenuTree)
+                        viewModel.selectSubMenu(menuDto.pageName, subItem.id)
                         navigateToSubTab(menuDto.pageName, subItem.id, subItem.tabIndex)
                     }
 
@@ -394,8 +373,8 @@ class MainActivity : AppCompatActivity(), MainNavigator {
                 when (destination.id) {
                     R.id.usersFragment -> {
                         val pageName = arguments?.getString("parent_page_name") ?: "user_management"
-                        currentSelectedPageName = pageName
-                        val rawTitle = currentMenuTree.find { it.pageName == pageName }?.displayName
+                        viewModel.updateSelectedPageName(pageName)
+                        val rawTitle = viewModel.drawerState.value.menuTree.find { it.pageName == pageName }?.displayName
                             ?: "사용자 · 권한"
                         val menuTitle = rawTitle.replace("&", "·")
                         binding.tvTitle.text = menuTitle

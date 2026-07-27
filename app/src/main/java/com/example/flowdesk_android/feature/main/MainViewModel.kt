@@ -19,6 +19,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
+import com.example.flowdesk_android.feature.auth.domain.model.Menu
+
 sealed class MainUiState {
     object Idle : MainUiState()
     object Loading : MainUiState()
@@ -26,11 +28,75 @@ sealed class MainUiState {
     data class Error(val message: String) : MainUiState()
 }
 
+data class MainDrawerState(
+    val menuTree: List<Menu> = emptyList(),
+    val selectedPageName: String? = null,
+    val selectedSubId: String? = null,
+    val expandedPageNames: Set<String> = emptySet()
+)
+
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val sessionManager: com.example.flowdesk_android.data.local.SessionManager
 ) : ViewModel() {
+
+    private val _drawerState = MutableStateFlow(MainDrawerState())
+    val drawerState: StateFlow<MainDrawerState> = _drawerState.asStateFlow()
+
+    fun setMenuTree(menuTree: List<Menu>) {
+        val sorted = menuTree.sortedBy { it.order }
+        _drawerState.update { it.copy(menuTree = sorted) }
+    }
+
+    fun selectMenu(pageName: String, hasSubItems: Boolean) {
+        _drawerState.update { current ->
+            if (hasSubItems) {
+                val newExpanded = if (current.expandedPageNames.contains(pageName)) {
+                    current.expandedPageNames - pageName
+                } else {
+                    setOf(pageName) // 다른 아코디언은 자동 접힘
+                }
+                current.copy(
+                    selectedPageName = pageName,
+                    selectedSubId = null,
+                    expandedPageNames = newExpanded
+                )
+            } else {
+                current.copy(
+                    selectedPageName = pageName,
+                    selectedSubId = null,
+                    expandedPageNames = emptySet()
+                )
+            }
+        }
+    }
+
+    fun toggleExpand(pageName: String) {
+        _drawerState.update { current ->
+            val newExpanded = if (current.expandedPageNames.contains(pageName)) {
+                current.expandedPageNames - pageName
+            } else {
+                setOf(pageName)
+            }
+            current.copy(expandedPageNames = newExpanded)
+        }
+    }
+
+    fun selectSubMenu(parentPageName: String, subId: String) {
+        _drawerState.update { current ->
+            current.copy(
+                selectedPageName = parentPageName,
+                selectedSubId = subId
+            )
+        }
+    }
+
+    fun updateSelectedPageName(pageName: String) {
+        _drawerState.update { current ->
+            current.copy(selectedPageName = pageName)
+        }
+    }
 
     // 1. 수동 리프레시 트리거
     private val _refreshTrigger = MutableStateFlow(0)
