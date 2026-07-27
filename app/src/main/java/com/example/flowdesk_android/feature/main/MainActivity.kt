@@ -1,6 +1,5 @@
 package com.example.flowdesk_android.feature.main
 
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
@@ -16,10 +15,6 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.databinding.ActivityMainBinding
-import com.example.flowdesk_android.databinding.ItemDrawerMenuBinding
-import com.example.flowdesk_android.databinding.ItemDrawerSubMenuBinding
-import com.example.flowdesk_android.feature.auth.domain.model.AuthMeInfo
-import com.example.flowdesk_android.feature.auth.domain.model.Menu
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -81,175 +76,13 @@ class MainActivity : AppCompatActivity(), MainNavigator {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.uiState.collect { state ->
-                        when (state) {
-                            is MainUiState.Success -> {
-                                val authInfo = state.data
-                                val menuTree = authInfo.menuTree ?: emptyList()
-
-                                // 드로어 프로필 설정 및 ViewModel에 메뉴 트리 전달
-                                setupDrawerHeader(authInfo)
-                                viewModel.setMenuTree(menuTree)
-                            }
-                            else -> {}
-                        }
-                    }
-                }
-                launch {
-                    viewModel.drawerState.collect { drawerState ->
-                        setupDrawerMenu(drawerState)
+                viewModel.uiState.collect { state ->
+                    if (state is MainUiState.Success) {
+                        val menuTree = state.data.menuTree ?: emptyList()
+                        viewModel.setMenuTree(menuTree)
                     }
                 }
             }
-        }
-    }
-
-    private fun setupDrawerHeader(authInfo: AuthMeInfo) {
-        val header = binding.layoutDrawerHeader
-        header.tvDrawerUserName.text = authInfo.user.name.ifEmpty { "사용자" }
-        header.tvDrawerUserEmail.text = authInfo.user.email
-
-        header.btnCloseDrawer.setOnClickListener {
-            binding.drawerLayout.closeDrawer(GravityCompat.START)
-        }
-
-        header.btnDrawerMypage.setOnClickListener {
-            binding.drawerLayout.closeDrawer(GravityCompat.START)
-            try {
-                navController.navigate(R.id.myPageFragment)
-            } catch (e: Exception) {
-            }
-        }
-
-        header.btnDrawerLogout.setOnClickListener {
-            binding.drawerLayout.closeDrawer(GravityCompat.START)
-            finish()
-        }
-    }
-
-    private fun setupDrawerMenu(drawerState: MainDrawerState) {
-        val container = binding.llDrawerMenuList
-        container.removeAllViews()
-
-        val primaryBlue = getColor(R.color.drawer_item_selected)
-        val defaultSlate = getColor(R.color.slate_600)
-        val textDark = getColor(R.color.text_primary)
-
-        drawerState.menuTree.forEach { menuDto ->
-            val itemBinding = ItemDrawerMenuBinding.inflate(layoutInflater, container, false)
-
-            val cleanDisplayName = if (menuDto.displayName.trim().endsWith("관리")) {
-                val raw = menuDto.displayName.trim()
-                raw.substring(0, raw.length - 2).trim()
-            } else {
-                menuDto.displayName
-            }.replace("&", "·").trim()
-
-            itemBinding.tvMenuName.text = cleanDisplayName
-
-            val iconRes = when (menuDto.pageName) {
-                "super" -> R.drawable.ic_super_admin
-                "user_management" -> R.drawable.ic_users
-                "system_management" -> R.drawable.ic_system
-                "content_management" -> R.drawable.ic_tenant_banner
-                "counsel_management" -> R.drawable.ic_counsel
-                else -> R.drawable.ic_default_menu
-            }
-            itemBinding.ivMenuIcon.setImageResource(iconRes)
-
-            val isSelected = (menuDto.pageName == drawerState.selectedPageName)
-            itemBinding.llDrawerMenuItem.isSelected = isSelected
-
-            // 아이콘 및 텍스트 선택 활성 색상 피드백
-            if (isSelected) {
-                itemBinding.ivMenuIcon.imageTintList = ColorStateList.valueOf(primaryBlue)
-                itemBinding.tvMenuName.setTextColor(primaryBlue)
-            } else {
-                itemBinding.ivMenuIcon.imageTintList = ColorStateList.valueOf(defaultSlate)
-                itemBinding.tvMenuName.setTextColor(textDark)
-            }
-
-            // 하위 메뉴(Children) 확인 및 아코디언 처리
-            val subItems = getSubMenuItems(menuDto)
-            val isExpanded = drawerState.expandedPageNames.contains(menuDto.pageName)
-
-            if (subItems.isNotEmpty()) {
-                itemBinding.ivChevron.visibility = View.VISIBLE
-                itemBinding.ivChevron.rotation = if (isExpanded) 90f else 0f
-            } else {
-                itemBinding.ivChevron.visibility = View.GONE
-            }
-
-            itemBinding.llDrawerMenuItem.setOnClickListener {
-                viewModel.selectMenu(menuDto.pageName, subItems.isNotEmpty())
-                if (subItems.isEmpty()) {
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    navigateToTab(menuDto.pageName)
-                }
-            }
-
-            // 우측 화살표 아이콘 클릭 동일 동작
-            itemBinding.ivChevron.setOnClickListener {
-                if (subItems.isNotEmpty()) {
-                    viewModel.toggleExpand(menuDto.pageName)
-                }
-            }
-
-            container.addView(itemBinding.root)
-
-            // 아코디언이 펼쳐진 상태일 경우 하위 메뉴 목록 인플레이션
-            if (isExpanded && subItems.isNotEmpty()) {
-                subItems.forEach { subItem ->
-                    val subBinding = ItemDrawerSubMenuBinding.inflate(layoutInflater, container, false)
-                    subBinding.tvSubMenuName.text = subItem.displayName
-
-                    val isSubSelected = (drawerState.selectedSubId == subItem.id)
-                    subBinding.llDrawerSubItem.isSelected = isSubSelected
-
-                    if (isSubSelected) {
-                        subBinding.vBullet.backgroundTintList = ColorStateList.valueOf(primaryBlue)
-                        subBinding.tvSubMenuName.setTextColor(primaryBlue)
-                    } else {
-                        subBinding.vBullet.backgroundTintList = ColorStateList.valueOf(getColor(R.color.slate_400))
-                        subBinding.tvSubMenuName.setTextColor(getColor(R.color.slate_700))
-                    }
-
-                    subBinding.llDrawerSubItem.setOnClickListener {
-                        binding.drawerLayout.closeDrawer(GravityCompat.START)
-                        viewModel.selectSubMenu(menuDto.pageName, subItem.id)
-                        navigateToSubTab(menuDto.pageName, subItem.id, subItem.tabIndex)
-                    }
-
-                    container.addView(subBinding.root)
-                }
-            }
-        }
-    }
-
-    private data class SubMenuItem(val id: String, val displayName: String, val tabIndex: Int)
-
-    private fun getSubMenuItems(parentMenu: Menu): List<SubMenuItem> {
-        if (parentMenu.children.isNotEmpty()) {
-            return parentMenu.children.mapIndexed { index, child ->
-                SubMenuItem(child.pageName, child.displayName, index)
-            }
-        }
-        return when (parentMenu.pageName) {
-            "system_management" -> listOf(
-                SubMenuItem("status", "테넌트 상태", 0),
-                SubMenuItem("block", "차단 설정", 1),
-                SubMenuItem("website", "웹사이트 관리", 2),
-                SubMenuItem("board_type", "게시판 타입", 3)
-            )
-            "user_management", "super" -> listOf(
-                SubMenuItem("users", "사용자 목록", 0),
-                SubMenuItem("roles", "역할 목록", 1)
-            )
-            "content_management" -> listOf(
-                SubMenuItem("board_post", "게시글 관리", 0)
-            )
-            else -> emptyList()
         }
     }
 

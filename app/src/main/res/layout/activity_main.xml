@@ -106,60 +106,13 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Side Navigation Drawer -->
-    <LinearLayout
-        android:id="@+id/side_drawer_container"
+    <!-- Side Navigation Drawer Container -->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/drawer_fragment_container"
+        android:name="com.example.flowdesk_android.feature.main.drawer.MainDrawerFragment"
         android:layout_width="290dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="#FFFFFF"
-        android:clickable="true"
-        android:focusable="true"
-        android:orientation="vertical">
-
-        <!-- Drawer Header -->
-        <include
-            android:id="@+id/layout_drawer_header"
-            layout="@layout/layout_drawer_header" />
-
-        <!-- Drawer Menu Section Label -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="8dp"
-            android:text="메인 메뉴"
-            android:textColor="#94A3B8"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-
-        <!-- Dynamic Menu Container -->
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:overScrollMode="never">
-
-            <LinearLayout
-                android:id="@+id/ll_drawer_menu_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingBottom="24dp" />
-        </ScrollView>
-
-        <!-- Footer / Version info -->
-        <TextView
-            android:id="@+id/tv_drawer_footer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:paddingVertical="16dp"
-            android:text="Flowdesk Android v1.0.0"
-            android:textColor="#CBD5E1"
-            android:textSize="11sp" />
-
-    </LinearLayout>
+        tools:layout="@layout/fragment_main_drawer" />
 
 </androidx.drawerlayout.widget.DrawerLayout>
