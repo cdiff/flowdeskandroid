@@ -163,9 +163,17 @@ class MainActivity : AppCompatActivity(), MainNavigator {
 
             val isSubScreen = subScreens.contains(destination.id)
 
-            if (destination.id == R.id.myPageFragment || destination.id == R.id.inviteTeamFragment) {
-                // 마이페이지 & 팀원 초대: 자체 헤더 사용 ➡️ 메인 탑바 숨김
+            if (destination.id == R.id.inviteTeamFragment) {
+                // 팀원 초대: 자체 헤더 사용 ➡️ 메인 탑바 숨김
                 binding.topBar.visibility = View.GONE
+            } else if (destination.id == R.id.myPageFragment) {
+                // 마이페이지: 흰색 배경(#FFFFFF), "마이페이지" 타이틀 표출, 우측 아이콘 그룹(프로필 + 햄버거) 노출
+                binding.topBar.visibility = View.VISIBLE
+                binding.btnNavBack.visibility = View.GONE
+                binding.llRightActions.visibility = View.VISIBLE
+                binding.topBar.setBackgroundColor(getColor(R.color.white))
+                binding.tvTitle.text = "마이페이지"
+                binding.tvTitle.textSize = 20f
             } else if (isSubScreen) {
                 // 서브 상세/수정/추가 화면: 메인 탑바 표출 (뒤로가기 ← 노출, 우측버튼 숨김)
                 binding.topBar.visibility = View.VISIBLE

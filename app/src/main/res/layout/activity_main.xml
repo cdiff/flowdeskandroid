@@ -55,7 +55,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
-            <!-- Top Right Actions: MyPage Icon & Hamburger Icon side-by-side -->
+            <!-- Top Right Actions: Profile Icon & Hamburger Icon -->
             <LinearLayout
                 android:id="@+id/ll_right_actions"
                 android:layout_width="wrap_content"
