@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/white"
+    tools:context=".feature.auth.presentation.login.LoginFragment">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -34,16 +35,16 @@
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.95" />
 
-            <!-- 상단 타이틀 (시원한 여백과 세련된 서체) -->
+            <!-- 상단 타이틀 텍스트 (로고 삭제 및 중앙 정렬) -->
             <TextView
                 android:id="@+id/tvTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="110dp"
+                android:layout_marginTop="120dp"
                 android:gravity="center"
                 android:lineSpacingExtra="4dp"
                 android:text="@string/login_title"
-                android:textColor="#0F172A"
+                android:textColor="@color/text_primary"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="@id/guideEnd"

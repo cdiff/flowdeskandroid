@@ -24,7 +24,20 @@ class SplashFragment : Fragment(R.layout.fragment_auth_splash) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        startTextFadeInAnimation(view)
         observeViewModel()
+    }
+
+    private fun startTextFadeInAnimation(view: View) {
+        val tvLogo = view.findViewById<android.widget.TextView>(R.id.tv_logo) ?: return
+        viewLifecycleOwner.lifecycleScope.launch {
+            kotlinx.coroutines.delay(1800L)
+            tvLogo.visibility = View.VISIBLE
+            tvLogo.animate()
+                .alpha(1.0f)
+                .setDuration(500L)
+                .start()
+        }
     }
 
     private fun observeViewModel() {
