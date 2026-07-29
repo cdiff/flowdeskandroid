@@ -35,7 +35,7 @@ class RoleDetailFragment : BaseFragment(R.layout.fragment_user_management_role_d
 
     private var currentRoleId: Int = -1
 
-    override fun getToolbarView(view: View): View? = binding.toolbar
+    override fun getToolbarView(view: View): View? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentUserManagementRoleDetailBinding.bind(view)
@@ -44,16 +44,9 @@ class RoleDetailFragment : BaseFragment(R.layout.fragment_user_management_role_d
 
     override fun initView() {
         currentRoleId = arguments?.getInt("roleId") ?: return
-        setupToolbar()
         setupEditButton()
         setupViewPagerAnimation()
         viewModel.loadRoleDetail(currentRoleId)
-    }
-
-    private fun setupToolbar() {
-        binding.btnBack.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
     }
 
     private fun setupEditButton() {
@@ -130,7 +123,6 @@ class RoleDetailFragment : BaseFragment(R.layout.fragment_user_management_role_d
                 // UI State Observe
                 launch {
                     viewModel.uiState.collect { state ->
-                        binding.progressBar.isVisible = state is RoleDetailUiState.Loading
                         binding.scrollView.visibility =
                             if (state is RoleDetailUiState.Success) View.VISIBLE else View.INVISIBLE
 

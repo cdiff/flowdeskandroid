@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <!-- Drawer Header -->
+    <include
+        android:id="@+id/layout_drawer_header"
+        layout="@layout/layout_drawer_header" />
+
+    <!-- Drawer Menu Section Label -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_xl"
+        android:layout_marginTop="@dimen/spacing_xl"
+        android:layout_marginBottom="@dimen/spacing_sm"
+        android:text="@string/label_main_menu"
+        android:textColor="@color/slate_400"
+        android:textSize="@dimen/text_size_sm"
+        android:textStyle="bold" />
+
+    <!-- Dynamic Menu RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_drawer_menu_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:paddingBottom="@dimen/spacing_2xl"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+    <!-- Footer / Version info -->
+    <TextView
+        android:id="@+id/tv_drawer_footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingVertical="@dimen/spacing_lg"
+        android:text="Flowdesk Android v1.0.0"
+        android:textColor="@color/slate_300"
+        android:textSize="@dimen/text_size_xs" />
+
+</LinearLayout>

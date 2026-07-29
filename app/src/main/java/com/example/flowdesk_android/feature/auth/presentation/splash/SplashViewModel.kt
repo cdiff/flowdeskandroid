@@ -7,6 +7,7 @@ import com.example.flowdesk_android.feature.auth.domain.model.AuthSession
 import com.example.flowdesk_android.feature.auth.domain.repository.AuthRepository
 import com.example.flowdesk_android.feature.auth.domain.usecase.AuthenticateSessionUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,6 +39,7 @@ class SplashViewModel @Inject constructor(
     private fun checkSession() {
         viewModelScope.launch {
             _uiState.value = SplashUiState.Loading
+            val startTime = System.currentTimeMillis()
             
             // 1. 로컬 저장 토큰을 기반으로 세션 초기화 실행
             authSessionUseCase.initializeSession()
@@ -45,22 +47,33 @@ class SplashViewModel @Inject constructor(
             // 2. 초기화 완료된 세션 상태 가져오기
             val currentSession = authSessionUseCase.sessionState.value
             
-            if (currentSession is AuthSession.Active) {
+            val targetState = if (currentSession is AuthSession.Active) {
                 // 3. 로그인 상태가 유지 중이면 권한 및 메뉴 정보 조회 API 호출
-                fetchMenuInfo()
+                fetchMenuInfoState()
             } else {
                 // 4. 게스트 또는 로그아웃 상태이면 로그인 화면으로 리다이렉트
-                _uiState.value = SplashUiState.NavigateToLogin
+                SplashUiState.NavigateToLogin
             }
+
+            // 2초(2000ms) 최소 노출 시간 보장
+            val elapsedTime = System.currentTimeMillis() - startTime
+            val remainingTime = SPLASH_DURATION_MS - elapsedTime
+            if (remainingTime > 0) {
+                delay(remainingTime)
+            }
+
+            _uiState.value = targetState
         }
     }
 
-    private suspend fun fetchMenuInfo() {
-        authRepository.getMe().onSuccess { info ->
-            _uiState.value = SplashUiState.Success(info)
-        }.onFailure { exception ->
-            // 네트워크 오류 등으로 메뉴 정보 획득 실패 시, 에러 상태로 분기하거나 로그인 화면으로 넘김
-            _uiState.value = SplashUiState.Error(exception.message ?: "메뉴 정보를 가져오는데 실패했습니다.")
-        }
+    private suspend fun fetchMenuInfoState(): SplashUiState {
+        return authRepository.getMe().fold(
+            onSuccess = { info -> SplashUiState.Success(info) },
+            onFailure = { exception -> SplashUiState.Error(exception.message ?: "메뉴 정보를 가져오는데 실패했습니다.") }
+        )
+    }
+
+    companion object {
+        private const val SPLASH_DURATION_MS = 2300L
     }
 }

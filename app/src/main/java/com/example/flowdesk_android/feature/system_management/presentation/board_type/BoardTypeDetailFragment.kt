@@ -49,13 +49,6 @@ class BoardTypeDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Window insets 처리 (상태바/카메라 홀 침범 예방)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(top = systemBars.top)
-            insets
-        }
-
         setupUI()
         setupListeners()
         observeViewModel()
@@ -69,7 +62,6 @@ class BoardTypeDetailFragment : Fragment() {
         if (boardId == -1L) {
             // 생성 모드
             binding.tvTitle.visibility = View.VISIBLE
-            binding.tvHeaderTitle.visibility = View.GONE
             binding.tvDates.visibility = View.GONE
             binding.etBoardKey.isEnabled = true
             binding.btnSave.text = getString(R.string.board_btn_save)
@@ -80,8 +72,6 @@ class BoardTypeDetailFragment : Fragment() {
         } else {
             // 상세/수정 모드
             binding.tvTitle.visibility = View.GONE
-            binding.tvHeaderTitle.visibility = View.VISIBLE
-            binding.tvHeaderTitle.text = getString(R.string.board_title_detail)
             binding.etBoardKey.isEnabled = false // 키 수정 불가
             binding.btnSave.text = getString(R.string.board_btn_edit)
 
@@ -92,10 +82,6 @@ class BoardTypeDetailFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        binding.btnBack.setOnClickListener {
-            findNavController().popBackStack()
-        }
-
         binding.btnSave.setOnClickListener {
             performSave()
         }

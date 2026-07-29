@@ -71,13 +71,6 @@ class StatusEditFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Window insets 처리
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(top = systemBars.top)
-            insets
-        }
-
         setupFocusHighlights()
         setupColorPicker()
         setupGroupAutoComplete()
@@ -143,10 +136,6 @@ class StatusEditFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        binding.btnBack.setOnClickListener {
-            findNavController().popBackStack()
-        }
-
         // 상태 고유 키 포커싱 및 실시간 검증 리스너
         binding.etStatusKey.setOnFocusChangeListener { _, hasFocus ->
             binding.lineStatusKey.setBackgroundColor(
@@ -199,12 +188,9 @@ class StatusEditFragment : Fragment() {
         if (tenantStatusId != -1L) {
             binding.tvTitle.visibility = View.GONE
             binding.btnSave.text = getString(R.string.board_btn_save)
-            binding.tvHeaderTitle.visibility = View.VISIBLE
-            binding.tvHeaderTitle.text = getString(R.string.status_title_detail)
             binding.scrollView.visibility = View.INVISIBLE
         } else {
             binding.tvTitle.text = getString(R.string.status_title_create)
-            binding.tvHeaderTitle.visibility = View.GONE
             binding.scrollView.visibility = View.VISIBLE
         }
 
@@ -246,8 +232,6 @@ class StatusEditFragment : Fragment() {
         if (detail != null) {
             binding.tvTitle.visibility = View.GONE
             binding.btnSave.text = getString(R.string.board_btn_save)
-            binding.tvHeaderTitle.visibility = View.VISIBLE
-            binding.tvHeaderTitle.text = getString(R.string.status_title_detail)
 
             binding.layoutStatusGroup.visibility = View.VISIBLE
             binding.layoutGroupSelector.setReadOnly(true, binding.btnGroupDropdown)
@@ -282,7 +266,6 @@ class StatusEditFragment : Fragment() {
             binding.tvTitle.text = getString(R.string.status_title_create)
             binding.tvTitle.visibility = View.VISIBLE
             binding.btnSave.text = getString(R.string.status_btn_create)
-            binding.tvHeaderTitle.visibility = View.GONE
 
             binding.layoutStatusGroup.visibility = View.VISIBLE
             binding.layoutGroupSelector.setReadOnly(false, binding.btnGroupDropdown)

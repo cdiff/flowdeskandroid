@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ══════════════════════════════════════
+         ① Spacing Scale (Margins / Paddings)
+    ══════════════════════════════════════ -->
+    <dimen name="spacing_2xs">2dp</dimen>
+    <dimen name="spacing_xs">4dp</dimen>
+    <dimen name="spacing_sm">8dp</dimen>
+    <dimen name="spacing_md">12dp</dimen>
+    <dimen name="spacing_lg">16dp</dimen>
+    <dimen name="spacing_xl">20dp</dimen>
+    <dimen name="spacing_2xl">24dp</dimen>
+    <dimen name="spacing_3xl">28dp</dimen>
+    <dimen name="spacing_4xl">32dp</dimen>
+    <dimen name="spacing_bottom_content">100dp</dimen>
+
+    <!-- TopBar Specific -->
+    <dimen name="topbar_min_height">56dp</dimen>
+    <dimen name="topbar_extra_padding_top">12dp</dimen>
+
+    <!-- ══════════════════════════════════════
+         ② Typography (Text Sizes - sp)
+    ══════════════════════════════════════ -->
+    <dimen name="text_size_xs">11sp</dimen>
+    <dimen name="text_size_sm">12sp</dimen>
+    <dimen name="text_size_base">15sp</dimen>
+    <dimen name="text_size_md">16sp</dimen>
+    <dimen name="text_size_lg">18sp</dimen>
+    <dimen name="text_size_xl">20sp</dimen>
+    <dimen name="text_size_2xl">24sp</dimen>
+
+    <!-- ══════════════════════════════════════
+         ③ Component Dimensions
+    ══════════════════════════════════════ -->
+    <dimen name="icon_size_sm">24dp</dimen>
+    <dimen name="icon_size_md">32dp</dimen>
+    <dimen name="icon_size_lg">40dp</dimen>
+    <dimen name="button_height">56dp</dimen>
+    <dimen name="radius_sm">8dp</dimen>
+    <dimen name="radius_md">16dp</dimen>
+    <dimen name="divider_thickness">1dp</dimen>
+    <dimen name="drawer_width">290dp</dimen>
+</resources>

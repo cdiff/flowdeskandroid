@@ -28,13 +28,6 @@ class EditProfileFragment : Fragment(R.layout.fragment_mypage_edit_profile) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentMypageEditProfileBinding.bind(view)
 
-        // Handle Insets
-        ViewCompat.setOnApplyWindowInsetsListener(binding.topBar) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(top = systemBars.top)
-            insets
-        }
-
         setupListeners()
         observeViewModel()
         
@@ -43,10 +36,6 @@ class EditProfileFragment : Fragment(R.layout.fragment_mypage_edit_profile) {
     }
 
     private fun setupListeners() {
-        binding.btnBack.setOnClickListener {
-            findNavController().navigateUp()
-        }
-
         binding.btnSave.setOnClickListener {
             val name = binding.etUserName.text.toString()
             val email = binding.etEmail.text.toString()

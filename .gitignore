@@ -18,3 +18,10 @@ local.properties
 .agents/
 .ua/
 .understand-anything/
+
+# Keystore & Signing Secrets
+*.jks
+*.keystore
+keystore/
+key.properties
+

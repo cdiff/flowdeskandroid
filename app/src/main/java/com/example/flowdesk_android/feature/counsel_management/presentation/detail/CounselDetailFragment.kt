@@ -64,8 +64,8 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
         _binding = null
     }
 
-    override fun getToolbarView(view: View): View {
-        return binding.layoutToolbar
+    override fun getToolbarView(view: View): View? {
+        return null
     }
 
     override fun initView() {
@@ -101,10 +101,6 @@ class CounselDetailFragment : BaseFragment(R.layout.fragment_counsel_detail) {
     }
 
     private fun setupListeners() {
-        binding.btnBack.setOnClickListener {
-            findNavController().navigateUp()
-        }
-
         binding.spinnerStatus.setOnClickListener {
             statusPopup?.let { if (it.isShowing) { it.dismiss(); return@setOnClickListener } }
             showStatusPopup()

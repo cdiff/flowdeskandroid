@@ -21,13 +21,15 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+
+
             <!-- Profile Info & Banner Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingHorizontal="16dp"
-                android:paddingTop="8dp"
+                android:paddingTop="16dp"
                 android:paddingBottom="24dp">
 
                 <!-- Profile Section -->
@@ -151,6 +153,7 @@
                     android:padding="16dp">
 
                     <TextView
+                        android:id="@+id/tv_banner_title"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:text="@string/mypage_banner_invite_title"

@@ -7,17 +7,16 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.databinding.FragmentUserManagementUserListBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import androidx.navigation.fragment.findNavController
 
 @AndroidEntryPoint
 class UserListFragment : Fragment(R.layout.fragment_user_management_user_list) {
@@ -25,6 +24,7 @@ class UserListFragment : Fragment(R.layout.fragment_user_management_user_list) {
     private val binding get() = _binding!!
     private val viewModel: UserListViewModel by viewModels()
     private lateinit var userAdapter: UserAdapter
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentUserManagementUserListBinding.bind(view)
@@ -99,8 +99,8 @@ class UserListFragment : Fragment(R.layout.fragment_user_management_user_list) {
                         val activeCount = users.count { it.isActive }
                         val inactiveCount = users.size - activeCount
 
-                        binding.tvActiveCount.text = activeCount.toString()
-                        binding.tvInactiveCount.text = inactiveCount.toString()
+                        binding.tvActiveCount.text = "${activeCount}명"
+                        binding.tvInactiveCount.text = "${inactiveCount}명"
                     }
                 }
 

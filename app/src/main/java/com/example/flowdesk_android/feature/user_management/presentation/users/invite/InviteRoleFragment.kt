@@ -39,13 +39,6 @@ class InviteRoleFragment : Fragment(R.layout.fragment_invite_role) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentInviteRoleBinding.bind(view)
 
-        // Window insets 처리 (카메라 영역 침범 방지)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(top = systemBars.top)
-            insets
-        }
-
         // 이전 Fragment에서 전달된 비밀번호 수신
         password = arguments?.getString("password") ?: ""
 
@@ -86,10 +79,6 @@ class InviteRoleFragment : Fragment(R.layout.fragment_invite_role) {
     }
 
     private fun setupListeners() {
-        binding.btnBackRole.setOnClickListener {
-            findNavController().popBackStack()
-        }
-
         binding.btnDoInvite.setOnClickListener {
             val selectedRoleIds = roleAdapter.getSelectedRoleIds()
             if (selectedRoleIds.isEmpty()) {

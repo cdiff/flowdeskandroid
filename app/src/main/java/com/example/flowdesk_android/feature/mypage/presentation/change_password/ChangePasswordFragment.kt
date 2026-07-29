@@ -30,21 +30,11 @@ class ChangePasswordFragment : Fragment(R.layout.fragment_mypage_change_password
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentMypageChangePasswordBinding.bind(view)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.topBar) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(top = systemBars.top)
-            insets
-        }
-
         setupListeners()
         observeViewModel()
     }
 
     private fun setupListeners() {
-        binding.btnBack.setOnClickListener {
-            findNavController().navigateUp()
-        }
-
         binding.btnChange.setOnClickListener {
             val current = binding.etCurrentPassword.text.toString()
             val newPass = binding.etNewPassword.text.toString()

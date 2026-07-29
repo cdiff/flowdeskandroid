@@ -37,13 +37,6 @@ class InvitePasswordFragment : Fragment(R.layout.fragment_invite_password) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentInvitePasswordBinding.bind(view)
 
-        // Window insets 처리 (카메라 영역 침범 방지)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(top = systemBars.top)
-            insets
-        }
-
         // 요약 카드 바인딩
         binding.tvSummaryName.text = viewModel.userName
         binding.tvSummaryEmail.text = viewModel.userEmail
@@ -52,10 +45,6 @@ class InvitePasswordFragment : Fragment(R.layout.fragment_invite_password) {
     }
 
     private fun setupListeners() {
-        binding.btnBackPassword.setOnClickListener {
-            findNavController().popBackStack()
-        }
-
         binding.etPassword.setOnFocusChangeListener { _, hasFocus ->
             binding.layoutPasswordInputBox.isSelected = hasFocus
         }

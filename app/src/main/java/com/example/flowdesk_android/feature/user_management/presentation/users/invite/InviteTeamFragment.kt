@@ -68,13 +68,6 @@ class InviteTeamFragment : Fragment(R.layout.fragment_user_management_user_invit
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentUserManagementUserInviteBinding.bind(view)
 
-        // Window insets 처리 (카메라 영역 침범 방지)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(top = systemBars.top)
-            insets
-        }
-
         // 완전히 처음 진입한 최초 1회만 첫 단계 데이터 리셋 수행
         if (isFirstLaunch) {
             viewModel.resetSteps()
@@ -124,12 +117,6 @@ class InviteTeamFragment : Fragment(R.layout.fragment_user_management_user_invit
     }
 
     private fun setupListeners() {
-        binding.btnBack.setOnClickListener {
-            if (!viewModel.previousStep()) {
-                findNavController().popBackStack()
-            }
-        }
-
         binding.etCurrentInput.setOnFocusChangeListener { _, hasFocus ->
             binding.layoutNormalInputBox.isSelected = hasFocus
         }

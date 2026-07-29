@@ -34,8 +34,6 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage_main) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentMypageMainBinding.bind(view)
 
-
-
         binding.clProfileSection.setOnClickListener {
             findNavController().navigate(R.id.editProfileFragment)
         }
@@ -115,6 +113,25 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage_main) {
 
         val permissionCount = state.user.permissions.count { it.value }
         binding.tvPermissionCount.text = getString(R.string.mypage_msg_count_suffix, permissionCount)
+
+        // 사용자 초대 권한 검사 (user_create / user_management 권한 유무)
+        val canInvite = state.user.permissions["user_create"] == true ||
+                state.user.permissions["user_management"] == true ||
+                state.user.menuTree.any { it.pageName == "user_management" }
+
+        if (canInvite) {
+            binding.tvBannerTitle.text = getString(R.string.mypage_banner_invite_title)
+            binding.btnInvite.text = getString(R.string.mypage_btn_invite)
+            binding.btnInvite.setOnClickListener {
+                findNavController().navigate(R.id.usersFragment)
+            }
+        } else {
+            binding.tvBannerTitle.text = "오늘의 상담 일정을 확인해 보세요!"
+            binding.btnInvite.text = "일정 확인"
+            binding.btnInvite.setOnClickListener {
+                findNavController().navigate(R.id.counselDashboardFragment)
+            }
+        }
 
         setupMyPermissionsGrid(state.user.menuTree)
     }

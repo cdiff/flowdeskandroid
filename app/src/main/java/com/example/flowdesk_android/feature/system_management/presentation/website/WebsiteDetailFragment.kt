@@ -53,13 +53,6 @@ class WebsiteDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
-        // Window insets 처리 (상태바/카메라 홀 침범 예방)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(top = systemBars.top)
-            insets
-        }
-
         setupListeners()
         observeViewModel()
         
@@ -72,10 +65,6 @@ class WebsiteDetailFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        binding.btnBack.setOnClickListener {
-            findNavController().popBackStack()
-        }
-
         binding.btnSave.setOnClickListener {
             val code = webCode ?: return@setOnClickListener
             // 바로 수정 처리 수행
@@ -166,7 +155,6 @@ class WebsiteDetailFragment : Fragment() {
         binding.etDuplicateDays.isEnabled = canUpdate
         binding.switchActive.isEnabled = canUpdate
         
-        binding.tvHeaderTitle.text = "웹사이트 상세 정보"
         binding.btnSave.text = "저장하기"
     }
 

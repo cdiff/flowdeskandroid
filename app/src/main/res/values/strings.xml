@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FlowDesk Android</string>
+    <string name="app_name">플로우데스크</string>
     <string-array name="email_domains">
         <item>직접입력</item>
         <item>gmail.com</item>
@@ -374,4 +374,15 @@
     <string name="block_keyword_status_released">해제됨</string>
     <string name="block_keyword_dialog_delete_title">금칙어 차단 해제</string>
     <string name="block_keyword_dialog_delete_message">\'%1$s\' 단어의 차단을 해제하시겠습니까?\n해제하면 즉시 해당 단어 사용이 허용됩니다.</string>
+
+    <!-- UI General -->
+    <string name="label_main_menu">메인 메뉴</string>
+    <string name="counsel_detail_tab_info">기본 정보</string>
+    <string name="counsel_detail_tab_memo">메모/코멘트</string>
+    <string name="counsel_detail_tab_history">변경 이력</string>
+    <string name="counsel_detail_btn_change_status">상태 변경</string>
+    <string name="counsel_detail_btn_change_manager">담당자 변경</string>
+    <string name="super_admin_actions_banner_title">액션 관리란?</string>
+    <string name="super_admin_pages_banner_title">페이지 관리란?</string>
+    <string name="super_admin_tenants_banner_title">테넌트 관리란?</string>
 </resources>
