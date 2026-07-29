@@ -111,7 +111,12 @@ class MainDrawerFragment : Fragment() {
 
         header.btnDrawerLogout.setOnClickListener {
             closeDrawer()
-            activity?.finish()
+            viewModel.logout {
+                val intent = android.content.Intent(requireActivity(), com.example.flowdesk_android.feature.main.AuthActivity::class.java)
+                intent.flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                requireActivity().finish()
+            }
         }
     }
 

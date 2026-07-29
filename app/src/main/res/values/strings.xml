@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FlowDesk Android</string>
+    <string name="app_name">플로우데스크</string>
     <string-array name="email_domains">
         <item>직접입력</item>
         <item>gmail.com</item>

@@ -21,6 +21,8 @@ import javax.inject.Inject
 
 import com.example.flowdesk_android.feature.auth.domain.model.Menu
 
+import com.example.flowdesk_android.feature.auth.domain.usecase.AuthenticateSessionUseCase
+
 sealed class MainUiState {
     object Idle : MainUiState()
     object Loading : MainUiState()
@@ -38,11 +40,20 @@ data class MainDrawerState(
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val authRepository: AuthRepository,
+    private val authSessionUseCase: AuthenticateSessionUseCase,
     private val sessionManager: com.example.flowdesk_android.data.local.SessionManager
 ) : ViewModel() {
 
     private val _drawerState = MutableStateFlow(MainDrawerState())
     val drawerState: StateFlow<MainDrawerState> = _drawerState.asStateFlow()
+
+    fun logout(onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            authSessionUseCase.logout()
+            sessionManager.clear()
+            onSuccess()
+        }
+    }
 
     fun setMenuTree(menuTree: List<Menu>) {
         val sorted = menuTree.sortedBy { it.order }

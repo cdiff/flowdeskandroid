@@ -31,7 +31,7 @@ annotation class RefreshClient
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    private const val BASE_URL = "https://flowdesk-admin-production.up.railway.app/"
+    private const val BASE_URL = "https://flowdesk-admin-backend-production.up.railway.app/"
 
     /**
      * Refresh 전용 OkHttpClient — Authenticator 미포함 (순환 방지)
