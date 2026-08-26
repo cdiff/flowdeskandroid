@@ -19,8 +19,8 @@ android {
     compileSdk = 36 // Updated syntax
 
     defaultConfig {
-        applicationId = "com.example.flowdesk_android"
-        minSdk = 34 // High minSdk, but sticking to existing config
+        applicationId = "com.flowdesk.android"
+        minSdk = 30
         targetSdk = 36
         versionCode = 1
         versionName = "1.0.0"
@@ -39,7 +39,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -58,6 +59,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 

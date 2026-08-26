@@ -1,5 +1,6 @@
 package com.example.flowdesk_android.di
 
+import com.example.flowdesk_android.BuildConfig
 import com.example.flowdesk_android.core.network.AuthInterceptor
 import com.example.flowdesk_android.core.network.TokenAuthenticator
 import com.example.flowdesk_android.feature.auth.data.api.AuthRefreshApi
@@ -41,7 +42,11 @@ object NetworkModule {
     @RefreshClient
     fun provideRefreshOkHttpClient(): OkHttpClient {
         val logging = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+            level = if (BuildConfig.DEBUG) {
+                HttpLoggingInterceptor.Level.BODY
+            } else {
+                HttpLoggingInterceptor.Level.NONE
+            }
         }
         return OkHttpClient.Builder()
             .addInterceptor(logging)
@@ -72,7 +77,11 @@ object NetworkModule {
         tokenAuthenticator: TokenAuthenticator
     ): OkHttpClient {
         val logging = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+            level = if (BuildConfig.DEBUG) {
+                HttpLoggingInterceptor.Level.BODY
+            } else {
+                HttpLoggingInterceptor.Level.NONE
+            }
         }
         return OkHttpClient.Builder()
             .addInterceptor(logging)
