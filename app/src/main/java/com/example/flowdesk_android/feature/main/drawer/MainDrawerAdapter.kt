@@ -35,14 +35,15 @@ class MainDrawerAdapter(
             }
 
             override fun getChangePayload(oldItem: DrawerRow, newItem: DrawerRow): Any? {
+                val payloads = mutableSetOf<String>()
                 if (oldItem is DrawerRow.Header && newItem is DrawerRow.Header) {
-                    if (oldItem.isExpanded != newItem.isExpanded) return PAYLOAD_EXPAND
-                    if (oldItem.isSelected != newItem.isSelected) return PAYLOAD_SELECTION
+                    if (oldItem.isExpanded != newItem.isExpanded) payloads.add(PAYLOAD_EXPAND)
+                    if (oldItem.isSelected != newItem.isSelected) payloads.add(PAYLOAD_SELECTION)
                 }
                 if (oldItem is DrawerRow.SubItem && newItem is DrawerRow.SubItem) {
-                    if (oldItem.isSelected != newItem.isSelected) return PAYLOAD_SELECTION
+                    if (oldItem.isSelected != newItem.isSelected) payloads.add(PAYLOAD_SELECTION)
                 }
-                return super.getChangePayload(oldItem, newItem)
+                return if (payloads.isNotEmpty()) payloads else null
             }
         }
     }
@@ -87,20 +88,27 @@ class MainDrawerAdapter(
         }
         val item = getItem(position)
         for (payload in payloads) {
-            when (payload) {
-                PAYLOAD_EXPAND -> {
-                    if (holder is HeaderViewHolder && item is DrawerRow.Header) {
-                        holder.updateExpandState(item.isExpanded)
-                    }
+            if (payload is Set<*>) {
+                if (payload.contains(PAYLOAD_EXPAND) && holder is HeaderViewHolder && item is DrawerRow.Header) {
+                    holder.updateExpandState(item.isExpanded)
                 }
-                PAYLOAD_SELECTION -> {
+                if (payload.contains(PAYLOAD_SELECTION)) {
                     if (holder is HeaderViewHolder && item is DrawerRow.Header) {
                         holder.updateSelectionState(item.isSelected)
                     } else if (holder is SubItemViewHolder && item is DrawerRow.SubItem) {
                         holder.updateSelectionState(item.isSelected)
                     }
                 }
-                else -> super.onBindViewHolder(holder, position, payloads)
+            } else if (payload == PAYLOAD_EXPAND && holder is HeaderViewHolder && item is DrawerRow.Header) {
+                holder.updateExpandState(item.isExpanded)
+            } else if (payload == PAYLOAD_SELECTION) {
+                if (holder is HeaderViewHolder && item is DrawerRow.Header) {
+                    holder.updateSelectionState(item.isSelected)
+                } else if (holder is SubItemViewHolder && item is DrawerRow.SubItem) {
+                    holder.updateSelectionState(item.isSelected)
+                }
+            } else {
+                super.onBindViewHolder(holder, position, payloads)
             }
         }
     }
