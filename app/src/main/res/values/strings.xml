@@ -366,10 +366,6 @@
     <string name="status_hint_select_group">그룹 선택</string>
 
     <!-- 금칙어 상세 -->
-    <string name="block_keyword_label_id_format">차단 ID: %1$d</string>
-    <string name="block_keyword_label_created_by_format">등록자 ID: %1$s</string>
-    <string name="block_keyword_label_created_at_format">등록: %1$s</string>
-    <string name="block_keyword_label_updated_at_format">수정: %1$s</string>
     <string name="block_keyword_status_blocking">차단 중</string>
     <string name="block_keyword_status_released">해제됨</string>
     <string name="block_keyword_dialog_delete_title">금칙어 차단 해제</string>
