@@ -156,10 +156,10 @@ class BlockKeywordDetailFragment : BaseFragment(R.layout.fragment_block_keyword_
 
     private fun displayDetail(item: BlockWordItem) {
         binding.tvDetailKeyword.text = item.blockWord
-        binding.tvDetailTenantId.text = getString(R.string.block_keyword_label_id_format, item.dbwIdx)
-        binding.tvDetailCreatedBy.text = getString(R.string.block_keyword_label_created_by_format, item.createdBy)
-        binding.tvDetailCreatedAt.text = getString(R.string.block_keyword_label_created_at_format, item.createdAt ?: "-")
-        binding.tvDetailUpdatedAt.text = getString(R.string.block_keyword_label_updated_at_format, item.updatedAt ?: "-")
+        binding.tvDetailTenantId.text = "차단 ID: ${item.dbwIdx}"
+        binding.tvDetailCreatedBy.text = "등록자 ID: ${item.createdBy ?: "-"}"
+        binding.tvDetailCreatedAt.text = "등록: ${item.createdAt ?: "-"}"
+        binding.tvDetailUpdatedAt.text = "수정: ${item.updatedAt ?: "-"}"
         binding.etReason.setText(item.reason ?: "")
 
         when (item.matchType) {
