@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.updatePadding
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -30,7 +29,8 @@ class AuthActivity : AppCompatActivity() {
         // 상태바 아이콘을 라이트 배경 기준 다크 아이콘으로 설정 (windowLightStatusBar 대체)
         WindowCompat.getInsetsController(window, binding.root).isAppearanceLightStatusBars = true
 
-        // AuthActivity 루트에서 Insets 소비 — 하위 Fragment들이 자동으로 안전 영역 확보
+        // [A안] AuthActivity 루트에서 Insets 일괄 소비
+        // 하위 Fragment(Onboarding, Login, Splash 등)는 개별 Insets 처리 불필요
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.updatePadding(top = systemBars.top, bottom = systemBars.bottom)
