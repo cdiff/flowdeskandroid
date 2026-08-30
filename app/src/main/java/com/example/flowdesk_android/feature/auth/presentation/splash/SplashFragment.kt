@@ -11,16 +11,21 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.flowdesk_android.R
+import com.example.flowdesk_android.data.local.TokenManager
 import com.example.flowdesk_android.feature.auth.domain.model.AuthMeInfo
 import com.example.flowdesk_android.feature.main.MainActivity
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SplashFragment : Fragment(R.layout.fragment_auth_splash) {
 
     private val viewModel: SplashViewModel by viewModels()
+
+    @Inject
+    lateinit var tokenManager: TokenManager
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -84,7 +89,12 @@ class SplashFragment : Fragment(R.layout.fragment_auth_splash) {
 
     private fun navigateToLogin() {
         try {
-            findNavController().navigate(R.id.action_splashFragment_to_loginFragment)
+            // 최초 실행 시에만 온보딩 화면 1회 노출, 이후에는 바로 로그인 화면으로 이동
+            if (!tokenManager.hasSeenOnboarding()) {
+                findNavController().navigate(R.id.action_splashFragment_to_onboardingFragment)
+            } else {
+                findNavController().navigate(R.id.action_splashFragment_to_loginFragment)
+            }
         } catch (e: Exception) {
             // 이미 화면이 이동했거나 중복 이벤트 발생 시 에러 방어
         }

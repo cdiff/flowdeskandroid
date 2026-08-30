@@ -29,15 +29,25 @@ class LoginFragment : Fragment(R.layout.fragment_auth_login) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentAuthLoginBinding.bind(view)
 
-        // 회원가입 완료 후 유입된 정보 자동 기입 (Pre-fill)
+        // 회원가입 완료 후 유입된 정보 또는 온보딩 데모 계정 자동 기입 (Pre-fill)
         arguments?.let { bundle ->
             val tenantName = bundle.getString("tenantName")
             val email = bundle.getString("email")
+            val password = bundle.getString("password")
+            val isDemo = bundle.getBoolean("EXTRA_DEMO_MODE", false)
+
             if (!tenantName.isNullOrEmpty()) {
                 binding.etTenant.setText(tenantName)
             }
             if (!email.isNullOrEmpty()) {
                 binding.etUserId.setText(email)
+            }
+            if (!password.isNullOrEmpty()) {
+                binding.etPassword.setText(password)
+            }
+
+            if (isDemo) {
+                Toast.makeText(requireContext(), "체험용 데모 계정 정보가 입력되었습니다.", Toast.LENGTH_SHORT).show()
             }
         }
 
