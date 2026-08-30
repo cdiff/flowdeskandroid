@@ -12,9 +12,9 @@
         <!-- 터치/클릭 물결(Ripple) 효과 전역 완전히 제거 -->
         <item name="colorControlHighlight">@android:color/transparent</item>
         <item name="colorControlActivated">@color/blue_600</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/white</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <!-- Android 15(API 35+): statusBarColor, windowLightStatusBar deprecated.
+             enableEdgeToEdge() + WindowInsetsControllerCompat으로 일원화 -->
+        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
     </style>
 
     <style name="CustomBottomSheetDialogTheme" parent="Theme.MaterialComponents.Light.BottomSheetDialog">

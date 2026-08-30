@@ -9,9 +9,8 @@
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/white</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <!-- Android 15(API 35+): statusBarColor, windowLightStatusBar deprecated.
+             enableEdgeToEdge() + WindowInsetsControllerCompat으로 일원화 -->
     </style>
 </resources>
 

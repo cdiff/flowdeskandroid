@@ -2,10 +2,12 @@ package com.example.flowdesk_android.feature.main
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.lifecycle.Lifecycle
@@ -27,10 +29,14 @@ class MainActivity : AppCompatActivity(), MainNavigator {
     private var statusBarTopHeight: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // 상태바 아이콘을 라이트 배경 기준 다크 아이콘으로 설정 (windowLightStatusBar 대체)
+        WindowCompat.getInsetsController(window, binding.root).isAppearanceLightStatusBars = true
 
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
