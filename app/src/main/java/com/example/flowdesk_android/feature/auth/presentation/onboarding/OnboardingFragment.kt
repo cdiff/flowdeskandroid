@@ -4,9 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
@@ -36,21 +33,11 @@ class OnboardingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        applyWindowInsets()
+        // WindowInsets는 AuthActivity 루트에서 일괄 처리 (A안)
         setupViewPager()
         setupClickListeners()
     }
 
-    private fun applyWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.layoutRoot) { _, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            binding.layoutRoot.updatePadding(
-                top = systemBars.top,
-                bottom = systemBars.bottom
-            )
-            insets
-        }
-    }
 
     private fun setupViewPager() {
         val adapter = OnboardingPagerAdapter()
