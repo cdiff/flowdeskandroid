@@ -29,4 +29,12 @@ class TokenManager @Inject constructor(@ApplicationContext context: Context) {
     fun clear() {
         prefs.edit().clear().apply()
     }
+
+    fun setOnboardingSeen(seen: Boolean = true) {
+        prefs.edit().putBoolean("has_seen_onboarding", seen).apply()
+    }
+
+    fun hasSeenOnboarding(): Boolean {
+        return prefs.getBoolean("has_seen_onboarding", false)
+    }
 }

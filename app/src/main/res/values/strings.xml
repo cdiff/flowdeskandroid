@@ -381,4 +381,14 @@
     <string name="super_admin_actions_banner_title">액션 관리란?</string>
     <string name="super_admin_pages_banner_title">페이지 관리란?</string>
     <string name="super_admin_tenants_banner_title">테넌트 관리란?</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title_1">웹사이트 상담 문의가\n실시간으로 쏙, 플로우데스크</string>
+    <string name="onboarding_subtitle_1">자사 웹사이트에 위젯 코드만 넣으면\n고객의 상담이 모바일로 즉시 연동돼요.</string>
+    <string name="onboarding_title_2">내 역할에 딱 맞춘,\n스마트한 업무 공간</string>
+    <string name="onboarding_subtitle_2">관리자부터 실무 상담원까지\n꼭 필요한 기능과 권한만 맞춤형으로 제공해요.</string>
+    <string name="onboarding_title_3">놓치는 일정 없이,\n캘린더로 완벽 관리</string>
+    <string name="onboarding_subtitle_3">고객 예약부터 당일 처리 현황까지\n실시간 통계와 캘린더로 손쉽게 확인하세요.</string>
+    <string name="onboarding_title_4">지금 바로\n플로우데스크를 시작하세요!</string>
+    <string name="onboarding_subtitle_4">회사 테넌트 코드로 로그인하거나\n데모 모드로 1초 만에 둘러볼 수 있어요.</string>
 </resources>
