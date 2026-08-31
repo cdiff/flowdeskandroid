@@ -38,6 +38,76 @@
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="28dp" />
 
+
+            <!-- 0. 게시판 선택 (필수 *) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="게시판"
+                        android:textColor="#0F172A"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" *"
+                        android:textColor="#EF4444"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- 클릭 시 드롭다운 팝업 -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layout_board_selector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="10dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+
+                    <TextView
+                        android:id="@+id/tv_selected_board"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="게시판을 선택하세요"
+                        android:textColor="#CBD5E1"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/iv_board_arrow" />
+
+                    <ImageView
+                        android:id="@+id/iv_board_arrow"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_arrow_drop_down"
+                        android:tint="#94A3B8"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#E2E8F0"
+                    android:layout_marginBottom="28dp" />
+            </LinearLayout>
+
             <!-- 1. 제목 (필수 *) -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -86,6 +156,7 @@
                     android:background="#E2E8F0"
                     android:layout_marginBottom="28dp" />
             </LinearLayout>
+
 
             <!-- 2. 공지 여부 토글 -->
             <androidx.constraintlayout.widget.ConstraintLayout

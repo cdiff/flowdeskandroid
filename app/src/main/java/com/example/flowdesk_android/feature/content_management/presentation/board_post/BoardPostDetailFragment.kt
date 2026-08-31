@@ -1,10 +1,10 @@
 package com.example.flowdesk_android.feature.content_management.presentation.board_post
 
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -61,9 +61,19 @@ class BoardPostDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // 상단 시스템바(노치) 영역만큼 ScrollView에 패딩 적용
+        ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.scrollView.updatePadding(top = systemBars.top)
+            insets
+        }
+
         setupUI()
         setupListeners()
         observeViewModel()
+
+        // 게시판 목록 로드 (신규: 목록에서 선택한 boardId를 초기값으로, 수정: 현재 post의 boardId)
+        viewModel.loadBoardTypes(initialBoardId = boardId)
 
         if (postId != -1L) {
             viewModel.loadPostDetail(boardId, postId)
@@ -101,6 +111,25 @@ class BoardPostDetailFragment : Fragment() {
             showDeleteConfirmDialog()
         }
 
+        // 게시판 선택 드롭다운
+        binding.layoutBoardSelector.setOnClickListener {
+            val boards = viewModel.boardTypes.value
+            if (boards.isEmpty()) {
+                showTopToast("게시판 목록을 불러오는 중입니다.")
+                return@setOnClickListener
+            }
+            val popup = PopupMenu(requireContext(), binding.layoutBoardSelector)
+            boards.forEachIndexed { index, board ->
+                popup.menu.add(0, index, index, board.name)
+            }
+            popup.setOnMenuItemClickListener { item ->
+                val selected = boards[item.itemId]
+                viewModel.selectBoard(selected.boardId)
+                true
+            }
+            popup.show()
+        }
+
         // 공지 기간 설정 상담 대시보드 커스텀 달력(CustomCalendarDialogFragment) 바인딩
         val openCalendarListener = View.OnClickListener {
             showCustomCalendarPicker()
@@ -119,6 +148,33 @@ class BoardPostDetailFragment : Fragment() {
                         viewModel.canWrite.collectLatest { canWrite ->
                             binding.btnSave.isEnabled = canWrite
                             binding.layoutButtons.visibility = if (canWrite) View.VISIBLE else View.GONE
+                        }
+                    }
+                }
+
+                // 게시판 선택 상태 관찰
+                launch {
+                    viewModel.selectedBoardId.collectLatest { boardId ->
+                        val boards = viewModel.boardTypes.value
+                        val selected = boards.find { it.boardId == boardId }
+                        if (selected != null) {
+                            binding.tvSelectedBoard.text = selected.name
+                            binding.tvSelectedBoard.setTextColor(android.graphics.Color.parseColor("#0F172A"))
+                        } else {
+                            binding.tvSelectedBoard.text = "게시판을 선택하세요"
+                            binding.tvSelectedBoard.setTextColor(android.graphics.Color.parseColor("#CBD5E1"))
+                        }
+                    }
+                }
+
+                // 게시판 목록 로드 완료 시 선택 표시 갱신
+                launch {
+                    viewModel.boardTypes.collectLatest { boards ->
+                        val currentId = viewModel.selectedBoardId.value
+                        val selected = boards.find { it.boardId == currentId }
+                        if (selected != null) {
+                            binding.tvSelectedBoard.text = selected.name
+                            binding.tvSelectedBoard.setTextColor(android.graphics.Color.parseColor("#0F172A"))
                         }
                     }
                 }
@@ -213,13 +269,25 @@ class BoardPostDetailFragment : Fragment() {
         val startDtmToSend = if (selectedStartDtm.isNullOrEmpty()) null else selectedStartDtm
         val endDtmToSend = if (selectedEndDtm.isNullOrEmpty()) null else selectedEndDtm
 
+        // 신규 등록 시 과거 날짜 선택 방지 검증
+        if (postId == -1L && !selectedStartDtm.isNullOrEmpty()) {
+            val startDate = try {
+                LocalDate.parse(selectedStartDtm?.substringBefore("T"))
+            } catch (e: Exception) {
+                null
+            }
+            if (startDate != null && startDate.isBefore(LocalDate.now())) {
+                showTopToast("공지 시작일은 오늘 이후 날짜여야 합니다.")
+                return
+            }
+        }
+
         viewModel.savePost(
-            boardId = boardId,
             postId = postId,
             title = title,
             content = content,
             isNotice = isNotice,
-            isActive = true, // default active
+            isActive = true,
             startDtm = startDtmToSend,
             endDtm = endDtmToSend
         )
@@ -231,17 +299,25 @@ class BoardPostDetailFragment : Fragment() {
     private fun showCustomCalendarPicker() {
         val customCalendar = CustomCalendarDialogFragment()
 
+        // 신규 작성 시 과거 날짜 선택 불가능하도록 minDate를 오늘로 제한
+        if (postId == -1L) {
+            customCalendar.setMinDate(LocalDate.now())
+        }
+
+        val today = LocalDate.now()
         val startLocalDate = try {
             if (!selectedStartDtm.isNullOrEmpty()) {
-                LocalDate.parse(selectedStartDtm?.substringBefore("T"))
-            } else LocalDate.now()
+                val parsed = LocalDate.parse(selectedStartDtm?.substringBefore("T"))
+                if (postId == -1L && parsed.isBefore(today)) today else parsed
+            } else today
         } catch (e: Exception) {
-            LocalDate.now()
+            today
         }
 
         val endLocalDate = try {
             if (!selectedEndDtm.isNullOrEmpty()) {
-                LocalDate.parse(selectedEndDtm?.substringBefore("T"))
+                val parsed = LocalDate.parse(selectedEndDtm?.substringBefore("T"))
+                if (postId == -1L && parsed.isBefore(startLocalDate)) startLocalDate.plusDays(7) else parsed
             } else startLocalDate.plusDays(7)
         } catch (e: Exception) {
             startLocalDate.plusDays(7)
