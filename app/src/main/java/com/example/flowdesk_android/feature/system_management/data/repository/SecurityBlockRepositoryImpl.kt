@@ -1,5 +1,6 @@
 package com.example.flowdesk_android.feature.system_management.data.repository
 
+import com.example.flowdesk_android.core.network.parseErrorMessage
 import com.example.flowdesk_android.feature.system_management.data.api.SecurityBlockApi
 import com.example.flowdesk_android.feature.system_management.data.dto.*
 import com.example.flowdesk_android.feature.system_management.domain.model.*
@@ -19,7 +20,7 @@ class SecurityBlockRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -33,7 +34,7 @@ class SecurityBlockRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -44,7 +45,7 @@ class SecurityBlockRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -55,7 +56,7 @@ class SecurityBlockRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -69,7 +70,7 @@ class SecurityBlockRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -78,7 +79,7 @@ class SecurityBlockRepositoryImpl @Inject constructor(
     ): Result<Unit> = runCatching {
         val response = apiService.deleteBlockIp(id)
         if (!response.isSuccessful) {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -92,7 +93,7 @@ class SecurityBlockRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -105,7 +106,7 @@ class SecurityBlockRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -119,7 +120,7 @@ class SecurityBlockRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -130,7 +131,7 @@ class SecurityBlockRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -141,7 +142,7 @@ class SecurityBlockRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -155,7 +156,7 @@ class SecurityBlockRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -164,7 +165,7 @@ class SecurityBlockRepositoryImpl @Inject constructor(
     ): Result<Unit> = runCatching {
         val response = apiService.deleteBlockPhone(id)
         if (!response.isSuccessful) {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -178,7 +179,7 @@ class SecurityBlockRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -191,7 +192,7 @@ class SecurityBlockRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -206,7 +207,7 @@ class SecurityBlockRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -217,7 +218,7 @@ class SecurityBlockRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -228,7 +229,7 @@ class SecurityBlockRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -243,7 +244,7 @@ class SecurityBlockRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -252,7 +253,7 @@ class SecurityBlockRepositoryImpl @Inject constructor(
     ): Result<Unit> = runCatching {
         val response = apiService.deleteBlockWord(id)
         if (!response.isSuccessful) {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -267,7 +268,7 @@ class SecurityBlockRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 }

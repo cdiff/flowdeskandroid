@@ -1,5 +1,6 @@
 package com.example.flowdesk_android.feature.super_admin.data.repository
 
+import com.example.flowdesk_android.core.network.parseErrorMessage
 import com.example.flowdesk_android.feature.super_admin.data.api.SuperApi
 import com.example.flowdesk_android.feature.super_admin.data.dto.CreateActionRequest
 import com.example.flowdesk_android.feature.super_admin.data.dto.CreatePageRequest
@@ -31,7 +32,7 @@ class SuperRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.toDomain() ?: throw Exception("응답 바디 없음")
             } else {
-                throw Exception("대시보드 조회 실패 (${response.code()})")
+                throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
             }
         }
     }
@@ -48,7 +49,7 @@ class SuperRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.items?.map { it.toDomain() } ?: emptyList()
             } else {
-                throw Exception("테넌트 목록 조회 실패 (${response.code()})")
+                throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
             }
         }
     }
@@ -63,7 +64,7 @@ class SuperRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.toDomain() ?: throw Exception("응답 바디 없음")
             } else {
-                throw Exception("테넌트 생성 실패 (${response.code()})")
+                throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
             }
         }
     }
@@ -74,7 +75,7 @@ class SuperRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.toDomain() ?: throw Exception("응답 바디 없음")
             } else {
-                throw Exception("테넌트 상세 조회 실패 (${response.code()})")
+                throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
             }
         }
     }
@@ -91,7 +92,7 @@ class SuperRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.toDomain() ?: throw Exception("응답 바디 없음")
             } else {
-                throw Exception("테넌트 수정 실패 (${response.code()})")
+                throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
             }
         }
     }
@@ -99,7 +100,7 @@ class SuperRepositoryImpl @Inject constructor(
     override suspend fun deleteTenant(tenantId: Int): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
             val response = api.deleteTenant(tenantId)
-            if (!response.isSuccessful) throw Exception("테넌트 삭제 실패 (${response.code()})")
+            if (!response.isSuccessful) throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -107,9 +108,9 @@ class SuperRepositoryImpl @Inject constructor(
         runCatching {
             val response = api.updateTenantStatus(tenantId, UpdateTenantStatusRequest(if (isActive) 1 else 0))
             if (response.isSuccessful) {
-                response.body()?.toDomain() ?: throw Exception("응답 바디 없음")
+                response.body()?.toDomain() ?: throw Exception(response.parseErrorMessage("응답 바디 없음"))
             } else {
-                throw Exception("상태 변경 실패 (${response.code()})")
+                throw Exception(response.parseErrorMessage("상태 변경 실패"))
             }
         }
     }
@@ -126,7 +127,7 @@ class SuperRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.items?.map { it.toDomain() } ?: emptyList()
             } else {
-                throw Exception("페이지 목록 조회 실패 (${response.code()})")
+                throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
             }
         }
     }
@@ -144,7 +145,7 @@ class SuperRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.toDomain() ?: throw Exception("응답 바디 없음")
             } else {
-                throw Exception("페이지 생성 실패 (${response.code()})")
+                throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
             }
         }
     }
@@ -155,7 +156,7 @@ class SuperRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.toDomain() ?: throw Exception("응답 바디 없음")
             } else {
-                throw Exception("페이지 상세 조회 실패 (${response.code()})")
+                throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
             }
         }
     }
@@ -175,7 +176,7 @@ class SuperRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.toDomain() ?: throw Exception("응답 바디 없음")
             } else {
-                throw Exception("페이지 수정 실패 (${response.code()})")
+                throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
             }
         }
     }
@@ -183,7 +184,7 @@ class SuperRepositoryImpl @Inject constructor(
     override suspend fun deletePage(pageId: Int): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
             val response = api.deletePage(pageId)
-            if (!response.isSuccessful) throw Exception("페이지 삭제 실패 (${response.code()})")
+            if (!response.isSuccessful) throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -199,7 +200,7 @@ class SuperRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.items?.map { it.toDomain() } ?: emptyList()
             } else {
-                throw Exception("액션 목록 조회 실패 (${response.code()})")
+                throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
             }
         }
     }
@@ -213,7 +214,7 @@ class SuperRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.toDomain() ?: throw Exception("응답 바디 없음")
             } else {
-                throw Exception("액션 생성 실패 (${response.code()})")
+                throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
             }
         }
     }
@@ -224,7 +225,7 @@ class SuperRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.toDomain() ?: throw Exception("응답 바디 없음")
             } else {
-                throw Exception("액션 상세 조회 실패 (${response.code()})")
+                throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
             }
         }
     }
@@ -240,7 +241,7 @@ class SuperRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.toDomain() ?: throw Exception("응답 바디 없음")
             } else {
-                throw Exception("액션 수정 실패 (${response.code()})")
+                throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
             }
         }
     }
@@ -248,7 +249,7 @@ class SuperRepositoryImpl @Inject constructor(
     override suspend fun deleteAction(actionId: Int): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
             val response = api.deleteAction(actionId)
-            if (!response.isSuccessful) throw Exception("액션 삭제 실패 (${response.code()})")
+            if (!response.isSuccessful) throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -258,7 +259,7 @@ class SuperRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.toDomain() ?: throw Exception("응답 바디 없음")
             } else {
-                throw Exception("액션 상태 변경 실패 (${response.code()})")
+                throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
             }
         }
     }

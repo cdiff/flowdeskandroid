@@ -1,5 +1,6 @@
 package com.example.flowdesk_android.feature.system_management.data.repository
 
+import com.example.flowdesk_android.core.network.parseErrorMessage
 import com.example.flowdesk_android.feature.system_management.data.api.SystemManagementApi
 import com.example.flowdesk_android.feature.system_management.data.dto.*
 import com.example.flowdesk_android.feature.system_management.domain.model.TenantStatus
@@ -20,7 +21,7 @@ class SystemManagementRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -46,7 +47,7 @@ class SystemManagementRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -55,7 +56,7 @@ class SystemManagementRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -78,14 +79,14 @@ class SystemManagementRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
     override suspend fun deleteTenantStatus(id: Long): Result<Unit> = runCatching {
         val response = apiService.deleteTenantStatus(id)
         if (!response.isSuccessful) {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 
@@ -95,7 +96,7 @@ class SystemManagementRepositoryImpl @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.toDomain() ?: throw Exception("Response body is null")
         } else {
-            throw Exception("API error: ${response.code()}")
+            throw Exception(response.parseErrorMessage("오류가 발생했습니다."))
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.flowdesk_android.feature.system_management.data.repository
 
+import com.example.flowdesk_android.core.network.parseErrorMessage
 import com.example.flowdesk_android.feature.system_management.data.api.BoardApi
 import com.example.flowdesk_android.feature.system_management.data.dto.CreateBoardTypeRequestDto
 import com.example.flowdesk_android.feature.system_management.data.dto.UpdateBoardTypeRequestDto
@@ -29,8 +30,7 @@ class BoardRepositoryImpl @Inject constructor(
                     Result.failure(Exception("응답 바디가 비어있습니다."))
                 }
             } else {
-                val errorMsg = response.errorBody()?.string() ?: "알 수 없는 API 에러"
-                Result.failure(Exception(errorMsg))
+                Result.failure(Exception(response.parseErrorMessage("알 수 없는 API 에러")))
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -84,8 +84,7 @@ class BoardRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {
-                val errorMsg = response.errorBody()?.string() ?: "비활성화 에러"
-                Result.failure(Exception(errorMsg))
+                Result.failure(Exception(response.parseErrorMessage("비활성화 에러")))
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -166,8 +165,7 @@ class BoardRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {
-                val errorMsg = response.errorBody()?.string() ?: "삭제 에러"
-                Result.failure(Exception(errorMsg))
+                Result.failure(Exception(response.parseErrorMessage("삭제 에러")))
             }
         } catch (e: Exception) {
             Result.failure(e)
