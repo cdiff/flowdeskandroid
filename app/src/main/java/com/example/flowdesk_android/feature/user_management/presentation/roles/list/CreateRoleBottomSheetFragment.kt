@@ -1,20 +1,17 @@
-package com.example.flowdesk_android.feature.user_management.presentation.roles.list
+﻿package com.example.flowdesk_android.feature.user_management.presentation.roles.list
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
-import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.example.flowdesk_android.R
 import com.example.flowdesk_android.databinding.DialogRoleCreateBinding
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class CreateRoleBottomSheetFragment : BottomSheetDialogFragment() {
@@ -26,8 +23,6 @@ class CreateRoleBottomSheetFragment : BottomSheetDialogFragment() {
     private var initialDisplayName: String? = null
     private var initialRoleName: String? = null
     private var initialDescription: String? = null
-
-    private val viewModel: RolesViewModel by viewModels({ requireParentFragment() })
 
     private var _binding: DialogRoleCreateBinding? = null
     private val binding get() = _binding!!
@@ -54,23 +49,24 @@ class CreateRoleBottomSheetFragment : BottomSheetDialogFragment() {
         return R.style.CustomBottomSheetDialogTheme
     }
 
+    override fun onStart() {
+        super.onStart()
+        // 키보드 활성화 시 바텀시트가 허공으로 붕 뜨는 현상(adjustPan) 방지
+        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        val bottomSheetDialog = dialog as? BottomSheetDialog ?: return
+        val bottomSheet = bottomSheetDialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet) ?: return
+        BottomSheetBehavior.from(bottomSheet).apply {
+            state = BottomSheetBehavior.STATE_EXPANDED
+            skipCollapsed = true
+            isShouldRemoveExpandedCorners = false
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        dialog?.setOnShowListener { dialogInterface ->
-            val bottomSheetDialog = dialogInterface as com.google.android.material.bottomsheet.BottomSheetDialog
-            val bottomSheet = bottomSheetDialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-            bottomSheet?.let {
-                val behavior = com.google.android.material.bottomsheet.BottomSheetBehavior.from(it)
-                behavior.state = com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
-                behavior.skipCollapsed = true
-                behavior.isShouldRemoveExpandedCorners = false
-            }
-        }
-
         setupUI()
         setupListeners()
-        observeViewModel()
     }
 
     private fun setupUI() {
@@ -79,7 +75,7 @@ class CreateRoleBottomSheetFragment : BottomSheetDialogFragment() {
             binding.tvHeaderTitle.text = "역할 수정"
             binding.tvHeaderSubtitle.text = "역할의 기본 정보를 수정합니다"
             binding.btnCreate.text = "수정하기"
-            
+
             // 기존 값 세팅
             binding.etDisplayName.setText(initialDisplayName)
             binding.etRoleName.setText(initialRoleName)
@@ -91,7 +87,6 @@ class CreateRoleBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun setupListeners() {
-
         binding.btnCreate.setOnClickListener {
             val displayName = binding.etDisplayName.text.toString()
             val roleName = binding.etRoleName.text.toString()
@@ -102,44 +97,8 @@ class CreateRoleBottomSheetFragment : BottomSheetDialogFragment() {
                 return@setOnClickListener
             }
 
-            if (roleId != -1) {
-                // 수정 모드이면 주입된 onConfirm 콜백 호출 후 닫기
-                onConfirm?.invoke(displayName, roleName, description)
-                dismiss()
-            } else {
-                // 생성 모드이면 기존 뷰모델 생성 연동
-                viewModel.createRole(roleName, displayName, description)
-            }
-        }
-    }
-
-    private fun observeViewModel() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                
-                launch {
-                    viewModel.uiState.collect { state ->
-                        binding.progressBar.isVisible = state is RoleListUiState.Loading
-                        binding.btnCreate.isEnabled = state !is RoleListUiState.Loading
-                    }
-                }
-                
-                launch {
-                    viewModel.event.collect { event ->
-                        when (event) {
-                            is RoleListEvent.RoleCreated -> {
-                                Toast.makeText(context, getString(R.string.success_role_created), Toast.LENGTH_SHORT).show()
-                                onSuccess?.invoke()
-                                dismiss()
-                            }
-                            is RoleListEvent.Error -> {
-                                Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
-                            }
-                            else -> {}
-                        }
-                    }
-                }
-            }
+            // 생성/수정 모두 onConfirm 콜백으로 상위 Fragment에 위임
+            onConfirm?.invoke(displayName, roleName, description)
         }
     }
 

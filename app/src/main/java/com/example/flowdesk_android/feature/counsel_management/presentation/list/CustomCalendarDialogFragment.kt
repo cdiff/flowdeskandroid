@@ -33,6 +33,7 @@ class CustomCalendarDialogFragment : DialogFragment() {
     // Date selection states
     private var selectedStartDate: LocalDate? = null
     private var selectedEndDate: LocalDate? = null
+    private var minDate: LocalDate? = null
 
     // Callback
     private var onDateRangeSelectedListener: ((LocalDate, LocalDate) -> Unit)? = null
@@ -45,6 +46,10 @@ class CustomCalendarDialogFragment : DialogFragment() {
     fun setInitialRange(start: LocalDate?, end: LocalDate?) {
         this.selectedStartDate = start
         this.selectedEndDate = end
+    }
+
+    fun setMinDate(minDate: LocalDate?) {
+        this.minDate = minDate
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,10 +103,15 @@ class CustomCalendarDialogFragment : DialogFragment() {
     }
 
     private fun setupCalendarList() {
-        // Generate months (e.g., from 6 months ago to 6 months in the future)
+        // Generate months (e.g., from minDate or 6 months ago to 12 months in the future)
         val monthsList = mutableListOf<YearMonth>()
-        val startMonth = YearMonth.now().minusMonths(6)
-        for (i in 0..12) {
+        val startMonth = if (minDate != null) {
+            YearMonth.from(minDate)
+        } else {
+            YearMonth.now().minusMonths(6)
+        }
+        val totalMonths = if (minDate != null) 12 else 18
+        for (i in 0..totalMonths) {
             monthsList.add(startMonth.plusMonths(i.toLong()))
         }
 
@@ -120,6 +130,11 @@ class CustomCalendarDialogFragment : DialogFragment() {
     }
 
     private fun handleDateSelection(date: LocalDate) {
+        val min = minDate
+        if (min != null && date.isBefore(min)) {
+            return
+        }
+
         val start = selectedStartDate
         val end = selectedEndDate
 
@@ -235,9 +250,19 @@ class CustomCalendarDialogFragment : DialogFragment() {
                 val isEnd = date == selectedEndDate
                 val isInRange = selectedStartDate != null && selectedEndDate != null &&
                         date.isAfter(selectedStartDate) && date.isBefore(selectedEndDate)
+                val isDisabled = minDate != null && date.isBefore(minDate)
 
                 // Background & Text Style binding
                 when {
+                    isDisabled -> {
+                        dayBinding.viewSelectedCircle.visibility = View.GONE
+                        dayBinding.tvDayNumber.setTextColor(Color.parseColor("#CBD5E1"))
+                        dayBinding.tvDayNumber.paint.isFakeBoldText = false
+                        dayBinding.viewRangeLeft.visibility = View.GONE
+                        dayBinding.viewRangeRight.visibility = View.GONE
+                        itemView.setOnClickListener(null)
+                        itemView.isClickable = false
+                    }
                     isStart -> {
                         dayBinding.viewSelectedCircle.visibility = View.VISIBLE
                         dayBinding.tvDayNumber.setTextColor(Color.WHITE)
@@ -246,6 +271,7 @@ class CustomCalendarDialogFragment : DialogFragment() {
                         // Highlight right side only if end date exists
                         dayBinding.viewRangeLeft.visibility = View.GONE
                         dayBinding.viewRangeRight.visibility = if (selectedEndDate != null) View.VISIBLE else View.GONE
+                        itemView.setOnClickListener { onDateClick(date) }
                     }
                     isEnd -> {
                         dayBinding.viewSelectedCircle.visibility = View.VISIBLE
@@ -255,6 +281,7 @@ class CustomCalendarDialogFragment : DialogFragment() {
                         // Highlight left side only
                         dayBinding.viewRangeLeft.visibility = View.VISIBLE
                         dayBinding.viewRangeRight.visibility = View.GONE
+                        itemView.setOnClickListener { onDateClick(date) }
                     }
                     isInRange -> {
                         dayBinding.viewSelectedCircle.visibility = View.GONE
@@ -264,6 +291,7 @@ class CustomCalendarDialogFragment : DialogFragment() {
                         // Highlight entire width
                         dayBinding.viewRangeLeft.visibility = View.VISIBLE
                         dayBinding.viewRangeRight.visibility = View.VISIBLE
+                        itemView.setOnClickListener { onDateClick(date) }
                     }
                     else -> {
                         dayBinding.viewSelectedCircle.visibility = View.GONE
@@ -272,11 +300,8 @@ class CustomCalendarDialogFragment : DialogFragment() {
 
                         dayBinding.viewRangeLeft.visibility = View.GONE
                         dayBinding.viewRangeRight.visibility = View.GONE
+                        itemView.setOnClickListener { onDateClick(date) }
                     }
-                }
-
-                itemView.setOnClickListener {
-                    onDateClick(date)
                 }
             }
         }

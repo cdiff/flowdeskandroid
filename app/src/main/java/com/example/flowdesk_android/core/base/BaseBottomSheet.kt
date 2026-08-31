@@ -25,6 +25,7 @@ abstract class BaseBottomSheet : BottomSheetDialogFragment() {
 
     override fun onStart() {
         super.onStart()
+        dialog?.window?.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         // 완전히 펼쳐진 상태(STATE_EXPANDED)에서도 상단 모서리 둥글기 유지
         (dialog as? BottomSheetDialog)?.behavior?.apply {
             isShouldRemoveExpandedCorners = false

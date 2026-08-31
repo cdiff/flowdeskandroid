@@ -88,9 +88,16 @@ class RolesFragment : Fragment() {
 
     private fun setupListeners() {
         binding.btnCreateRole.setOnClickListener {
-            val bottomSheet = CreateRoleBottomSheetFragment().apply {
-                onSuccess = {
-                    viewModel.triggerRefresh()
+            val bottomSheet = CreateRoleBottomSheetFragment()
+            bottomSheet.onConfirm = { displayName, roleName, description ->
+                viewModel.createRole(roleName, displayName, description) { success, errorMsg ->
+                    if (success) {
+                        Toast.makeText(context, getString(R.string.success_role_created), Toast.LENGTH_SHORT).show()
+                        bottomSheet.dismiss()
+                        viewModel.triggerRefresh()
+                    } else {
+                        Toast.makeText(context, errorMsg ?: "역할 생성 실패", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
             bottomSheet.show(childFragmentManager, CreateRoleBottomSheetFragment.TAG)

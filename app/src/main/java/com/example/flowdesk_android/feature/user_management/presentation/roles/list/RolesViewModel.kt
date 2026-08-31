@@ -115,16 +115,19 @@ class RolesViewModel @Inject constructor(
         }
     }
 
-    fun createRole(roleName: String, displayName: String, description: String) {
+    fun createRole(roleName: String, displayName: String, description: String, onResult: ((Boolean, String?) -> Unit)? = null) {
         viewModelScope.launch {
             _isLoading.value = true
             roleRepository.createRole(roleName, displayName, description)
                 .onSuccess {
                     _event.send(RoleListEvent.RoleCreated)
-                    triggerRefresh() // 생성의 경우 ID 정보 등을 받아와야 하므로 서버 갱신 수행
+                    triggerRefresh()
+                    onResult?.invoke(true, null)
                 }
                 .onFailure {
-                    _event.send(RoleListEvent.Error(it.message ?: "역할 생성 실패"))
+                    val msg = it.message ?: "역할 생성 실패"
+                    _event.send(RoleListEvent.Error(msg))
+                    onResult?.invoke(false, msg)
                 }
             _isLoading.value = false
         }

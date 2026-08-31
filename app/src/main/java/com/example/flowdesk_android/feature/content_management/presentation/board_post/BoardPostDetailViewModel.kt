@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flowdesk_android.data.local.SessionManager
 import com.example.flowdesk_android.feature.system_management.domain.model.BoardPost
+import com.example.flowdesk_android.feature.system_management.domain.model.BoardType
 import com.example.flowdesk_android.feature.system_management.domain.repository.BoardRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -69,6 +70,31 @@ class BoardPostDetailViewModel @Inject constructor(
     private val _toastMessage = MutableSharedFlow<String>()
     val toastMessage: SharedFlow<String> = _toastMessage.asSharedFlow()
 
+    /** 게시판 타입 목록 */
+    private val _boardTypes = MutableStateFlow<List<BoardType>>(emptyList())
+    val boardTypes: StateFlow<List<BoardType>> = _boardTypes.asStateFlow()
+
+    /** 현재 선택된 boardId (-1L = 미선택) */
+    private val _selectedBoardId = MutableStateFlow(-1L)
+    val selectedBoardId: StateFlow<Long> = _selectedBoardId.asStateFlow()
+
+    fun loadBoardTypes(initialBoardId: Long = -1L) {
+        viewModelScope.launch {
+            boardRepository.getBoardTypes()
+                .onSuccess { types ->
+                    _boardTypes.value = types
+                    // 초기 boardId가 있으면 미리 선택 상태로 설정
+                    if (initialBoardId != -1L) {
+                        _selectedBoardId.value = initialBoardId
+                    }
+                }
+        }
+    }
+
+    fun selectBoard(boardId: Long) {
+        _selectedBoardId.value = boardId
+    }
+
     fun loadPostDetail(boardId: Long, postId: Long) {
         if (postId == -1L) {
             _actionState.value = BoardPostDetailUiState.Idle
@@ -96,7 +122,6 @@ class BoardPostDetailViewModel @Inject constructor(
     }
 
     fun savePost(
-        boardId: Long,
         postId: Long,
         title: String,
         content: String,
@@ -105,6 +130,11 @@ class BoardPostDetailViewModel @Inject constructor(
         startDtm: String?,
         endDtm: String?
     ) {
+        val boardId = _selectedBoardId.value
+        if (boardId == -1L) {
+            viewModelScope.launch { _toastMessage.emit("게시판을 선택해주세요.") }
+            return
+        }
         viewModelScope.launch {
             _actionState.value = BoardPostDetailUiState.Loading
             val result = if (postId == -1L) {
