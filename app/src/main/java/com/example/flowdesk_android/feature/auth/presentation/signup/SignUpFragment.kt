@@ -294,7 +294,15 @@ class SignUpFragment : Fragment(R.layout.fragment_auth_signup) {
                     itemBinding.layoutEditMode.visibility = View.VISIBLE
 
                     itemBinding.tvEditLabel.text = label
-                    itemBinding.etEditValue.setText(value)
+                    // 클로저에 캡처된 초기 value가 아닌 ViewModel의 최신값을 읽어옴
+                    val currentValue = when (targetStep) {
+                        SignUpStep.ADMIN_NAME -> viewModel.adminName
+                        SignUpStep.EMAIL -> viewModel.email
+                        SignUpStep.PHONE -> viewModel.phone
+                        SignUpStep.COMPANY -> viewModel.companyName
+                        SignUpStep.TENANT -> viewModel.tenantName
+                    }
+                    itemBinding.etEditValue.setText(currentValue)
 
                     // 전화번호는 숫자 키패드 지원 및 실시간 띄어쓰기 연동
                     if (targetStep == SignUpStep.PHONE) {
@@ -323,7 +331,7 @@ class SignUpFragment : Fragment(R.layout.fragment_auth_signup) {
                     }
 
                     itemBinding.etEditValue.requestFocus()
-                    itemBinding.etEditValue.setSelection(value.length)
+                    itemBinding.etEditValue.setSelection(currentValue.length)
 
                     // 키보드 자동으로 올리기
                     val imm = requireContext().getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager

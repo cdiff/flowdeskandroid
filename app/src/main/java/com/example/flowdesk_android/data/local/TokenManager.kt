@@ -27,7 +27,12 @@ class TokenManager @Inject constructor(@ApplicationContext context: Context) {
     }
     
     fun clear() {
+        // 온보딩 노출 여부는 앱 설치 단위로 1회만 보여주기 위해 로그아웃 시에도 유지
+        val hasSeenOnboarding = hasSeenOnboarding()
         prefs.edit().clear().apply()
+        if (hasSeenOnboarding) {
+            setOnboardingSeen(true)
+        }
     }
 
     fun setOnboardingSeen(seen: Boolean = true) {
