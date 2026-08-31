@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity(), MainNavigator {
             statusBarTopHeight = systemBars.top
             val extraPadding = resources.getDimensionPixelSize(R.dimen.topbar_extra_padding_top)
             binding.topBar.updatePadding(top = systemBars.top + extraPadding)
-            binding.navHostFragment.updatePadding(top = 0)
+            binding.navHostFragment.updatePadding(top = 0, bottom = systemBars.bottom)
             insets
         }
 
