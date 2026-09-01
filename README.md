@@ -1,9 +1,9 @@
+<p align="center">
+  <img src="docs/store-assets/playstore_feature_graphic_1024x500.png" alt="Flowdesk Android Banner" width="100%">
+</p>
+
 <h1 align="center">
-  <br>
-  <img src="https://img.shields.io/badge/Flowdesk-0F172A?style=for-the-badge&logo=android&logoColor=38BDF8" alt="Flowdesk Android Logo" width="220">
-  <br>
   <b>Flowdesk Android</b>
-  <br>
 </h1>
 
 <p align="center">
@@ -57,20 +57,19 @@
 
 고객 인입 통계, 접수 현황, 처리율을 한눈에 파악하는 직관적인 대시보드와 월간/일간 상담 일정 캘린더를 제공합니다.
 
-<p align="center">
-  <img src="docs/screenshots/counsel_dashboard_1.jpg" width="31%" alt="상담 통계 대시보드 1" />
-  <img src="docs/screenshots/counsel_dashboard_2.jpg" width="31%" alt="상담 통계 대시보드 2" />
-  <img src="docs/screenshots/counsel_dashboard_3.jpg" width="31%" alt="상담 통계 대시보드 3" />
-</p>
+#### 📈 실시간 상담 분석 대시보드
 
-<p align="center">
-  <img src="docs/screenshots/counsel_list.jpg" width="48%" alt="상담 목록 및 내역" />
-  <img src="docs/screenshots/counsel_calendar.jpg" width="48%" alt="상담 캘린더 일정 관리" />
-</p>
+| 📊 상담 인입 통계 | 📈 처리율 & 성과 분석 | ⏱️ 접수 현황 모니터링 |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/counsel_dashboard_1.jpg" width="100%" alt="상담 통계 대시보드 1" /> | <img src="docs/screenshots/counsel_dashboard_2.jpg" width="100%" alt="상담 통계 대시보드 2" /> | <img src="docs/screenshots/counsel_dashboard_3.jpg" width="100%" alt="상담 통계 대시보드 3" /> |
+| • 유형별·시간대별 인입 분포 시각화<br>• MPAndroidChart 기반 동적 차트 | • 실시간 상담 처리율 및 만족도 지표<br>• 담당자별 성과 비교 통계 | • 상태별 실시간 접수 카운팅<br>• 대기/진행중 현황 실시간 트래킹 |
 
-* **대시보드 통계**: 상담 유형별 분포 차트, 시간대별 접수량, 담당자별 처리 통계 시각화 (MPAndroidChart)
-* **상담 목록 & 필터링**: 상담 상태(접수, 진행중, 완료), 기간, 담당자별 맞춤 검색
-* **상담 캘린더**: 날짜별 예약된 상담 일정을 타임라인 형태로 직관적 조회
+#### 📅 상담 목록 검색 & 캘린더 스케줄러
+
+| 📋 다중 필터 상담 목록 | 📅 월간/일간 상담 캘린더 |
+| :---: | :---: |
+| <img src="docs/screenshots/counsel_list.jpg" width="100%" alt="상담 목록 및 내역" /> | <img src="docs/screenshots/counsel_calendar.jpg" width="100%" alt="상담 캘린더 일정 관리" /> |
+| • 상담 상태(접수/진행/완료), 기간, 담당자별 맞춤 검색<br>• 플랫 카드 & 아코디언 세부 메뉴 연동 | • 날짜별 예약된 상담 일정을 타임라인으로 조회<br>• 터치 인터랙션을 통한 상세 상담 카드 직관 확인 |
 
 ---
 
@@ -78,13 +77,10 @@
 
 조직의 구성원을 안전하게 초대하고, 각 메뉴 및 기능별 세부 권한을 매트릭스 형태로 부여합니다.
 
-<p align="center">
-  <img src="docs/screenshots/user_management.jpg" width="48%" alt="사용자 관리" />
-  <img src="docs/screenshots/role_management.jpg" width="48%" alt="역할 및 권한 관리" />
-</p>
-
-* **사용자 관리**: 팀원 목록 조회, 상태(활성/비활성) 변경, 팀 초대 및 계정 제어
-* **역할(Role) & 권한(Permission)**: 권한 카탈로그 기반 읽기/쓰기 권한 부여, 기존 역할 권한 복사 기능
+| 👤 팀원 및 계정 관리 | 🛡️ 역할 & 세부 권한 매트릭스 (RBAC) |
+| :---: | :---: |
+| <img src="docs/screenshots/user_management.jpg" width="100%" alt="사용자 관리" /> | <img src="docs/screenshots/role_management.jpg" width="100%" alt="역할 및 권한 관리" /> |
+| • 팀원 목록 조회, 초대 및 상태(활성/비활성) 제어<br>• 역할 배정 및 프로필 상태 실시간 동기화 | • 권한 카탈로그 기반 메뉴별 읽기/쓰기 권한 부여<br>• 기존 역할 권한 원클릭 복사 및 위임 기능 |
 
 ---
 
@@ -92,13 +88,10 @@
 
 시스템 관리자 전용 테넌트 상태 모니터링 및 악성 접근 방지를 위한 보안 차단 정책을 관리합니다.
 
-<p align="center">
-  <img src="docs/screenshots/tenant_management.jpg" width="48%" alt="테넌트 관리" />
-  <img src="docs/screenshots/block_management.jpg" width="48%" alt="차단 관리" />
-</p>
-
-* **테넌트 관리**: 테넌트별 운영 상태 및 웹사이트 설정, 커스텀 상태 컬러 피커 연동
-* **차단 설정**: 비정상 접근 IP 차단 및 악성 키워드 필터링 실시간 제어
+| 🏢 테넌트 상태 & 테마 관리 | 🚫 비정상 접근 & 키워드 차단 |
+| :---: | :---: |
+| <img src="docs/screenshots/tenant_management.jpg" width="100%" alt="테넌트 관리" /> | <img src="docs/screenshots/block_management.jpg" width="100%" alt="차단 관리" /> |
+| • 테넌트별 운영 상태 및 웹사이트 설정 제어<br>• 커스텀 상태 컬러 피커 연동으로 시각적 브랜딩 | • 악성 접근 IP 실시간 차단 및 해제 다이얼로그<br>• 부적절 키워드 필터링 정책 모바일 즉시 반영 |
 
 ---
 
@@ -106,13 +99,10 @@
 
 사내 공지 및 게시판 운영과 개인 계정 알림/보안 옵션을 손쉽게 관리할 수 있습니다.
 
-<p align="center">
-  <img src="docs/screenshots/board_management.jpg" width="48%" alt="게시판 관리" />
-  <img src="docs/screenshots/mypage.jpg" width="48%" alt="마이페이지 및 설정" />
-</p>
-
-* **게시판 관리**: 게시글 작성/수정/삭제 및 게시판 카테고리별 분류
-* **마이페이지**: 프로필 수정, 비밀번호 변경, 서비스 알림 수신 설정
+| 📢 사내 공지 및 게시판 운영 | ⚙️ 마이페이지 및 보안 설정 |
+| :---: | :---: |
+| <img src="docs/screenshots/board_management.jpg" width="100%" alt="게시판 관리" /> | <img src="docs/screenshots/mypage.jpg" width="100%" alt="마이페이지 및 설정" /> |
+| • 게시판 카테고리별 공지/게시글 작성·수정·삭제<br>• 언더라인 폼 기반 깔끔한 입력 경험 | • 프로필 수정, 비밀번호 변경, 다크모드 대응<br>• 서비스 알림 수신 설정 및 세션 관리 |
 
 ---
 
