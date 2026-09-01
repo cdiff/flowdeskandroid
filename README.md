@@ -1,9 +1,7 @@
-<p align="center">
-  <img src="docs/store-assets/playstore_feature_graphic_1024x500.png" alt="Flowdesk Android Banner" width="100%">
-</p>
-
 <h1 align="center">
+  <br>
   <b>Flowdesk Android</b>
+  <br>
 </h1>
 
 <p align="center">
