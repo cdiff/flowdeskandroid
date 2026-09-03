@@ -129,7 +129,40 @@ class SignUpFragment : Fragment(R.layout.fragment_auth_signup) {
         binding.btnNext.setOnClickListener { handleNext() }
     }
 
+    /**
+     * 현재 열려 있는 모든 인라인 수정 필드를 검사하고 자동 저장함.
+     * @return true: 모두 정상이거나 열린 필드가 없음, false: 유효성 검사 실패(에러 표시 및 포커스 유지)
+     */
+    private fun saveActiveInlineEdits(): Boolean {
+        val steps = SignUpStep.entries
+        for (i in 0 until binding.containerCompletedItems.childCount) {
+            val child = binding.containerCompletedItems.getChildAt(i)
+            val itemBinding = ItemSignupCompletedFieldBinding.bind(child)
+            if (itemBinding.layoutEditMode.visibility == View.VISIBLE) {
+                val label = itemBinding.tvEditLabel.text.toString()
+                val targetStep = steps.find { it.label == label } ?: SignUpStep.ADMIN_NAME
+                val newValue = itemBinding.etEditValue.text.toString().trim()
+                val errorMsg = checkSingleInput(targetStep, newValue)
+                if (errorMsg != null) {
+                    itemBinding.tvEditError.text = errorMsg
+                    itemBinding.tvEditError.visibility = View.VISIBLE
+                    itemBinding.etEditValue.requestFocus()
+                    return false
+                } else {
+                    itemBinding.tvEditError.visibility = View.GONE
+                    viewModel.updateCompletedItemValue(targetStep, newValue)
+                    itemBinding.layoutEditMode.visibility = View.GONE
+                    itemBinding.layoutReadMode.visibility = View.VISIBLE
+                }
+            }
+        }
+        return true
+    }
+
     private fun handleNext() {
+        // 1. 혹시 수정 중이던 이전 필드가 있다면 먼저 검사 및 자동 저장
+        if (!saveActiveInlineEdits()) return
+
         val currentStep = viewModel.currentStep.value
         val inputValue = binding.etCurrentInput.text.toString().trim()
 
@@ -290,6 +323,9 @@ class SignUpFragment : Fragment(R.layout.fragment_auth_signup) {
             // 완료 항목 카드 클릭 시 인라인 편집 모드로 전환
             itemBinding.root.setOnClickListener {
                 if (itemBinding.layoutEditMode.visibility == View.GONE) {
+                    // 다른 열려있는 수정 카드가 있다면 먼저 저장 후 닫기
+                    saveActiveInlineEdits()
+
                     itemBinding.layoutReadMode.visibility = View.GONE
                     itemBinding.layoutEditMode.visibility = View.VISIBLE
 
@@ -325,9 +361,19 @@ class SignUpFragment : Fragment(R.layout.fragment_auth_signup) {
                         itemBinding.etEditValue.inputType = InputType.TYPE_CLASS_TEXT
                     }
 
-                    // 수정 모드 에디터 포커스 리스너 연동
+                    // 수정 모드 에디터 포커스 리스너 연동: 다른 필드로 포커스가 이동하면 자동 저장
                     itemBinding.etEditValue.setOnFocusChangeListener { _, hasFocus ->
                         itemBinding.layoutEditMode.isSelected = hasFocus
+                        if (!hasFocus && itemBinding.layoutEditMode.visibility == View.VISIBLE) {
+                            val newValue = itemBinding.etEditValue.text.toString().trim()
+                            val errorMsg = checkSingleInput(targetStep, newValue)
+                            if (errorMsg == null && newValue.isNotEmpty()) {
+                                itemBinding.tvEditError.visibility = View.GONE
+                                viewModel.updateCompletedItemValue(targetStep, newValue)
+                                itemBinding.layoutEditMode.visibility = View.GONE
+                                itemBinding.layoutReadMode.visibility = View.VISIBLE
+                            }
+                        }
                     }
 
                     itemBinding.etEditValue.requestFocus()
@@ -351,9 +397,9 @@ class SignUpFragment : Fragment(R.layout.fragment_auth_signup) {
                 }
             }
 
-            // 키보드 완료(Done) 키를 누르면 수정을 적용함
+            // 키보드 완료(Done) / Next 키를 누르면 수정을 적용함
             itemBinding.etEditValue.setOnEditorActionListener { _, actionId, _ ->
-                if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE) {
+                if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE || actionId == android.view.inputmethod.EditorInfo.IME_ACTION_NEXT) {
                     val newValue = itemBinding.etEditValue.text.toString().trim()
                     val errorMsg = checkSingleInput(targetStep, newValue)
                     if (errorMsg != null) {
@@ -367,6 +413,8 @@ class SignUpFragment : Fragment(R.layout.fragment_auth_signup) {
                         imm.hideSoftInputFromWindow(itemBinding.etEditValue.windowToken, 0)
 
                         viewModel.updateCompletedItemValue(targetStep, newValue)
+                        itemBinding.layoutEditMode.visibility = View.GONE
+                        itemBinding.layoutReadMode.visibility = View.VISIBLE
                     }
                     true
                 } else {
