@@ -41,9 +41,9 @@ class OnboardingPagerAdapter : RecyclerView.Adapter<OnboardingPagerAdapter.Onboa
         val startIndex = fullText.indexOf(page.highlightWord)
         if (startIndex >= 0) {
             val endIndex = startIndex + page.highlightWord.length
-            val skyBlueColor = Color.parseColor("#0284C7")
+            val highlightColor = Color.parseColor("#3B82F6")
             spannable.setSpan(
-                ForegroundColorSpan(skyBlueColor),
+                ForegroundColorSpan(highlightColor),
                 startIndex,
                 endIndex,
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
