@@ -7,10 +7,23 @@
     android:background="@color/white"
     tools:context=".feature.auth.presentation.login.LoginFragment">
 
+    <!-- 상태바 영역까지 매끄럽게 연결되는 소프트 앰비언트 글로우 배경 레이어 -->
+    <View
+        android:id="@+id/viewAmbientGlow"
+        android:layout_width="match_parent"
+        android:layout_height="420dp"
+        android:background="@drawable/bg_login_glow"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ScrollView
+        android:id="@+id/scrollViewLogin"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
+        android:overScrollMode="never"
+        android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -19,194 +32,339 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="40dp">
+            android:paddingHorizontal="24dp"
+            android:paddingTop="105dp"
+            android:paddingBottom="12dp">
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideStart"
-                android:layout_width="wrap_content"
+            <!-- 1. 상단 타이틀 영역 (좌측 정렬) -->
+            <TextView
+                android:id="@+id/tvGreeting"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.05" />
+                android:letterSpacing="-0.02"
+                android:text="만나서 반가워요!"
+                android:textColor="#3B82F6"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideEnd"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.95" />
-
-            <!-- 상단 타이틀 텍스트 (로고 삭제 및 중앙 정렬) -->
             <TextView
                 android:id="@+id/tvTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="120dp"
-                android:gravity="center"
-                android:lineSpacingExtra="4dp"
-                android:text="@string/login_title"
-                android:textColor="@color/text_primary"
-                android:textSize="22sp"
+                android:layout_marginTop="2dp"
+                android:letterSpacing="-0.02"
+                android:text="회원관리를 시작해볼까요?"
+                android:textColor="#0F172A"
+                android:textSize="24sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@id/guideEnd"
-                app:layout_constraintStart_toStartOf="@id/guideStart"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvGreeting" />
 
-            <!-- 1. 회사명 / 테넌트 (사진과 동일한 OutlinedBox 아웃라인 라벨 스타일) -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/layoutTenant"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            <TextView
+                android:id="@+id/tvSubtitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="48dp"
-                android:hint="@string/hint_tenant"
-                app:boxCornerRadiusBottomEnd="12dp"
-                app:boxCornerRadiusBottomStart="12dp"
-                app:boxCornerRadiusTopEnd="12dp"
-                app:boxCornerRadiusTopStart="12dp"
-                app:boxStrokeColor="@color/selector_outlined_box_stroke"
-                app:boxStrokeWidth="1dp"
-                app:boxStrokeWidthFocused="1.5dp"
-                android:textColorHint="#94A3B8"
-                app:hintTextColor="@color/login_blue"
-                app:layout_constraintEnd_toEndOf="@id/guideEnd"
-                app:layout_constraintStart_toStartOf="@id/guideStart"
-                app:layout_constraintTop_toBottomOf="@id/tvTitle">
+                android:layout_marginTop="8dp"
+                android:text="회사와 이메일 계정으로 안전하게 로그인하세요."
+                android:textColor="#64748B"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvTitle" />
 
-                <com.google.android.material.textfield.TextInputEditText
+            <!-- 2. 회사명 (또는 워크스페이스) 입력 필드 (12dp 모서리 & 얇고 밝은 #E2E8F0 테두리) -->
+            <FrameLayout
+                android:id="@+id/layoutTenantBox"
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_marginTop="34dp"
+                android:background="@drawable/bg_input_box_rounded"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvSubtitle">
+
+                <EditText
                     android:id="@+id/etTenant"
                     android:layout_width="match_parent"
-                    android:layout_height="54dp"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:gravity="center_vertical"
+                    android:hint="회사명 (또는 워크스페이스)"
+                    android:imeOptions="actionNext"
                     android:inputType="text"
-                    android:paddingHorizontal="16dp"
+                    android:paddingStart="18dp"
+                    android:paddingEnd="48dp"
+                    android:singleLine="true"
                     android:textColor="#0F172A"
+                    android:textColorHint="#94A3B8"
                     android:textSize="14sp" />
-            </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- 2. 이메일 / 아이디 (OutlinedBox 아웃라인 라벨 스타일) -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/layoutUserId"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                <ImageView
+                    android:id="@+id/ivTenantIcon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginEnd="16dp"
+                    android:contentDescription="회사 아이콘"
+                    android:src="@drawable/ic_lucide_building" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tvTenantError"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:hint="@string/hint_user_id"
-                app:boxCornerRadiusBottomEnd="12dp"
-                app:boxCornerRadiusBottomStart="12dp"
-                app:boxCornerRadiusTopEnd="12dp"
-                app:boxCornerRadiusTopStart="12dp"
-                app:boxStrokeColor="@color/selector_outlined_box_stroke"
-                app:boxStrokeWidth="1dp"
-                app:boxStrokeWidthFocused="1.5dp"
-                android:textColorHint="#94A3B8"
-                app:hintTextColor="@color/login_blue"
-                app:layout_constraintEnd_toEndOf="@id/guideEnd"
-                app:layout_constraintStart_toStartOf="@id/guideStart"
-                app:layout_constraintTop_toBottomOf="@id/layoutTenant">
+                android:layout_marginTop="3dp"
+                android:layout_marginStart="4dp"
+                android:textColor="#EF4444"
+                android:textSize="11sp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layoutTenantBox" />
 
-                <com.google.android.material.textfield.TextInputEditText
+            <!-- 3. 이메일 주소 입력 필드 (12dp 모서리 & 얇고 밝은 #E2E8F0 테두리) -->
+            <FrameLayout
+                android:id="@+id/layoutUserIdBox"
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_input_box_rounded"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvTenantError">
+
+                <EditText
                     android:id="@+id/etUserId"
                     android:layout_width="match_parent"
-                    android:layout_height="54dp"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:gravity="center_vertical"
+                    android:hint="이메일 주소"
+                    android:imeOptions="actionNext"
                     android:inputType="textEmailAddress"
-                    android:paddingHorizontal="16dp"
+                    android:paddingStart="18dp"
+                    android:paddingEnd="48dp"
+                    android:singleLine="true"
                     android:textColor="#0F172A"
+                    android:textColorHint="#94A3B8"
                     android:textSize="14sp" />
-            </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- 3. 비밀번호 (OutlinedBox 아웃라인 라벨 + 비밀번호 토글) -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/layoutPassword"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                <ImageView
+                    android:id="@+id/ivEmailIcon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginEnd="16dp"
+                    android:contentDescription="이메일 아이콘"
+                    android:src="@drawable/ic_lucide_mail" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tvEmailError"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:hint="@string/hint_password"
-                app:boxCornerRadiusBottomEnd="12dp"
-                app:boxCornerRadiusBottomStart="12dp"
-                app:boxCornerRadiusTopEnd="12dp"
-                app:boxCornerRadiusTopStart="12dp"
-                app:boxStrokeColor="@color/selector_outlined_box_stroke"
-                app:boxStrokeWidth="1dp"
-                app:boxStrokeWidthFocused="1.5dp"
-                app:endIconMode="password_toggle"
-                android:textColorHint="#94A3B8"
-                app:hintTextColor="@color/login_blue"
-                app:layout_constraintEnd_toEndOf="@id/guideEnd"
-                app:layout_constraintStart_toStartOf="@id/guideStart"
-                app:layout_constraintTop_toBottomOf="@id/layoutUserId">
+                android:layout_marginTop="3dp"
+                android:layout_marginStart="4dp"
+                android:textColor="#EF4444"
+                android:textSize="11sp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layoutUserIdBox" />
 
-                <com.google.android.material.textfield.TextInputEditText
+            <!-- 4. 비밀번호 입력 필드 (12dp 모서리 & 얇고 밝은 #E2E8F0 테두리) -->
+            <FrameLayout
+                android:id="@+id/layoutPasswordBox"
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_input_box_rounded"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvEmailError">
+
+                <EditText
                     android:id="@+id/etPassword"
                     android:layout_width="match_parent"
-                    android:layout_height="54dp"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:gravity="center_vertical"
+                    android:hint="비밀번호"
+                    android:imeOptions="actionDone"
                     android:inputType="textPassword"
-                    android:paddingHorizontal="16dp"
+                    android:paddingStart="18dp"
+                    android:paddingEnd="48dp"
+                    android:singleLine="true"
                     android:textColor="#0F172A"
+                    android:textColorHint="#94A3B8"
                     android:textSize="14sp" />
-            </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- 사진과 동일한 비율의 아이디 저장 체크박스 -->
-            <CheckBox
+                <ImageView
+                    android:id="@+id/ivPasswordToggle"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginEnd="10dp"
+                    android:background="@android:color/transparent"
+                    android:clickable="true"
+                    android:contentDescription="비밀번호 보기 전환"
+                    android:focusable="true"
+                    android:padding="5dp"
+                    android:src="@drawable/ic_lucide_eye" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tvPasswordError"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:layout_marginStart="4dp"
+                android:textColor="#EF4444"
+                android:textSize="11sp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layoutPasswordBox" />
+
+            <!-- 5. 자동 로그인 체크박스 (AppCompatCheckBox로 머티리얼 기본 검은색 틴트 완전 차단) -->
+            <androidx.appcompat.widget.AppCompatCheckBox
                 android:id="@+id/cbAutoLogin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:buttonTint="#CBD5E1"
-                android:paddingStart="4dp"
-                android:text="@string/auto_login"
-                android:textColor="#64748B"
+                android:layout_marginTop="16dp"
+                android:background="@android:color/transparent"
+                android:button="@drawable/selector_custom_checkbox"
+                app:buttonCompat="@drawable/selector_custom_checkbox"
+                android:buttonTint="@null"
+                app:buttonTint="@null"
+                android:paddingStart="8dp"
+                android:text="자동 로그인"
+                android:textColor="#0F172A"
                 android:textSize="13sp"
-                app:layout_constraintStart_toStartOf="@id/guideStart"
-                app:layout_constraintTop_toBottomOf="@id/layoutPassword" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvPasswordError" />
 
-            <!-- 사진과 동일한 비율의 대형 둥근 로그인 버튼 -->
+            <!-- 6. 로그인 버튼 (단색 파랑 #3B82F6 & 12dp 모서리, 물결 효과 제거) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLogin"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_marginTop="28dp"
-                android:backgroundTint="@color/login_blue"
+                android:layout_height="54dp"
+                android:layout_marginTop="26dp"
+                android:backgroundTint="#3B82F6"
+                android:elevation="0dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:text="@string/btn_login"
-                android:textColor="@color/white"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                app:rippleColor="@android:color/transparent"
+                android:stateListAnimator="@null"
+                android:text="로그인"
+                android:textColor="#FFFFFF"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                app:cornerRadius="14dp"
-                app:elevation="0dp"
-                app:layout_constraintEnd_toEndOf="@id/guideEnd"
-                app:layout_constraintStart_toStartOf="@id/guideStart"
+                app:cornerRadius="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cbAutoLogin" />
 
-            <!-- 사진 스타일의 하단 회원가입 안내 (사진 위치) -->
+            <!-- 7. 회원가입 링크 (하단 푸터 링크 바로 위에 배치) -->
             <LinearLayout
                 android:id="@+id/layoutSignUpLink"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="100dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp"
+                android:background="@android:color/transparent"
                 android:gravity="center"
                 android:orientation="horizontal"
+                android:padding="6dp"
+                app:layout_constraintBottom_toTopOf="@id/layoutFooterLinks"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/btnLogin">
+                app:layout_constraintTop_toBottomOf="@id/btnLogin"
+                app:layout_constraintVertical_bias="1.0">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="계정이 없으신가요? "
-                    android:textColor="#94A3B8"
+                    android:text="아직 회원이 아니신가요? "
+                    android:textColor="#64748B"
                     android:textSize="13sp" />
 
                 <TextView
                     android:id="@+id/tvSignUpLink"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/sign_up"
-                    android:textColor="@color/login_blue"
-                    android:textSize="14sp"
+                    android:text="회원가입  >"
+                    android:textColor="#3B82F6"
+                    android:textSize="13sp"
                     android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 8. 하단 푸터 링크 (이용약관 | 개인정보처리방침 | 고객지원) -->
+            <LinearLayout
+                android:id="@+id/layoutFooterLinks"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <TextView
+                    android:id="@+id/tvTerms"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:padding="4dp"
+                    android:text="이용약관"
+                    android:textColor="#94A3B8"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="4dp"
+                    android:text="|"
+                    android:textColor="#CBD5E1"
+                    android:textSize="10sp" />
+
+                <TextView
+                    android:id="@+id/tvPrivacy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:padding="4dp"
+                    android:text="개인정보처리방침"
+                    android:textColor="#94A3B8"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="4dp"
+                    android:text="|"
+                    android:textColor="#CBD5E1"
+                    android:textSize="10sp" />
+
+                <TextView
+                    android:id="@+id/tvSupport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:padding="4dp"
+                    android:text="고객지원"
+                    android:textColor="#94A3B8"
+                    android:textSize="11sp" />
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

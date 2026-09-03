@@ -29,17 +29,26 @@ class AuthActivity : AppCompatActivity() {
         // 상태바 아이콘을 라이트 배경 기준 다크 아이콘으로 설정 (windowLightStatusBar 대체)
         WindowCompat.getInsetsController(window, binding.root).isAppearanceLightStatusBars = true
 
-        // [A안] AuthActivity 루트에서 Insets 일괄 소비
-        // 하위 Fragment(Onboarding, Login, Splash 등)는 개별 Insets 처리 불필요
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(top = systemBars.top, bottom = systemBars.bottom)
-            insets
-        }
+        var statusBarTop = 0
+        var navBarBottom = 0
 
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.auth_nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            statusBarTop = systemBars.top
+            navBarBottom = systemBars.bottom
+            val topPadding = if (navController.currentDestination?.id == R.id.loginFragment) 0 else statusBarTop
+            v.updatePadding(top = topPadding, bottom = navBarBottom)
+            insets
+        }
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            val topPadding = if (destination.id == R.id.loginFragment) 0 else statusBarTop
+            binding.root.updatePadding(top = topPadding, bottom = navBarBottom)
+        }
     }
     
     override fun onSupportNavigateUp(): Boolean {
