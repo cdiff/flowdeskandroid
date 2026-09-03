@@ -25,6 +25,7 @@ android {
         versionCode = 4
         versionName = "1.0.0"
 
+        manifestPlaceholders["appName"] = "@string/app_name"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -38,6 +39,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-DEBUG"
+            manifestPlaceholders["appName"] = "플로우데스크(Dev)"
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -46,6 +52,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            manifestPlaceholders["appName"] = "@string/app_name"
         }
     }
     compileOptions {
