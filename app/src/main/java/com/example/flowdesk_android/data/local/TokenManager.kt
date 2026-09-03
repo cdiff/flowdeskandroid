@@ -42,4 +42,12 @@ class TokenManager @Inject constructor(@ApplicationContext context: Context) {
     fun hasSeenOnboarding(): Boolean {
         return prefs.getBoolean("has_seen_onboarding", false)
     }
+
+    fun setAutoLogin(enabled: Boolean) {
+        prefs.edit().putBoolean("auto_login", enabled).apply()
+    }
+
+    fun isAutoLogin(): Boolean {
+        return prefs.getBoolean("auto_login", true)
+    }
 }

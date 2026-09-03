@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="22dp"
+    android:height="22dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 외곽 건물 형태 -->
+    <path
+        android:strokeColor="#94A3B8"
+        android:strokeWidth="1.6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M6,2h12a2,2 0 0,1 2,2v18H4V4a2,2 0 0,1 2,-2z" />
+    <!-- 1층 문 -->
+    <path
+        android:strokeColor="#94A3B8"
+        android:strokeWidth="1.6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M9,22v-4a1,1 0 0,1 1,-1h4a1,1 0 0,1 1,1v4" />
+    <!-- 좌/우 3단 창문 -->
+    <path
+        android:strokeColor="#94A3B8"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M8.5,6.5h0.01M15.5,6.5h0.01M8.5,10.5h0.01M15.5,10.5h0.01M8.5,14.5h0.01M15.5,14.5h0.01" />
+</vector>
