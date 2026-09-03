@@ -191,6 +191,7 @@ cd flowdeskandroid
 * 📖 **[신규 개발자 온보딩 가이드](docs/ONBOARDING.md)**: 전체 아키텍처 및 추천 학습 경로
 * 🎨 **[프로젝트 개발 규칙 (AGENTS.md)](.agents/AGENTS.md)**: UI/UX 디자인 규격 및 상태 관리 표준
 * 🔒 **[개인정보처리방침 (Privacy Policy)](https://cdiff.github.io/flowdeskandroid/privacy-policy/)**: 구글 플레이스토어 정책 웹페이지
+* 📜 **[서비스 이용약관 (Terms of Service)](https://cdiff.github.io/flowdeskandroid/terms-of-service/)**: 서비스 이용약관 웹페이지
 
 ---
 
