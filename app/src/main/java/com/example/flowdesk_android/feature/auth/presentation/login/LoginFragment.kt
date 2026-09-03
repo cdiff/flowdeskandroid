@@ -262,16 +262,20 @@ class LoginFragment : Fragment(R.layout.fragment_auth_login) {
 
             if (!tenantName.isNullOrEmpty()) {
                 binding.etTenant.setText(tenantName)
+                bundle.remove("tenantName")
             }
             if (!email.isNullOrEmpty()) {
                 binding.etUserId.setText(email)
+                bundle.remove("email")
             }
             if (!password.isNullOrEmpty()) {
                 binding.etPassword.setText(password)
+                bundle.remove("password")
             }
 
             if (isDemo) {
                 Toast.makeText(requireContext(), "체험용 데모 계정 정보가 입력되었습니다.", Toast.LENGTH_SHORT).show()
+                bundle.putBoolean("EXTRA_DEMO_MODE", false)
             }
         }
     }

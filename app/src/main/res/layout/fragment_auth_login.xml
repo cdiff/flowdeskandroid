@@ -33,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingHorizontal="24dp"
-            android:paddingTop="105dp"
+            android:paddingTop="113dp"
             android:paddingBottom="12dp">
 
             <!-- 1. 상단 타이틀 영역 (좌측 정렬) -->

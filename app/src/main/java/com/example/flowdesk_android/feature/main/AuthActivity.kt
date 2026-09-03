@@ -36,17 +36,23 @@ class AuthActivity : AppCompatActivity() {
             .findFragmentById(R.id.auth_nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
+        fun isImmersiveDestination(destinationId: Int?): Boolean {
+            return destinationId == R.id.loginFragment ||
+                    destinationId == R.id.onboardingFragment ||
+                    destinationId == R.id.splashFragment
+        }
+
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             statusBarTop = systemBars.top
             navBarBottom = systemBars.bottom
-            val topPadding = if (navController.currentDestination?.id == R.id.loginFragment) 0 else statusBarTop
+            val topPadding = if (isImmersiveDestination(navController.currentDestination?.id)) 0 else statusBarTop
             v.updatePadding(top = topPadding, bottom = navBarBottom)
             insets
         }
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            val topPadding = if (destination.id == R.id.loginFragment) 0 else statusBarTop
+            val topPadding = if (isImmersiveDestination(destination.id)) 0 else statusBarTop
             binding.root.updatePadding(top = topPadding, bottom = navBarBottom)
         }
     }

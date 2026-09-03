@@ -126,38 +126,34 @@
                     android:id="@+id/btn_start"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:backgroundTint="@color/brand_primary"
+                    android:backgroundTint="#3B82F6"
                     android:elevation="0dp"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
                     android:insetLeft="0dp"
                     android:insetRight="0dp"
+                    app:rippleColor="@android:color/transparent"
                     android:stateListAnimator="@null"
                     android:text="플로우데스크 시작하기"
                     android:textColor="#FFFFFF"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    app:cornerRadius="16dp" />
+                    app:cornerRadius="12dp" />
 
-                <com.google.android.material.button.MaterialButton
+                <TextView
                     android:id="@+id/btn_demo"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginTop="10dp"
-                    android:backgroundTint="@android:color/transparent"
-                    android:elevation="0dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:insetLeft="0dp"
-                    android:insetRight="0dp"
-                    android:stateListAnimator="@null"
-                    android:text="데모 계정으로 체험하기"
-                    android:textColor="#475569"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:cornerRadius="16dp"
-                    app:strokeColor="#CBD5E1"
-                    app:strokeWidth="1.5dp" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="16dp"
+                    android:background="@android:color/transparent"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    android:text="데모 계정으로 먼저 둘러보기 >"
+                    android:textColor="#64748B"
+                    android:textSize="14sp" />
             </LinearLayout>
         </FrameLayout>
 
