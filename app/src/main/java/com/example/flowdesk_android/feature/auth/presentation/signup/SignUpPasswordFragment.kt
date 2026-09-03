@@ -92,10 +92,10 @@ class SignUpPasswordFragment : Fragment(R.layout.fragment_auth_signup_password) 
         val sel = editText.selectionEnd
         if (isVisible) {
             editText.transformationMethod = HideReturnsTransformationMethod.getInstance()
-            icon.setImageResource(R.drawable.ic_visibility_on)
+            icon.setImageResource(R.drawable.ic_lucide_eye_off)
         } else {
             editText.transformationMethod = PasswordTransformationMethod.getInstance()
-            icon.setImageResource(R.drawable.ic_visibility_off)
+            icon.setImageResource(R.drawable.ic_lucide_eye)
         }
         editText.setSelection(sel)
     }
