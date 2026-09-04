@@ -198,7 +198,7 @@ class LoginFragment : Fragment(R.layout.fragment_auth_login) {
             return
         }
 
-        // 3. 이메일 유효성 검사 (빈 값 & 포맷 검증)
+        // 3. 이메일 유효성 검사 (데모 계정은 이메일 형식 예외 허용)
         if (userId.isEmpty()) {
             binding.layoutUserIdBox.isActivated = true
             binding.tvEmailError.text = "이메일 주소를 입력해주세요."
@@ -208,7 +208,7 @@ class LoginFragment : Fragment(R.layout.fragment_auth_login) {
             return
         }
 
-        if (!Patterns.EMAIL_ADDRESS.matcher(userId).matches()) {
+        if (!isDemoAccount(tenantName, userId) && !Patterns.EMAIL_ADDRESS.matcher(userId).matches()) {
             binding.layoutUserIdBox.isActivated = true
             binding.tvEmailError.text = "올바른 이메일 형식을 입력해주세요."
             binding.tvEmailError.visibility = View.VISIBLE
@@ -334,8 +334,27 @@ class LoginFragment : Fragment(R.layout.fragment_auth_login) {
         }
     }
 
+    private fun isDemoAccount(tenant: String, userId: String): Boolean {
+        val t = tenant.trim().lowercase()
+        val u = userId.trim().lowercase()
+        return Pair(t, u) in DEMO_ACCOUNTS || u in DEMO_USER_IDS
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        // 백엔드(Swagger) 제공 3대 검증용 데모 계정 예외 허용 목록
+        // 1. Super Admin: system / admin
+        // 2. Tenant Admin: demo_company / demo_admin
+        // 3. Tenant User: demo_company / demo_user01
+        private val DEMO_ACCOUNTS = setOf(
+            Pair("system", "admin"),
+            Pair("demo_company", "demo_admin"),
+            Pair("demo_company", "demo_user01")
+        )
+        private val DEMO_USER_IDS = setOf("admin", "demo_admin", "demo_user01")
     }
 }
